@@ -1,0 +1,45 @@
+# Roteiro de desenvolvimento — NAPI GeoAI
+
+> O roteiro descreve metas futuras, não funcionalidades já entregues.
+
+## Marco 0 — Fundação e ferramentas
+
+- [x] Repositório GitHub pessoal criado.
+- [x] Conexão Cursor → QGIS MCP → QGIS Desktop validada pelo responsável (QGIS 3.44.15; porta local 9875).
+- [ ] Organizar ambiente Python, dependências e testes automatizados.
+- [ ] Definir políticas de branches, revisão e versões.
+
+## Marco 1 — Motor e fontes de dados
+
+- [ ] Criar pacote Python isolado da interface.
+- [ ] Implementar conectores documentados para IBGE e ANEEL com mocks e testes.
+- [ ] Definir contrato de metadados (fonte, versão, CRS, resolução, data, licença, checksum).
+- [ ] Preparar ingestão de dados INPE/LABREN e MapBiomas em formatos disponíveis.
+- [ ] Validar a geração de recorte geoespacial do Paraná no QGIS.
+
+## Marco 2 — Aptidão solar territorial
+
+- [ ] Definir exclusões e restrições legais/ambientais.
+- [ ] Estabelecer critérios físicos/territoriais e normalização.
+- [ ] Implementar cenários de pesos e análise de sensibilidade.
+- [ ] Validar geometrias, projeções, unidades e indicadores.
+- [ ] Gerar mapas e tabelas reproduzíveis com dados reais.
+
+## Marco 3 — API e aplicação bilíngue
+
+- [ ] FastAPI com endpoints versionados, documentação e health check.
+- [ ] Streamlit com seletor PT-BR / EN e mapas interativos.
+- [ ] Exportação de resultados e metadados.
+- [ ] Separar processamento pesado da interface.
+
+## Marco 4 — Infraestrutura e publicação
+
+- [ ] Planejar PostGIS, armazenamento geoespacial e backups.
+- [ ] Definir autenticação, segurança, limites de carga e observabilidade.
+- [ ] Avaliar implantação institucional e incorporação ao site NAPI.
+- [ ] Acrescentar orquestração (Airflow) apenas quando justificada.
+- [ ] Avaliar mensageria (Kafka) apenas com requisitos de eventos em tempo real.
+
+## Critérios globais de aceite
+
+Sem credenciais no Git; sem resultados científicos fabricados; testes documentados; proveniência rastreável; alterações importantes por pull requests; publicação institucional apenas após aprovação explícita.
