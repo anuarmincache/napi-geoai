@@ -30,7 +30,7 @@ Candidate datasets include INPE/LABREN, ANEEL, IBGE, MapBiomas, ONS, and relevan
 
 **Initiator and technical lead:** Anuar Mincache.
 
-**Potential scientific collaborators (not yet formally confirmed):** Luiz Fernando Cotica; Ivair Aparecido Santos; Gustavo Sanguino Dias.
+**Scientific collaborators (participation confirmed by the project lead):** Luiz Fernando Cotica; Ivair Aparecido Santos; Gustavo Sanguino Dias.
 
 See [AUTHORS.md](AUTHORS.md), [ROADMAP.md](ROADMAP.md), and [architecture](docs/ARQUITETURA.md).
 
