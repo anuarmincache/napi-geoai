@@ -51,7 +51,7 @@ Cada fonte será avaliada quanto a formato, licenciamento, resolução, atualiza
 
 **Idealização e liderança técnica:** Anuar Mincache.
 
-**Possíveis colaboradores científicos (participação ainda não formalizada):** Luiz Fernando Cotica; Ivair Aparecido Santos; Gustavo Sanguino Dias.
+**Colaboradores científicos (participação confirmada pelo responsável do projeto):** Luiz Fernando Cotica; Ivair Aparecido Santos; Gustavo Sanguino Dias.
 
 Veja [AUTHORS.md](AUTHORS.md). O projeto está inicialmente hospedado nesta conta pessoal. Eventual vinculação ou transferência institucional dependerá de definição e autorização apropriadas.
 

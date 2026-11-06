@@ -6,11 +6,11 @@
 
 **Anuar Mincache** — project initiator and initial scientific and technical lead of NAPI GeoAI, developed in his personal repository.
 
-## Possíveis colaboradores científicos / Potential scientific collaborators
+## Colaboradores científicos / Scientific collaborators
 
-Os nomes abaixo foram indicados como **potenciais colaboradores**. A participação, afiliação e contribuição específica ainda precisam ser confirmadas; não pressupomos endosso institucional.
+A participação dos pesquisadores abaixo foi confirmada pelo responsável do projeto. As contribuições específicas serão documentadas conforme o desenvolvimento; a inclusão não presume aval institucional formal.
 
-The individuals below are **potential collaborators**. Participation, affiliations, and specific contributions have not yet been confirmed; institutional endorsement is not implied.
+The project lead has confirmed the participation of the researchers listed below. Specific contributions will be documented as the project progresses; institutional endorsement is not implied.
 
 - Luiz Fernando Cotica
 - Ivair Aparecido Santos
