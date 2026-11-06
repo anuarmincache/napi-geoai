@@ -1,2 +1,68 @@
-# napi-geoai
-Plataforma inteligente de análise geoespacial para planejamento energético sustentável, integrando QGIS, Python, inteligência artificial e dados oficiais.
+# NAPI GeoAI
+
+**Plataforma de inteligência geoespacial para o planejamento energético sustentável.**
+
+**Idioma:** [Português](README.md) | [English](README.en.md)
+
+> **Status:** projeto em fase de planejamento e implementação inicial. Ainda não há resultados territoriais validados ou aplicação em produção.
+
+## Visão geral
+
+O NAPI GeoAI é uma iniciativa de pesquisa e desenvolvimento liderada por **Anuar Mincache**, membro do **NAPI Energia Zero Carbono (NAPI EZC)**. O objetivo é desenvolver uma plataforma reprodutível para integrar dados geoespaciais públicos, avaliar cenários de planejamento energético e disponibilizar mapas, indicadores e relatórios científicos.
+
+O primeiro caso de uso planejado é a **avaliação preliminar da aptidão territorial para sistemas fotovoltaicos no Paraná**. A aptidão não equivale a viabilidade técnica, econômica, ambiental ou regulatória de implantação.
+
+## Objetivos
+
+- Conectar fontes oficiais de dados por APIs e formatos geoespaciais documentados.
+- Aplicar processamento raster e vetorial com Python e QGIS/PyQGIS.
+- Desenvolver um motor científico independente da interface.
+- Disponibilizar mapas e cenários em um aplicativo Streamlit, com API FastAPI.
+- Registrar proveniência, versões dos dados, parâmetros e validações.
+- Oferecer interface e documentação em português e inglês.
+
+## Arquitetura planejada
+
+```text
+Fontes públicas (API / CSV / GeoTIFF / serviços GIS)
+           ↓
+Conectores e validação de dados
+           ↓
+Processamento científico (Python, QGIS/PyQGIS)
+           ↓
+Banco geoespacial (PostgreSQL/PostGIS) + arquivos raster
+           ↓
+API (FastAPI) → Interface (Streamlit PT/EN)
+```
+
+**Desenvolvimento:** Cursor + QGIS MCP + GitHub. A inclusão de Airflow será avaliada conforme a complexidade dos pipelines; Kafka não faz parte do MVP.
+
+## Fontes candidatas
+
+- INPE/LABREN — dados de recurso solar.
+- ANEEL — dados de geração.
+- IBGE — limites e identificação territorial.
+- MapBiomas — cobertura e uso da terra.
+- ONS e órgãos ambientais — dados adicionais, conforme disponibilidade e licenças.
+
+Cada fonte será avaliada quanto a formato, licenciamento, resolução, atualização e qualidade. A lista acima não implica que os conectores já estejam implementados.
+
+## Equipe e reconhecimento
+
+**Idealização e liderança técnica:** Anuar Mincache.
+
+**Possíveis colaboradores científicos (participação ainda não formalizada):** Luiz Fernando Cotica; Ivair Aparecido Santos; Gustavo Sanguino Dias.
+
+Veja [AUTHORS.md](AUTHORS.md). O projeto está inicialmente hospedado nesta conta pessoal. Eventual vinculação ou transferência institucional dependerá de definição e autorização apropriadas.
+
+## Plano de desenvolvimento
+
+Consulte [ROADMAP.md](ROADMAP.md) e [docs/ARQUITETURA.md](docs/ARQUITETURA.md).
+
+## Reprodutibilidade e responsabilidade
+
+Não serão apresentados dados ilustrativos como resultados científicos. Critérios de aptidão, restrições territoriais e pesos devem ser transparentes, revisados e submetidos a análise de sensibilidade. Nenhuma decisão de investimento deve ser tomada exclusivamente com base em mapas preliminares.
+
+## Licença
+
+**Ainda não definida.** O repositório é público para consulta, mas não há licença de reutilização concedida neste momento. A licença será escolhida após avaliação dos requisitos institucionais e de propriedade intelectual.
