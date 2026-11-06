@@ -1,0 +1,39 @@
+# NAPI GeoAI
+
+**Geospatial intelligence platform for sustainable energy planning.**
+
+**Language:** [Português](README.md) | [English](README.en.md)
+
+> **Status:** early planning and implementation. No validated territorial results or production application are available yet.
+
+## Overview
+
+NAPI GeoAI is a research and development initiative led by **Anuar Mincache**, a member of **NAPI Energia Zero Carbono (NAPI EZC)**. Its goal is to build a reproducible platform that integrates public geospatial datasets, explores energy-planning scenarios, and provides maps, indicators, and scientific reports.
+
+The initial use case is a **preliminary land-suitability assessment for photovoltaic systems in Paraná, Brazil**. Suitability scores are not equivalent to technical, economic, environmental, or regulatory feasibility.
+
+## Planned capabilities
+
+- Data ingestion through documented APIs and geospatial datasets.
+- Raster and vector processing with Python and QGIS/PyQGIS.
+- A testable scientific engine separate from the web interface.
+- FastAPI backend and bilingual Streamlit frontend.
+- Dataset provenance, versioning, parameter tracking, and validation.
+
+## Proposed stack
+
+Python; QGIS/PyQGIS and QGIS MCP; Cursor; GitHub; FastAPI; Streamlit; PostgreSQL/PostGIS. Airflow may be adopted if workflow complexity justifies it; Kafka is not part of the MVP.
+
+Candidate datasets include INPE/LABREN, ANEEL, IBGE, MapBiomas, ONS, and relevant environmental agencies, subject to source verification, access terms, and data quality.
+
+## Leadership and collaboration
+
+**Initiator and technical lead:** Anuar Mincache.
+
+**Potential scientific collaborators (not yet formally confirmed):** Luiz Fernando Cotica; Ivair Aparecido Santos; Gustavo Sanguino Dias.
+
+See [AUTHORS.md](AUTHORS.md), [ROADMAP.md](ROADMAP.md), and [architecture](docs/ARQUITETURA.md).
+
+## Scientific integrity and license
+
+Illustrative data must never be presented as measured results. All models must document assumptions, constraints, uncertainty, and sensitivity analyses. **No software license has been selected yet**; public repository access does not imply permission to reuse the code.
