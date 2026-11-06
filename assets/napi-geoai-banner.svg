@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-labelledby="t d">
+<title id="t">NAPI GeoAI — Inteligência geoespacial para energia sustentável</title>
+<desc id="d">Banner conceitual com mapa abstrato de aptidão territorial, energia solar e rede de dados. Não representa resultados reais.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071b30"/><stop offset=".63" stop-color="#0b3045"/><stop offset="1" stop-color="#07392f"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ffcc4e"/><stop offset="1" stop-color="#ed9d36"/></linearGradient>
+<linearGradient id="land" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2ca784"/><stop offset=".45" stop-color="#91c555"/><stop offset=".75" stop-color="#efcb57"/><stop offset="1" stop-color="#e67f3e"/></linearGradient>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#8ed0be" stroke-opacity=".10"/></pattern>
+<clipPath id="region"><path d="M800 64l46-16 47 15 23-5 24 33 40 5 17 35 49 4 14 29-17 43 21 32-22 29-35 4-26 27-37-7-37 17-44-12-32 13-25-37-45-9-9-43-23-28 14-34-10-27 20-33z"/></clipPath>
+</defs>
+<rect width="1280" height="360" rx="20" fill="url(#bg)"/>
+<rect width="1280" height="360" rx="20" fill="url(#grid)"/>
+<circle cx="1050" cy="88" r="130" fill="#37b89e" opacity=".06"/>
+<circle cx="1050" cy="88" r="80" fill="#37b89e" opacity=".07"/>
+<path d="M0 285C170 219 280 321 415 271S677 205 783 289 1047 353 1280 274" fill="none" stroke="#56d5ba" stroke-opacity=".18" stroke-width="2"/>
+<g transform="translate(55 64)" stroke-linejoin="round" fill="none" stroke-width="5">
+<path d="M0 60L54 35l55 25-55 26z" stroke="#ffca58"/>
+<path d="M0 80l54 25 55-25M0 100l54 25 55-25" stroke="#a4d9b8"/>
+<path d="M54 31V3M54 5C34 7 35-21 63-18 76-16 77 0 54 5z" fill="#70dba7" stroke="#70dba7" stroke-width="2"/>
+</g>
+<text x="205" y="120" font-family="Arial,Helvetica,sans-serif" font-weight="800" font-size="62" fill="#f5fbfa">NAPI <tspan fill="url(#gold)">GeoAI</tspan></text>
+<text x="60" y="185" font-family="Arial,Helvetica,sans-serif" font-weight="600" font-size="27" fill="#eef8f4">Inteligência geoespacial para</text>
+<text x="60" y="220" font-family="Arial,Helvetica,sans-serif" font-weight="600" font-size="27" fill="#eef8f4">planejamento energético sustentável</text>
+<rect x="60" y="253" rx="18" width="249" height="40" fill="#ffca4d"/>
+<circle cx="81" cy="273" r="7" fill="#113d36"/>
+<text x="98" y="281" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="18" fill="#133b31">Em desenvolvimento</text>
+<text x="60" y="330" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#a6d4cb">QGIS  •  Python  •  GeoAI  •  Dados oficiais  •  Streamlit</text>
+<g clip-path="url(#region)">
+<rect x="760" y="40" width="320" height="290" fill="url(#land)"/>
+<path d="M745 80l380 95M750 130l380 95M760 180l360 90M770 50l110 310M825 50l110 310M880 40l110 310M940 40l110 300" stroke="#08273b" stroke-opacity=".23" stroke-width="8"/>
+<path d="M755 106l390 40M760 245l390-62" stroke="#f6e3a3" stroke-opacity=".4" stroke-width="3"/>
+</g>
+<path d="M800 64l46-16 47 15 23-5 24 33 40 5 17 35 49 4 14 29-17 43 21 32-22 29-35 4-26 27-37-7-37 17-44-12-32 13-25-37-45-9-9-43-23-28 14-34-10-27 20-33z" fill="none" stroke="#e5fff5" stroke-width="3" stroke-linejoin="round"/>
+<g fill="#fdf8e3" stroke="#0c3c42" stroke-width="3"><circle cx="832" cy="130" r="7"/><circle cx="930" cy="196" r="8"/><circle cx="993" cy="246" r="7"/></g>
+<g fill="none" stroke="#b4e5d8" stroke-opacity=".8" stroke-width="2"><path d="M832 130l98 66 63 50"/><path d="M930 196l72-87"/></g>
+<g transform="translate(1124 86)" font-family="Arial,Helvetica,sans-serif" fill="#dcf3e9">
+<circle cx="3" cy="0" r="7" fill="#ffcc58"/><text x="20" y="6" font-size="17">Solar</text>
+<circle cx="3" cy="61" r="7" fill="#81cc80"/><text x="20" y="67" font-size="17">Território</text>
+<circle cx="3" cy="122" r="7" fill="#67c9c2"/><text x="20" y="128" font-size="17">Dados</text>
+<circle cx="3" cy="183" r="7" fill="#d7e9f2"/><text x="20" y="189" font-size="17">Mapas</text>
+</g>
+</svg>

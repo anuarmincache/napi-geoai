@@ -1,5 +1,15 @@
 # NAPI GeoAI
 
+<div align="center">
+
+![NAPI GeoAI — Inteligência geoespacial para planejamento energético sustentável](assets/napi-geoai-banner.svg)
+
+[![Status: Em desenvolvimento](https://img.shields.io/badge/Status-Em%20desenvolvimento-F0B429?style=for-the-badge)](ROADMAP.md)
+[![Python](https://img.shields.io/badge/Python-Planejado-3776AB?style=for-the-badge&logo=python&logoColor=white)](docs/ARQUITETURA.md)
+[![QGIS](https://img.shields.io/badge/QGIS-MCP-589632?style=for-the-badge&logo=qgis&logoColor=white)](docs/ARQUITETURA.md)
+
+</div>
+
 **Plataforma de inteligência geoespacial para o planejamento energético sustentável.**
 
 **Idioma:** [Português](README.md) | [English](README.en.md)
