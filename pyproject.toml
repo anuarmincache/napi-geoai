@@ -8,7 +8,8 @@ version = "0.1.0"
 description = "Motor científico Python do NAPI GeoAI para análise geoespacial e planejamento energético."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "UNLICENSED" }
+# Licença ainda não definida (ver README). Campo omitido de propósito:
+# evita metadados ambíguos e alinha com PEP 639 / Hatchling até haver SPDX.
 authors = [
   { name = "Anuar Mincache" },
 ]

@@ -12,29 +12,43 @@ Opcional para desenvolvimento geoespacial local: QGIS Desktop com o plugin MCP (
 
 ## Setup
 
-No PowerShell, a partir da pasta do repositório:
+### 1. Obter o código (apenas se ainda não houver clone)
+
+No PowerShell, a partir da pasta onde o repositório deve ser criado (não execute isso de dentro de um clone existente):
 
 ```powershell
 git clone https://github.com/anuarmincache/napi-geoai.git
 cd napi-geoai
-uv python install 3.12
-uv venv --python 3.12
-.\.venv\Scripts\Activate.ps1
-uv pip install -e ".[dev]"
 ```
 
-Se a política de execução bloquear a ativação do venv:
+### 2. Ambiente Python (já dentro do clone)
+
+Se o repositório já estiver clonado, abra o PowerShell na pasta `napi-geoai` e continue daqui:
 
 ```powershell
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+uv python install 3.12
+uv venv --python 3.12
+uv pip install -e ".[dev]"
 ```
 
 ## Comandos validados
 
+Preferência: usar `uv run` (não exige ativar o venv nem alterar a política de execução do PowerShell):
+
 ```powershell
+uv run ruff check .
+uv run pytest -q
+```
+
+Alternativa com venv ativado:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
 ruff check .
 pytest -q
 ```
+
+Se a ativação do script for bloqueada pela política de execução, use `uv run` como acima. Alterar `Set-ExecutionPolicy` não é o procedimento padrão deste guia.
 
 Resultados esperados nesta fase: Ruff sem erros; pytest com os testes de importação do pacote `geoai` passando.
 
