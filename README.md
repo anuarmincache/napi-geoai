@@ -59,6 +59,21 @@ Veja [AUTHORS.md](AUTHORS.md). O projeto está inicialmente hospedado nesta cont
 
 Consulte [ROADMAP.md](ROADMAP.md) e [docs/ARQUITETURA.md](docs/ARQUITETURA.md).
 
+## Desenvolvimento local (Windows)
+
+A fundação Python desta fase foi validada localmente com `uv`, Python 3.12, `ruff check` e `pytest`. Guia completo: [docs/INSTALACAO_WINDOWS.md](docs/INSTALACAO_WINDOWS.md).
+
+```powershell
+uv python install 3.12
+uv venv --python 3.12
+.\.venv\Scripts\Activate.ps1
+uv pip install -e ".[dev]"
+ruff check .
+pytest -q
+```
+
+O pacote `geoai/` contém apenas metadados e ponto de entrada testável. Ainda não há conectores, mapas ou aplicação publicada.
+
 ## Reprodutibilidade e responsabilidade
 
 Não serão apresentados dados ilustrativos como resultados científicos. Critérios de aptidão, restrições territoriais e pesos devem ser transparentes, revisados e submetidos a análise de sensibilidade. Nenhuma decisão de investimento deve ser tomada exclusivamente com base em mapas preliminares.
