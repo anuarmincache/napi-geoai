@@ -53,8 +53,21 @@ Inclui rejeição de CRS ausente/divergente, geometria vazia, não poligonal e c
 | Arquivo | Função |
 |---|---|
 | `qgis/parana_limites.qgz` | Projeto com datasource relativo `../data/derived/parana_uf_2025.geojson` |
-| `qgis/exports/parana_limites_tecnico.png` | Layout com legenda, norte, escala, fonte e aviso anti-aptidão |
+| `qgis/exports/parana_limites_tecnico.png` | Layout com polígono do Paraná visível + legenda/norte/escala/fonte/aviso |
 | `qgis/exports/parana_canvas_preview.png` | Preview do canvas |
+
+### Teste visual do layout (pós-revisão cartográfica)
+
+Causa do PNG em branco: camada do layout com datasource relativo inválido na sessão (`isValid=False`, `featureCount=-2`), enquanto o canvas ainda refletia estado anterior.
+
+Correção aplicada:
+1. Recarregar `parana_uf_2025.geojson` com camada válida (1 feição).
+2. Item `QgsLayoutItemMap` com CRS `EPSG:31982`, `setLayers([layer])`, extent transformada de `layer.extent()` + margem 8%.
+3. Simbologia reforçada (preenchimento verde, contorno escuro).
+4. Reexportar PNG e **inspecionar visualmente** o contorno do Paraná centralizado/legível (não basta `exportToImage` OK).
+5. Regravar `.qgz` com datasource relativo.
+
+Checklist visual confirmado no PNG final: polígono presente; legenda; norte; escala; fonte IBGE; aviso de que **não** é aptidão solar.
 
 Teste pós-clone: ver [qgis/README.md](../qgis/README.md).
 
