@@ -47,10 +47,15 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev,db]"
 
+      - name: Install PostgreSQL client (backup/restore tests)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
       - name: Ruff
         run: ruff check .
 
-      - name: Pytest (unit + PostGIS)
+      - name: Pytest (unit + PostGIS + ops)
         run: pytest -q
 
       # QGIS Desktop / QGIS MCP are intentionally not executed in CI.

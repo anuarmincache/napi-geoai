@@ -24,6 +24,9 @@ fi
 echo "==> Habilitando PostGIS no banco napi_geoai"
 sudo -u postgres psql -d napi_geoai -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 
+echo "==> Template vazio com PostGIS (restores isolados)"
+bash "$(dirname "$0")/ensure_postgis_template.sh"
+
 echo "==> Teste local"
 sudo -u postgres psql -d napi_geoai -c "SELECT PostGIS_Version();"
 PGPASSWORD=napi_local_dev_only psql -h 127.0.0.1 -U napi -d napi_geoai -c "SELECT 1 AS ok;"

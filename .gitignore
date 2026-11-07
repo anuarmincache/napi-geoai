@@ -61,6 +61,13 @@ secrets/
 credentials.json
 service-account*.json
 
+# Database dumps / local backups (MVP 05) — nunca versionar
+backups/
+*.dump
+*.backup
+*.sql.gz
+napi_geoai_tmp_*/
+
 # Large geospatial / binary data (keep small fixtures under tests/)
 *.tif
 *.tiff

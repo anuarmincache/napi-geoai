@@ -90,6 +90,8 @@ Catálogo de fontes e contratos de ingestão (MVP 03): [docs/FONTES_OFICIAIS.md]
 
 Fundação PostGIS local (MVP 04): [docs/BANCO_DADOS.md](docs/BANCO_DADOS.md), [docs/MVP04_RESULTADOS.md](docs/MVP04_RESULTADOS.md). Com Docker disponível: `docker compose up -d`, definir `DATABASE_URL` a partir de `.env.example`, `py -3 scripts/migrate_db.py` e `py -3 scripts/import_parana_boundary_db.py`. Testes marcados `postgis` exigem banco real; no CI usam o serviço gratuito `postgis/postgis`. A conta Supabase remota **não** é usada neste MVP.
 
+Operação / robustez (MVP 05): [docs/OPERACAO_BANCO.md](docs/OPERACAO_BANCO.md) — `py -3 scripts/db_ops.py doctor|backup|restore-verify|security-audit`. Neste host WSL o Postgres nativo escuta em **5433**.
+
 ## Reprodutibilidade e responsabilidade
 
 Não serão apresentados dados ilustrativos como resultados científicos. Critérios de aptidão, restrições territoriais e pesos devem ser transparentes, revisados e submetidos a análise de sensibilidade. Nenhuma decisão de investimento deve ser tomada exclusivamente com base em mapas preliminares.
