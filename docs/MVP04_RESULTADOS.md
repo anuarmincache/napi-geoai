@@ -43,3 +43,9 @@ pytest -q                    → 45 passed, 2 skipped
 ```
 
 Instalação nativa: `bash scripts/setup_postgis_wsl.sh` (senha sudo só no terminal Ubuntu).
+
+### CI (GitHub Actions)
+
+Commits `ba5f3b1` / `7c0f909` — após correções de PostGIS portátil + SHA/EOL LF:
+
+- Runs `42404685730` e `42404681174` → **success** (Ruff + pytest com serviço PostGIS).
