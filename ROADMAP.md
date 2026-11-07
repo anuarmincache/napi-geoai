@@ -6,7 +6,7 @@
 
 - [x] Repositório GitHub pessoal criado.
 - [x] Conexão Cursor → QGIS MCP → QGIS Desktop validada pelo responsável (QGIS 3.44.15; porta local 9875).
-- [ ] Organizar ambiente Python, dependências e testes automatizados.
+- [x] Organizar ambiente Python, dependências e testes automatizados.
 - [ ] Definir políticas de branches, revisão e versões.
 
 ## Marco 1 — Motor e fontes de dados

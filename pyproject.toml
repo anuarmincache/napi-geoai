@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "napi-geoai"
+version = "0.1.0"
+description = "Motor científico Python do NAPI GeoAI para análise geoespacial e planejamento energético."
+readme = "README.md"
+requires-python = ">=3.12"
+# Licença ainda não definida (ver README). Campo omitido de propósito:
+# evita metadados ambíguos e alinha com PEP 639 / Hatchling até haver SPDX.
+authors = [
+  { name = "Anuar Mincache" },
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+  "ruff>=0.9,<1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["geoai"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+src = ["geoai", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "I",   # isort
+  "UP",  # pyupgrade
+  "B",   # bugbear
+]

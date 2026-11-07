@@ -34,6 +34,21 @@ Candidate datasets include INPE/LABREN, ANEEL, IBGE, MapBiomas, ONS, and relevan
 
 See [AUTHORS.md](AUTHORS.md), [ROADMAP.md](ROADMAP.md), and [architecture](docs/ARQUITETURA.md).
 
+## Local development (Windows)
+
+The Python foundation for this phase was validated locally with `uv`, Python 3.12, `ruff check`, and `pytest`. Full guide: [docs/INSTALACAO_WINDOWS.md](docs/INSTALACAO_WINDOWS.md).
+
+```powershell
+uv python install 3.12
+uv venv --python 3.12
+.\.venv\Scripts\Activate.ps1
+uv pip install -e ".[dev]"
+ruff check .
+pytest -q
+```
+
+The `geoai/` package currently exposes only metadata and a testable entry point. Connectors, maps, and a published application are not included yet.
+
 ## Scientific integrity and license
 
 Illustrative data must never be presented as measured results. All models must document assumptions, constraints, uncertainty, and sensitivity analyses. **No software license has been selected yet**; public repository access does not imply permission to reuse the code.
