@@ -28,7 +28,7 @@ Se o repositório já estiver clonado, abra o PowerShell na pasta `napi-geoai` e
 ```powershell
 uv python install 3.12
 uv venv --python 3.12
-uv pip install -e ".[dev]"
+uv pip install -e ".[dev,db]"
 ```
 
 ## Comandos validados
@@ -50,21 +50,34 @@ pytest -q
 
 Se a ativação do script for bloqueada pela política de execução, use `uv run` como acima. Alterar `Set-ExecutionPolicy` não é o procedimento padrão deste guia.
 
-Resultados esperados nesta fase: Ruff sem erros; pytest passando (importação + limites/conector IBGE com mocks/fixtures).
+Resultados esperados nesta fase: Ruff sem erros; pytest passando (importação + limites/conector IBGE com mocks/fixtures). Testes marcados `postgis` só passam com `DATABASE_URL` apontando para PostgreSQL/PostGIS (Docker Compose ou CI).
+
+## PostGIS local (MVP 04)
+
+Ver [BANCO_DADOS.md](BANCO_DADOS.md). Resumo:
+
+1. Instalar Docker Desktop (gratuito para uso pessoal) **ou** PostgreSQL+PostGIS no Windows/WSL.
+2. `docker compose up -d` e copiar `.env.example` → `.env`.
+3. `uv run python scripts/migrate_db.py`
+4. `uv run python scripts/import_parana_boundary_db.py`
+
+Sem Docker/Postgres nesta máquina, os testes `postgis` são *skipped* localmente e executados no GitHub Actions. **Não** use a conta Supabase remota neste MVP.
 
 ## Escopo desta fase
 
 Incluído:
 
-- pacote `geoai/` (metadados, conector IBGE, validação de limites)
+- pacote `geoai/` (metadados, conector IBGE, validação de limites, camada `geoai.db`)
 - script `scripts/prepare_parana_boundary.py`
+- migrações PostGIS e importador do limite UF Paraná
 - projeto QGIS técnico do Paraná (`qgis/`)
 - `pyproject.toml` com Ruff e pytest
 - `.gitignore`
-- workflow GitHub Actions de lint/testes (sem QGIS Desktop)
+- workflow GitHub Actions de lint/testes + serviço PostGIS (sem QGIS Desktop; sem Supabase remoto)
 
 Fora do escopo:
 
 - mapas de aptidão solar ou indicadores energéticos
 - FastAPI / Streamlit em produção
 - Airflow / Kafka
+- conexão à conta Supabase existente

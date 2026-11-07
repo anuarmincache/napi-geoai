@@ -1,0 +1,22 @@
+# PostgreSQL + PostGIS local gratuito (MVP 04).
+# Não usa Supabase remoto. Requer Docker Desktop ou engine compatível.
+services:
+  postgis:
+    image: postgis/postgis:16-3.4
+    container_name: napi-geoai-postgis
+    environment:
+      POSTGRES_DB: napi_geoai
+      POSTGRES_USER: napi
+      POSTGRES_PASSWORD: napi_local_dev_only
+    ports:
+      - "5432:5432"
+    volumes:
+      - napi_geoai_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U napi -d napi_geoai"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  napi_geoai_pgdata:
