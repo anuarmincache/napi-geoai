@@ -24,16 +24,27 @@ ANEEL_SIGA_CSV_URL = (
     "siga-empreendimentos-geracao.csv"
 )
 ANEEL_LICENSE_NOTE = (
-    "ODbL — Open Data Commons Open Database License (ANEEL Dados Abertos)."
+    "ODbL — Open Data Commons Open Database License (ANEEL Dados Abertos). "
+    "Redistribuição/derivação sujeitas aos termos ODbL (manter atribuição e "
+    "share-alike quando aplicável)."
 )
 
 REQUIRED_SIGA_FIELDS: tuple[str, ...] = (
+    "DatGeracaoConjuntoDados",
     "NomEmpreendimento",
+    "IdeNucleoCEG",
     "CodCEG",
     "SigUFPrincipal",
     "SigTipoGeracao",
+    "DscFaseUsina",
+    "DscOrigemCombustivel",
+    "DscFonteCombustivel",
     "MdaPotenciaOutorgadaKw",
+    "NumCoordNEmpreendimento",
+    "NumCoordEEmpreendimento",
 )
+
+SIGA_DELIMITER = ";"
 
 
 def _decode_csv_bytes(payload: bytes) -> str:
@@ -45,15 +56,68 @@ def _decode_csv_bytes(payload: bytes) -> str:
     raise ValidationConnectorError("não foi possível decodificar CSV ANEEL SIGA")
 
 
+def _read_header_fields(text: str) -> list[str]:
+    first = text.splitlines()[0] if text else ""
+    if not first.strip():
+        raise ValidationConnectorError("CSV SIGA sem cabeçalho")
+    reader = csv.reader(io.StringIO(first), delimiter=SIGA_DELIMITER)
+    try:
+        fields = next(reader)
+    except StopIteration as exc:
+        raise ValidationConnectorError("CSV SIGA sem cabeçalho") from exc
+    return [f.strip() for f in fields]
+
+
+def validate_siga_csv_file(path: Path) -> list[str]:
+    """Valida encoding, delimitador e conjunto de colunas obrigatórias.
+
+    Usado antes de promover o artefato ao destino/cache.
+    """
+
+    path = Path(path)
+    # Cabeçalho cabe em poucos KB; evita carregar CSV completo.
+    with path.open("rb") as handle:
+        head = handle.read(65536)
+    if b"\x00" in head[:1024]:
+        raise ValidationConnectorError("CSV SIGA parece binário/inválido")
+    text = _decode_csv_bytes(head)
+    if SIGA_DELIMITER not in text.splitlines()[0]:
+        raise ValidationConnectorError(
+            f"CSV SIGA: delimitador esperado '{SIGA_DELIMITER}' ausente no cabeçalho"
+        )
+    fields = _read_header_fields(text)
+    missing = [f for f in REQUIRED_SIGA_FIELDS if f not in fields]
+    if missing:
+        raise ValidationConnectorError(f"CSV SIGA sem campos: {missing}")
+    return fields
+
+
 def parse_siga_csv(
     text: str,
     *,
     uf: str | None = None,
     limit: int | None = None,
 ) -> list[dict[str, str]]:
-    """Parseia o CSV SIGA (delimiter ';')."""
+    """Parseia o CSV SIGA (delimiter ';').
 
-    reader = csv.DictReader(io.StringIO(text), delimiter=";")
+    ``limit``: ``None`` = sem limite; ``0`` = lista vazia; ``<0`` = erro.
+    """
+
+    if limit is not None and limit < 0:
+        raise ValidationConnectorError("limit não pode ser negativo")
+    if limit == 0:
+        # Ainda valida o cabeçalho.
+        missing_check = csv.DictReader(io.StringIO(text), delimiter=SIGA_DELIMITER)
+        if not missing_check.fieldnames:
+            raise ValidationConnectorError("CSV SIGA sem cabeçalho")
+        missing = [
+            f for f in REQUIRED_SIGA_FIELDS if f not in missing_check.fieldnames
+        ]
+        if missing:
+            raise ValidationConnectorError(f"CSV SIGA sem campos: {missing}")
+        return []
+
+    reader = csv.DictReader(io.StringIO(text), delimiter=SIGA_DELIMITER)
     if not reader.fieldnames:
         raise ValidationConnectorError("CSV SIGA sem cabeçalho")
     missing = [f for f in REQUIRED_SIGA_FIELDS if f not in reader.fieldnames]
@@ -78,6 +142,7 @@ def parse_siga_file(
     uf: str | None = None,
     limit: int | None = None,
 ) -> list[dict[str, str]]:
+    validate_siga_csv_file(path)
     payload = Path(path).read_bytes()
     return parse_siga_csv(_decode_csv_bytes(payload), uf=uf, limit=limit)
 
@@ -90,9 +155,11 @@ def download_siga_csv(
     retries: int = 3,
     retry_backoff_s: float = 0.5,
     use_cache: bool = True,
+    force_refresh: bool = False,
+    cache_ttl_s: float | None = 86_400.0,
     client: httpx.Client | None = None,
 ) -> IngestResult:
-    """Baixa o CSV SIGA para ``destination`` com proveniência/cache."""
+    """Baixa o CSV SIGA com validação de cabeçalho antes do cache."""
 
     provenance = download_http_file(
         url,
@@ -103,19 +170,15 @@ def download_siga_csv(
         retries=retries,
         retry_backoff_s=retry_backoff_s,
         use_cache=use_cache,
+        force_refresh=force_refresh,
+        cache_ttl_s=cache_ttl_s,
+        content_validator=validate_siga_csv_file,
         client=client,
-        extra={"format": "csv", "delimiter": ";"},
+        extra={"format": "csv", "delimiter": SIGA_DELIMITER},
     )
-    # Validação leve: cabeçalho presente (não carrega o arquivo inteiro em memória
-    # além do necessário — lê só o início).
-    with Path(destination).open("rb") as handle:
-        head = handle.read(4096)
-    text_head = _decode_csv_bytes(head)
-    first_line = text_head.splitlines()[0] if text_head else ""
-    if "SigUFPrincipal" not in first_line:
-        raise ValidationConnectorError(
-            "CSV baixado não parece SIGA (faltou SigUFPrincipal no cabeçalho)"
-        )
+    # Revalidar destino final (inclui cache hit de arquivo previamente inválido
+    # se metadados estiverem inconsistentes).
+    validate_siga_csv_file(Path(destination))
     return IngestResult(
         source_id=ANEEL_SIGA_SOURCE_ID,
         local_path=str(Path(destination).resolve()),

@@ -44,7 +44,9 @@ class SourceSpec:
     download_url: str | None
     formats: tuple[str, ...]
     license_note: str
-    update_cadence: str
+    official_update_cadence: str
+    verification_policy: str
+    catalogued_at: str
     spatial_coverage: str
     crs_or_coords: str
     granularity: str
@@ -53,17 +55,29 @@ class SourceSpec:
     notes: str = ""
     connector_module: str | None = None
 
+    @property
+    def update_cadence(self) -> str:
+        """Alias legado: periodicidade oficial declarada pelo provedor."""
+
+        return self.official_update_cadence
+
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data["access_mode"] = self.access_mode.value
         data["status"] = self.status.value
         data["formats"] = list(self.formats)
+        data["update_cadence"] = self.official_update_cadence
         return data
 
 
 @dataclass(frozen=True, slots=True)
 class ProvenanceRecord:
-    """Metadados obrigatórios de proveniência de um artefato baixado."""
+    """Metadados obrigatórios de proveniência de um artefato baixado.
+
+    ``retrieved_at``: quando o conteúdo foi baixado/substituído.
+    ``last_checked_at``: quando a origem foi consultada pela última vez
+    (pode ser um 304 sem novo download). Integridade local ≠ atualidade.
+    """
 
     source_id: str
     url: str
@@ -74,6 +88,9 @@ class ProvenanceRecord:
     http_last_modified: str | None = None
     license_note: str = ""
     local_path: str = ""
+    last_checked_at: str = ""
+    cache_hit: bool = False
+    not_modified: bool = False
     extra: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

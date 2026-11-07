@@ -23,16 +23,28 @@ def test_prototype_sources_have_connector_module() -> None:
         assert spec.connector_module
         assert spec.download_url
         assert spec.license_note
+        assert spec.catalogued_at
+        assert spec.official_update_cadence
+        assert spec.verification_policy
 
 
 def test_get_source_and_access_modes() -> None:
     ibge = get_source("ibge.malhas_municipais.pr_uf_2025")
     assert ibge.access_mode == AccessMode.HTTP_FILE
+    assert ibge.update_cadence == ibge.official_update_cadence
     aneel = get_source("aneel.siga.empreendimentos_geracao")
     assert aneel.access_mode == AccessMode.CKAN_RESOURCE
+    assert "diária" in aneel.official_update_cadence.lower() or "mensal" in (
+        aneel.official_update_cadence.lower()
+    )
     mapbiomas = get_source("mapbiomas.brazil.lulc")
     assert mapbiomas.access_mode == AccessMode.GEE_ASSET
     assert mapbiomas.status == SourceStatus.CATALOGUED
+    assert "redistribu" in mapbiomas.license_note.lower() or "citar" in (
+        mapbiomas.license_note.lower()
+    )
+    inpe = get_source("inpe.labren.atlas_solar_2017")
+    assert "autorização" in inpe.license_note.lower()
 
 
 def test_unknown_source_raises() -> None:

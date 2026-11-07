@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from geoai.connectors.contracts import AccessMode, SourceSpec, SourceStatus
 
+# Data da consulta documental/HTTP aos portais oficiais (não = data do dado).
+CATALOGUED_AT = "2026-11-07"
+
 SOURCE_CATALOG: tuple[SourceSpec, ...] = (
     SourceSpec(
         source_id="ibge.malhas_municipais.pr_uf_2025",
@@ -20,21 +23,24 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
         ),
         formats=("zip/shp", "geojson-derived"),
         license_note=(
-            "Arquivos públicos IBGE/Geociências (geoftp); citar origem e edição."
+            "Arquivos públicos IBGE/Geociências (geoftp); citar órgão, produto e "
+            "edição. Sem SPDX IBGE dedicado; verificar condições institucionais."
         ),
-        update_cadence="edição anual (municipio_YYYY)",
+        official_update_cadence="edição anual (municipio_YYYY) — produto versionado",
+        verification_policy="TTL local 7d + conditional GET; force_refresh sob demanda",
+        catalogued_at=CATALOGUED_AT,
         spatial_coverage="Paraná (UF)",
         crs_or_coords="EPSG:4674 (SIRGAS 2000)",
         granularity="UF (polígono)",
         auth_required=False,
         status=SourceStatus.PROTOTYPE,
-        notes="Conector prototype em geoai.connectors.ibge.",
+        notes="Conector prototype em geoai.connectors.ibge (compatível MVP 02).",
         connector_module="geoai.connectors.ibge",
     ),
     SourceSpec(
         source_id="aneel.siga.empreendimentos_geracao",
         organization="ANEEL",
-        product="SIGA — Sistema de Informações de Geração",
+        product="SIGA — empreendimentos de geração (CSV principal)",
         access_mode=AccessMode.CKAN_RESOURCE,
         entry_url=(
             "https://dadosabertos.aneel.gov.br/dataset/"
@@ -47,19 +53,25 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
             "siga-empreendimentos-geracao.csv"
         ),
         formats=("csv", "xml"),
-        license_note="ODbL (Open Data Commons Open Database License).",
-        update_cadence="mensal e diária (recursos distintos no CKAN)",
-        spatial_coverage="Brasil (campo SigUFPrincipal; coords empreendimento)",
+        license_note=(
+            "ODbL (Open Data Commons). Atribuição e share-alike conforme ODbL; "
+            "verificar pacote CKAN (license_id=odc-odbl)."
+        ),
+        official_update_cadence=(
+            "Pacote CKAN: 'Mensal e diária' (há recurso CSV diário separado). "
+            "Recurso CSV principal consultado em 2026-11-07 (Last-Modified "
+            "HTTP 2026-11-01)."
+        ),
+        verification_policy="TTL 24h + ETag/Last-Modified; force_refresh disponível",
+        catalogued_at=CATALOGUED_AT,
+        spatial_coverage="Brasil (SigUFPrincipal; coords empreendimento)",
         crs_or_coords=(
             "coordenadas geográficas WGS84 aproximadas (lat/lon com vírgula decimal)"
         ),
         granularity="empreendimento de geração",
         auth_required=False,
         status=SourceStatus.PROTOTYPE,
-        notes=(
-            "Portal CKAN + download HTTP do CSV. API CKAN package_show disponível. "
-            "Conector prototype em geoai.connectors.aneel. Não calcular aptidão solar."
-        ),
+        notes="Conector geoai.connectors.aneel. Não calcular aptidão solar.",
         connector_module="geoai.connectors.aneel",
     ),
     SourceSpec(
@@ -78,16 +90,19 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
             "empreendimento-geracao-distribuida.zip"
         ),
         formats=("zip/csv", "parquet"),
-        license_note="ODbL.",
-        update_cadence=(
-            "atualização periódica (houve suspensão 2025 por migração SISGD→MMGD)"
+        license_note="ODbL (portal ANEEL Dados Abertos).",
+        official_update_cadence=(
+            "Atualização periódica no CKAN; houve suspensão 23/09/2025–13/11/2025 "
+            "(migração SISGD→MMGD). Confirmar data do recurso antes de usar."
         ),
+        verification_policy="Apenas catalogado; sem conector automático neste MVP",
+        catalogued_at=CATALOGUED_AT,
         spatial_coverage="Brasil (município/UF)",
         crs_or_coords="atributos municipais (sem geometria nativa no CSV principal)",
         granularity="empreendimento MMGD",
         auth_required=False,
         status=SourceStatus.CATALOGUED,
-        notes="Arquivo grande (~100+ MiB). Não versionar bruto. Prototype futuro.",
+        notes="Arquivo grande (~100+ MiB). Não versionar bruto.",
         connector_module=None,
     ),
     SourceSpec(
@@ -99,21 +114,22 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
         download_url=None,
         formats=("csv", "shp", "qgs", "pdf-metadados"),
         license_note=(
-            "Uso analítico permitido com citação; reprodução comercial integral/"
-            "parcial exige autorização do INPE/CCST."
+            "Uso como dado de entrada para análises: permitido com citação "
+            "LABREN/CCST/INPE. Reprodução/cópia comercial integral ou parcial: "
+            "exige autorização expressa do INPE/CCST. Não redistribuir o Atlas "
+            "como produto comercial sem autorização."
         ),
-        update_cadence=(
-            "produto estático (série 1999–2015); não confundir com near-real-time"
+        official_update_cadence=(
+            "Produto estático (estimativas 1999–2015). Não é feed near-real-time."
         ),
+        verification_policy="Catalogado; download manual/futuro conector por UF",
+        catalogued_at=CATALOGUED_AT,
         spatial_coverage="Brasil / por UF / sedes municipais",
         crs_or_coords="grade 0,1°; lat/lon do centróide (ver metadados do pacote)",
-        granularity="célula ~10 km; Wh/m².dia (GHI, DNI, difusa, plano inclinado, PAR)",
+        granularity="célula ~10 km; Wh/m².dia",
         auth_required=False,
         status=SourceStatus.CATALOGUED,
-        notes=(
-            "Download via índice LABREN/data.inpe.br (não há API REST única). "
-            "Conector de ingestão ainda não implementado neste MVP."
-        ),
+        notes="Sem API REST única (índice LABREN / data.inpe.br).",
         connector_module=None,
     ),
     SourceSpec(
@@ -124,8 +140,14 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
         entry_url="https://plataforma.brasil.mapbiomas.org/",
         download_url="https://storage.googleapis.com/mapbiomas-public/",
         formats=("geotiff", "gee-imagecollection"),
-        license_note="Ver termos MapBiomas; citar coleção/versão.",
-        update_cadence="coleções anuais (ex.: Collection 10)",
+        license_note=(
+            "Citar projeto MapBiomas e coleção/versão. Consultar termos vigentes "
+            "em mapbiomas.org antes de redistribuir rasters; dados pesados não "
+            "devem ser commitados. GEE pode exigir conta Google autorizada."
+        ),
+        official_update_cadence="Coleções anuais (ex.: Collection 10) — não diário",
+        verification_policy="Catalogado; sem download automático no MVP",
+        catalogued_at=CATALOGUED_AT,
         spatial_coverage="Brasil (recortes por território na plataforma)",
         crs_or_coords=(
             "raster projetado (EPSG típico WGS84/Pseudo-Mercator conforme produto)"
@@ -133,11 +155,7 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
         granularity="30 m (Landsat) / produtos 10 m beta",
         auth_required=False,
         status=SourceStatus.CATALOGUED,
-        notes=(
-            "Acesso real: plataforma web (GeoTIFF), Google Earth Engine assets, "
-            "ou GCS mapbiomas-public. Sem REST genérico único. Rasters pesados "
-            "fora do Git."
-        ),
+        notes="Plataforma web, GEE ou GCS. Sem REST genérico único.",
         connector_module=None,
     ),
     SourceSpec(
@@ -148,17 +166,21 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
         entry_url="https://dados.ons.org.br/dataset/capacidade-geracao",
         download_url=None,
         formats=("csv", "xlsx", "parquet", "json-dicionario"),
-        license_note="CC-BY (crédito ao ONS).",
-        update_cadence="diária (portal declara ~12h e 19h)",
+        license_note=(
+            "CC-BY: crédito ao ONS e indicação de alterações. Dados 'como estão'."
+        ),
+        official_update_cadence=(
+            "Portal declara atualização diária (~12h e 19h) para este conjunto "
+            "(consulta 2026-11-07)."
+        ),
+        verification_policy="Catalogado; conector tabular futuro",
+        catalogued_at=CATALOGUED_AT,
         spatial_coverage="SIN / usinas despachadas ONS",
         crs_or_coords="atributos tabulares (sem geometria neste conjunto)",
         granularity="unidade geradora / usina",
         auth_required=False,
         status=SourceStatus.CATALOGUED,
-        notes=(
-            "Portal https://dados.ons.org.br — download sem login. "
-            "Portal API SINtegre exige credencial de agente e está fora do MVP."
-        ),
+        notes="API SINtegre (login agente) fora do MVP.",
         connector_module=None,
     ),
     SourceSpec(
@@ -169,14 +191,20 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
         entry_url="https://dados.ons.org.br/dataset/linha-transmissao",
         download_url=None,
         formats=("csv", "xlsx", "parquet"),
-        license_note="CC-BY (crédito ao ONS).",
-        update_cadence="diária",
+        license_note=(
+            "CC-BY: crédito ao ONS e indicação de alterações. Dados 'como estão'."
+        ),
+        official_update_cadence=(
+            "Portal declara atualização diária (consulta 2026-11-07)."
+        ),
+        verification_policy="Catalogado; conector tabular futuro",
+        catalogued_at=CATALOGUED_AT,
         spatial_coverage="Rede ≥230 kV (UF/subsistema)",
         crs_or_coords="atributos tabulares",
         granularity="linha de transmissão",
         auth_required=False,
         status=SourceStatus.CATALOGUED,
-        notes="Catalogado; conector tabular futuro.",
+        notes="Catalogado; sem conector neste MVP.",
         connector_module=None,
     ),
 )

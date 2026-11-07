@@ -73,9 +73,14 @@ def download_ibge_zip(
     timeout_s: float = 120.0,
     client: httpx.Client | None = None,
     use_cache: bool = True,
+    force_refresh: bool = False,
+    cache_ttl_s: float | None = 604_800.0,
     retries: int = 3,
 ) -> IbgeMalhaSource:
-    """Baixa um ZIP do geoftp.ibge.gov.br e grava metadados de proveniência."""
+    """Baixa um ZIP do geoftp.ibge.gov.br e grava metadados de proveniência.
+
+    Mantém a API do MVP 02; cache agora distingue integridade de atualidade.
+    """
 
     provenance = download_http_file(
         url,
@@ -85,6 +90,8 @@ def download_ibge_zip(
         timeout_s=timeout_s,
         retries=retries,
         use_cache=use_cache,
+        force_refresh=force_refresh,
+        cache_ttl_s=cache_ttl_s,
         client=client,
         extra={"expected_crs": EXPECTED_SOURCE_CRS},
     )

@@ -1,7 +1,10 @@
 # Catálogo de fontes oficiais — MVP 03
 
 Tabela auditável das fontes candidatas. **Mecanismos reais de acesso** (não se
-assume API REST para todas). Data de verificação dos endpoints HTTP: 2026-11-07.
+assume API REST para todas). `catalogued_at`: **2026-11-07**.
+
+Distinguir: **periodicidade oficial** (portal) ≠ **política de verificação** local
+(TTL/ETag no conector). Integridade de cache ≠ dado atualizado na origem.
 
 Nenhum cálculo de aptidão solar é derivado aqui.
 

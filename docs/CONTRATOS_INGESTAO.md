@@ -1,65 +1,61 @@
 # Contratos de ingestão — MVP 03
 
-Define interfaces Python e políticas comuns aos conectores. Implementação de
-referência: `geoai/connectors/contracts.py`, `http_fetch.py`, `errors.py`.
+Define interfaces Python e políticas comuns aos conectores. Implementação:
+`geoai/connectors/contracts.py`, `http_fetch.py`, `errors.py`.
 
-## Metadados obrigatórios da fonte (`SourceSpec`)
+## Metadados da fonte (`SourceSpec`)
 
 | Campo | Obrigatório | Descrição |
 |---|---|---|
-| `source_id` | sim | identificador estável (`org.produto.recorte`) |
-| `organization` | sim | órgão |
-| `product` | sim | nome do produto |
-| `access_mode` | sim | `http_file`, `ckan_resource`, `gee_asset`, etc. |
-| `entry_url` | sim | página/índice oficial |
-| `download_url` | se aplicável | URL direta verificável |
-| `formats` | sim | formatos reais |
-| `license_note` | sim | licença / restrições |
-| `update_cadence` | sim | periodicidade declarada |
-| `spatial_coverage` | sim | cobertura |
-| `crs_or_coords` | sim | CRS ou convenção de coordenadas |
-| `granularity` | sim | unidade mínima |
-| `auth_required` | sim | se exige credencial |
-| `status` | sim | `catalogued` / `prototype` / `stable` / `blocked` |
+| `source_id` | sim | identificador estável |
+| `organization` / `product` | sim | órgão e produto |
+| `access_mode` | sim | mecanismo real de acesso |
+| `entry_url` / `download_url` | sim / se houver | índice e URL direta |
+| `formats` / `license_note` | sim | formatos e restrições de reuso |
+| `official_update_cadence` | sim | periodicidade **declarada pelo provedor** |
+| `verification_policy` | sim | política **nossa** de revalidação (TTL/ETag) |
+| `catalogued_at` | sim | data da consulta ao portal (ISO date) |
+| `spatial_coverage` / `crs_or_coords` / `granularity` | sim | cobertura espacial |
+| `auth_required` / `status` | sim | credencial e maturidade |
 
-## Proveniência de artefato (`ProvenanceRecord`)
+`update_cadence` permanece como alias de `official_update_cadence` (compatibilidade).
 
-Campos mínimos após qualquer download:
+## Proveniência (`ProvenanceRecord`)
 
-`source_id`, `url`, `retrieved_at` (UTC ISO-8601), `content_sha256`,
-`content_length`, `license_note`.
+| Campo | Significado |
+|---|---|
+| `retrieved_at` | quando o **conteúdo** foi baixado/substituído |
+| `last_checked_at` | quando a **origem** foi consultada (pode ser 304) |
+| `content_sha256` | integridade local — **não** implica atualidade |
+| `cache_hit` / `not_modified` | reuso local / HTTP 304 |
 
-Recomendados: `http_etag`, `http_last_modified`, `local_path`, `extra`.
+## Cache e atualidade
 
-## Validação
+1. Reuso sem rede: `url` + `source_id` + SHA-256 ok **e** TTL de `last_checked_at`.
+2. Fora do TTL: conditional GET (`If-None-Match` / `If-Modified-Since`).
+3. `force_refresh=True`: GET completo.
+4. Integridade local ≠ dado atualizado na origem.
 
-1. HTTP 2xx e arquivo não vazio.
-2. SHA-256 calculado e persistido.
-3. Validação específica do conector (ex.: cabeçalho SIGA; CRS IBGE no pipeline de limites).
-4. Falhas → `ValidationConnectorError` (não silenciar).
+## Download atômico
 
-## Cache
+1. Escreve em `destino.partial`.
+2. Valida tamanho e `content_validator` (se houver).
+3. `os.replace` só após sucesso.
+4. Em falha, remove o partial e preserva o destino anterior.
 
-- Arquivo local + sidecar `*.cache.json` com proveniência.
-- Reuso se SHA-256 do arquivo = metadado em cache.
-- Cache é local (`data/raw/`); **não** versionar artefatos grandes.
+## Retries
 
-## Retries e erros de rede
+- Retenta: erros de transporte, 408, 429, 5xx (respeita `Retry-After` quando numérico).
+- Não retenta: demais 4xx (ex.: 404).
 
-- `download_http_file(..., retries=3, retry_backoff_s=0.5)`.
-- Erros HTTP/transporte → `NetworkConnectorError` após esgotar tentativas.
-- Testes usam `httpx.MockTransport` (offline).
+## Validação ANEEL SIGA
 
-## Resultado (`IngestResult`)
+Antes de promover ao cache: encoding, delimitador `;`, colunas obrigatórias completas.
+`limit=0` → lista vazia (após validar cabeçalho); `limit<0` → erro.
 
-`source_id`, `local_path`, `provenance`, opcionalmente `records_parsed` e `warnings`.
+## Prototypes
 
-## Prototypes priorizados
-
-| Fonte | Módulo | Testes |
-|---|---|---|
-| IBGE malha UF | `geoai.connectors.ibge` | mock HTTP + integração opcional |
-| ANEEL SIGA CSV | `geoai.connectors.aneel` | fixture `aneel_siga_mini.csv` + mock HTTP |
-
-Fontes apenas catalogadas (INPE/LABREN, MapBiomas, ONS, MMGD) não possuem
-download automático neste MVP.
+| Fonte | Módulo |
+|---|---|
+| IBGE malha UF | `geoai.connectors.ibge` (API MVP 02 preservada) |
+| ANEEL SIGA CSV | `geoai.connectors.aneel` |
