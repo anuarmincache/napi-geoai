@@ -18,7 +18,8 @@ nem indicador energético.
 | Licença / uso | Dados públicos do IBGE; citar órgão, produto e edição. Ver condições institucionais do IBGE. |
 | Last-Modified HTTP (observado) | Thu, 26 Feb 2026 20:02:50 GMT |
 | CRS de origem esperado | **EPSG:4674** (SIRGAS 2000, geográfico; unidades em graus) |
-| CRS recomendado para mapa métrico | **EPSG:31982** (SIRGAS 2000 / UTM zone 22S; metros) |
+| CRS recomendado para mapa métrico (visualização) | **EPSG:31982** (SIRGAS 2000 / UTM zone 22S; metros) — maior parte do PR |
+| Limitação UTM | A porção **ocidental** do Paraná (~oeste de 54°W) está na zona **UTM 21S (EPSG:31981)**. Área estadual total ou perímetros longos **não** devem usar só UTM 22S; preferir projeção justificada (ex. Albers) ou cálculo por zona. |
 
 ## O que este produto é / não é
 
@@ -42,10 +43,12 @@ Artefatos gerados:
 
 1. Download HTTP 200 a partir da URL oficial.
 2. SHA-256 do ZIP registrado.
-3. Leitura vetorial do ZIP; CRS presente ou atribuído como EPSG:4674 se ausente.
-4. Geometrias `Polygon`/`MultiPolygon` válidas (`is_valid`; `make_valid` se necessário).
-5. Sem feições vazias no produto exportado.
-6. Metadados explícitos de que o mapa **não** é aptidão solar.
+3. Leitura vetorial do ZIP; **CRS ausente gera erro** (sem inferência silenciosa). Só com `assume_crs='EPSG:4674'` explícito.
+4. Comparação de CRS via `pyproj.CRS.equals` (não por substring).
+5. Geometrias `Polygon`/`MultiPolygon` válidas; `make_valid` pode reparar, mas `GeometryCollection` sem polígono é rejeitada.
+6. Exportação **só** se `report.is_exportable` (sem vazios, não polígonos, CRS ok, `all_valid`).
+7. Metadados explícitos de que o mapa **não** é aptidão solar.
+8. Caminhos em JSON de proveniência/validação são **relativos ao repositório**.
 
 ## Limitações
 
