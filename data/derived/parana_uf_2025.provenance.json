@@ -10,8 +10,9 @@
   "content_length": 346662,
   "content_sha256_note": "SHA-256 do ZIP bruto IBGE (PR_UF_2025.zip), não do GeoJSON derivado.",
   "derived_geojson": "data/derived/parana_uf_2025.geojson",
-  "derived_geojson_sha256": "5d630a0c317c8d00977675be8b30901a7deb3e0d6774b32128d0558983378578",
-  "derived_geojson_bytes": 1002047,
+  "derived_geojson_sha256": "615c56730d598f6b3868518fa8cfcac60614620a7b835c93fc01425debba5a07",
+  "derived_geojson_bytes": 1002039,
+  "derived_geojson_eol": "lf",
   "http_etag": "\"54a26-64bbf9ae80e80\"",
   "http_last_modified": "Thu, 26 Feb 2026 20:02:50 GMT",
   "local_zip": "data/raw/ibge/PR_UF_2025.zip"

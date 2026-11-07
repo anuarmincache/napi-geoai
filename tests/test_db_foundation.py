@@ -73,8 +73,10 @@ def test_parana_artifacts_validate() -> None:
 
 def test_geojson_sha_stable() -> None:
     path = REPO / "data" / "derived" / "parana_uf_2025.geojson"
+    raw = path.read_bytes()
+    assert b"\r\n" not in raw, "GeoJSON deve usar LF (ver .gitattributes)"
     a = sha256_file(path)
-    b = hashlib.sha256(path.read_bytes()).hexdigest()
+    b = hashlib.sha256(raw).hexdigest()
     assert a == b
     # Hash persistido no provenance (prova externa ao conteúdo em memória do teste)
     prov = json.loads(
@@ -83,6 +85,7 @@ def test_geojson_sha_stable() -> None:
         )
     )
     assert a == prov["derived_geojson_sha256"]
+    assert a == "615c56730d598f6b3868518fa8cfcac60614620a7b835c93fc01425debba5a07"
 
 
 def test_validate_rejects_tampered_validation(tmp_path: Path) -> None:

@@ -1,0 +1,10 @@
+# Artefatos derivados e SQL: LF estável para SHA-256 reprodutível (Windows/CI).
+*.geojson text eol=lf
+*.json text eol=lf
+*.sql text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
