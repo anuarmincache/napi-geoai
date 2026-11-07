@@ -15,7 +15,7 @@
 - [ ] Implementar conectores documentados para IBGE e ANEEL com mocks e testes.
 - [ ] Definir contrato de metadados (fonte, versão, CRS, resolução, data, licença, checksum).
 - [ ] Preparar ingestão de dados INPE/LABREN e MapBiomas em formatos disponíveis.
-- [ ] Validar a geração de recorte geoespacial do Paraná no QGIS.
+- [x] Validar a geração de recorte geoespacial do Paraná no QGIS.
 
 ## Marco 2 — Aptidão solar territorial
 

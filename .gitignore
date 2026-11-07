@@ -86,6 +86,11 @@ service-account*.json
 data/raw/
 data/processed/
 data/external/
+# GeoJSON derivados pequenos e metadados de proveniência podem ser versionados
+!data/derived/
+!data/derived/**/*.geojson
+!data/derived/**/*.json
+!data/derived/**/*.md
 !tests/fixtures/
 !tests/fixtures/**
 

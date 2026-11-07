@@ -82,7 +82,9 @@ ruff check .
 pytest -q
 ```
 
-O pacote `geoai/` contém apenas metadados e ponto de entrada testável. Ainda não há conectores, mapas ou aplicação publicada.
+O pacote `geoai/` inclui fundação Python e, no MVP 02, conector IBGE + validação do limite do Paraná (produto técnico territorial). Ainda não há aplicação publicada nem mapas de aptidão solar.
+
+Documentação do recorte: [docs/FONTES_LIMITES_PARANA.md](docs/FONTES_LIMITES_PARANA.md), [docs/QGIS_MCP.md](docs/QGIS_MCP.md), [docs/MVP02_RESULTADOS.md](docs/MVP02_RESULTADOS.md).
 
 ## Reprodutibilidade e responsabilidade
 

@@ -1,0 +1,19 @@
+{
+  "product": "limite_territorial_parana",
+  "not_a_solar_suitability_map": true,
+  "source_crs": "EPSG:4674",
+  "recommended_map_crs": "EPSG:31982",
+  "units_note": "Fonte em graus (EPSG:4674). Para medidas métricas no mapa técnico, usar EPSG:31982 (metros).",
+  "validation": {
+    "feature_count": 1,
+    "crs": "EPSG:4674",
+    "is_geographic": true,
+    "all_valid": true,
+    "invalid_count": 0,
+    "empty_count": 0,
+    "non_polygon_count": 0,
+    "has_z": false,
+    "explanations": []
+  },
+  "output_geojson": "data\\derived\\parana_uf_2025.geojson"
+}
