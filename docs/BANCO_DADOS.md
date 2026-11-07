@@ -16,8 +16,8 @@ Verificação em 2026-11-07:
 | Componente | Status |
 |---|---|
 | Ubuntu-24.04 | **WSL2** (`VERSION 2`), kernel Microsoft |
-| Pacotes `postgresql-16` / `postgresql-16-postgis-3` | **Não instalados** (candidatos no apt) |
-| Porta `127.0.0.1:5432` | Fechada até a instalação |
+| Pacotes `postgresql-16` / `postgresql-16-postgis-3` | **Instalados** (apt, WSL2) |
+| Cluster nativo | `16/main` online — porta **5433** (5432 estava ocupada por container temporário na instalação) |
 | Docker Desktop (Windows) | Ausente |
 | Docker **dentro do WSL** | Presente (outros stacks); **não** usado como caminho preferido deste MVP |
 | Conta Supabase remota | **Fora de escopo** |
@@ -78,22 +78,24 @@ Não há stand-in espacial em SQLite: testes de banco exigem PostGIS real
 ## `DATABASE_URL` e `.env`
 
 ```text
-postgresql://napi:napi_local_dev_only@127.0.0.1:5432/napi_geoai
+postgresql://napi:napi_local_dev_only@127.0.0.1:5433/napi_geoai
 ```
 
-- WSL2 encaminha `127.0.0.1:5432` do Windows para o Postgres escutando em localhost
-  no Ubuntu (quando o serviço está ativo).
+- Neste host o cluster apt escuta em **5433** (`pg_lsclusters`). WSL2 encaminha
+  `127.0.0.1:5433` do Windows para o Postgres no Ubuntu.
+- Para voltar à 5432 (opcional): liberar a porta, ajustar `port` em
+  `/etc/postgresql/16/main/postgresql.conf` e `sudo service postgresql restart`.
 - Copiar `.env.example` → `.env` **não** injeta variáveis sozinho. Os scripts
   chamam `load_dotenv_file()`; no PowerShell você também pode exportar:
 
 ```powershell
-$env:DATABASE_URL="postgresql://napi:napi_local_dev_only@127.0.0.1:5432/napi_geoai"
+$env:DATABASE_URL="postgresql://napi:napi_local_dev_only@127.0.0.1:5433/napi_geoai"
 ```
 
 ## Como validar (após instalação WSL)
 
 ```powershell
-$env:DATABASE_URL="postgresql://napi:napi_local_dev_only@127.0.0.1:5432/napi_geoai"
+$env:DATABASE_URL="postgresql://napi:napi_local_dev_only@127.0.0.1:5433/napi_geoai"
 py -3 -m pip install -e ".[dev,db]"
 py -3 scripts/migrate_db.py
 py -3 scripts/import_parana_boundary_db.py

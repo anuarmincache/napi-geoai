@@ -30,19 +30,17 @@
 - Ubuntu-24.04 **WSL2** confirmado; pacotes Postgres/PostGIS **a instalar** via script (sudo interativo do usuário).
 - Sem Supabase remoto; sem serviços pagos.
 
-### Resultados locais (pós-correção)
+### Resultados locais (Postgres nativo WSL)
 
-Validação contra a mesma imagem do CI (`postgis/postgis:16-3.4` via Docker **no WSL**,
-porta `127.0.0.1:5432`) enquanto a instalação **nativa** apt aguarda `sudo` do usuário:
+Instalação apt concluída (`postgresql-16` + `postgresql-16-postgis-3`, PostGIS 3.4).
+Cluster `16/main` em **127.0.0.1:5433**.
 
 ```text
 ruff check .                 → All checks passed
-scripts/migrate_db.py        → Aplicada: 0001_init_postgis
-import Paraná                → succeeded, CD_UF=41, SRID 4674
+scripts/migrate_db.py        → Aplicada: 0001_init_postgis (nativo)
+import Paraná                → succeeded, CD_UF=41, hash canônico LF
 pytest -q                    → 45 passed, 2 skipped
 ```
-
-Instalação nativa: `bash scripts/setup_postgis_wsl.sh` (senha sudo só no terminal Ubuntu).
 
 ### CI (GitHub Actions)
 
