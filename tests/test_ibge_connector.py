@@ -8,6 +8,7 @@ from pathlib import Path
 
 import httpx
 import pytest
+from geoai.connectors.errors import NetworkConnectorError
 from geoai.connectors.ibge import (
     IBGE_PR_UF_2025_URL,
     download_ibge_zip,
@@ -39,7 +40,9 @@ def test_download_ibge_zip_records_provenance(tmp_path: Path) -> None:
     transport = httpx.MockTransport(handler)
     client = httpx.Client(transport=transport)
     dest = tmp_path / "PR_UF_2025.zip"
-    source = download_ibge_zip(IBGE_PR_UF_2025_URL, dest, client=client)
+    source = download_ibge_zip(
+        IBGE_PR_UF_2025_URL, dest, client=client, use_cache=False
+    )
     client.close()
 
     assert dest.exists()
@@ -61,6 +64,12 @@ def test_download_rejects_http_error(tmp_path: Path) -> None:
 
     transport = httpx.MockTransport(handler)
     client = httpx.Client(transport=transport)
-    with pytest.raises(httpx.HTTPStatusError):
-        download_ibge_zip(IBGE_PR_UF_2025_URL, tmp_path / "x.zip", client=client)
+    with pytest.raises(NetworkConnectorError):
+        download_ibge_zip(
+            IBGE_PR_UF_2025_URL,
+            tmp_path / "x.zip",
+            client=client,
+            retries=2,
+            use_cache=False,
+        )
     client.close()

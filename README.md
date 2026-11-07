@@ -86,6 +86,8 @@ O pacote `geoai/` inclui fundação Python e, no MVP 02, conector IBGE + valida�
 
 Documentação do recorte: [docs/FONTES_LIMITES_PARANA.md](docs/FONTES_LIMITES_PARANA.md), [docs/QGIS_MCP.md](docs/QGIS_MCP.md), [docs/MVP02_RESULTADOS.md](docs/MVP02_RESULTADOS.md). O CRS de mapa EPSG:31982 (UTM 22S) é para visualização da maior parte do estado; a faixa oeste exige UTM 21S/outra projeção justificada para métricas estaduais.
 
+Catálogo de fontes e contratos de ingestão (MVP 03): [docs/FONTES_OFICIAIS.md](docs/FONTES_OFICIAIS.md), [docs/CONTRATOS_INGESTAO.md](docs/CONTRATOS_INGESTAO.md).
+
 ## Reprodutibilidade e responsabilidade
 
 Não serão apresentados dados ilustrativos como resultados científicos. Critérios de aptidão, restrições territoriais e pesos devem ser transparentes, revisados e submetidos a análise de sensibilidade. Nenhuma decisão de investimento deve ser tomada exclusivamente com base em mapas preliminares.

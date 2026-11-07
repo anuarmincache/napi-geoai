@@ -1,40 +1,37 @@
 """Conector mínimo para malhas territoriais do IBGE (UF Paraná).
 
-Baixa o ZIP oficial, calcula checksum e registra proveniência.
+Reutiliza o download HTTP compartilhado (retries/cache/checksum).
 Não interpreta aptidão energética nem indicadores derivados.
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
 import httpx
 
-# Malha Municipal 2025 — Unidades da Federação do Paraná (IBGE/Geociências).
-# Índice: https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/
+from geoai.connectors.http_fetch import download_http_file
+
 IBGE_PR_UF_2025_URL = (
     "https://geoftp.ibge.gov.br/organizacao_do_territorio/"
     "malhas_territoriais/malhas_municipais/municipio_2025/UFs/PR/PR_UF_2025.zip"
 )
 
-# IBGE declara os arquivos do geoftp como públicos; atribuição à fonte é obrigatória
-# para rastreabilidade científica do projeto (não há SPDX IBGE-específico aqui).
 IBGE_LICENSE_NOTE = (
     "Arquivos públicos do IBGE/Geociências (geoftp). Uso sujeito às condições "
     "institucionais do IBGE; citar a origem e a edição da malha."
 )
 
-EXPECTED_SOURCE_CRS = "EPSG:4674"  # SIRGAS 2000 (geográfico)
+EXPECTED_SOURCE_CRS = "EPSG:4674"
+IBGE_SOURCE_ID = "ibge.malhas_municipais.pr_uf_2025"
 
 
 @dataclass(frozen=True, slots=True)
 class IbgeMalhaSource:
-    """Metadados de proveniência de uma malha IBGE."""
+    """Metadados de proveniência de uma malha IBGE (compatível com MVP 02)."""
 
     name: str
     url: str
@@ -69,44 +66,36 @@ IBGE_PR_UF_2025 = IbgeMalhaSource(
 )
 
 
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def download_ibge_zip(
     url: str,
     destination: Path,
     *,
     timeout_s: float = 120.0,
     client: httpx.Client | None = None,
+    use_cache: bool = True,
+    force_refresh: bool = False,
+    cache_ttl_s: float | None = 604_800.0,
+    retries: int = 3,
 ) -> IbgeMalhaSource:
-    """Baixa um ZIP do geoftp.ibge.gov.br e grava metadados de proveniência."""
+    """Baixa um ZIP do geoftp.ibge.gov.br e grava metadados de proveniência.
 
-    destination = Path(destination)
-    destination.parent.mkdir(parents=True, exist_ok=True)
+    Mantém a API do MVP 02; cache agora distingue integridade de atualidade.
+    """
 
-    owns_client = client is None
-    http = client or httpx.Client(follow_redirects=True, timeout=timeout_s)
-    try:
-        with http.stream("GET", url) as response:
-            response.raise_for_status()
-            etag = response.headers.get("ETag")
-            last_modified = response.headers.get("Last-Modified")
-            with destination.open("wb") as handle:
-                for chunk in response.iter_bytes():
-                    handle.write(chunk)
-    finally:
-        if owns_client:
-            http.close()
-
-    sha256 = _sha256_file(destination)
-    size = destination.stat().st_size
+    provenance = download_http_file(
+        url,
+        destination,
+        source_id=IBGE_SOURCE_ID,
+        license_note=IBGE_LICENSE_NOTE,
+        timeout_s=timeout_s,
+        retries=retries,
+        use_cache=use_cache,
+        force_refresh=force_refresh,
+        cache_ttl_s=cache_ttl_s,
+        client=client,
+        extra={"expected_crs": EXPECTED_SOURCE_CRS},
+    )
     filename = Path(urlparse(url).path).stem or "ibge_malha"
-
     return IbgeMalhaSource(
         name=filename,
         url=url,
@@ -114,12 +103,12 @@ def download_ibge_zip(
         territory="Paraná (UF)" if "PR_UF" in url.upper() else "unknown",
         license_note=IBGE_LICENSE_NOTE,
         expected_crs=EXPECTED_SOURCE_CRS,
-        retrieved_at=datetime.now(UTC).isoformat(),
-        content_sha256=sha256,
-        content_length=size,
-        http_etag=etag,
-        http_last_modified=last_modified,
-        local_zip=str(destination.resolve()),
+        retrieved_at=provenance.retrieved_at,
+        content_sha256=provenance.content_sha256,
+        content_length=provenance.content_length,
+        http_etag=provenance.http_etag,
+        http_last_modified=provenance.http_last_modified,
+        local_zip=str(Path(destination).resolve()),
     )
 
 
