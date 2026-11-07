@@ -22,18 +22,11 @@
 ## Evidência local (WSL nativo :5433)
 
 ```text
-db_ops doctor         → WARN (template_napi_postgis ainda ausente); demais checks OK
-db_ops security-audit → OK/WARN (senha de exemplo); listen=localhost
-db_ops backup         → dump ~442 KB, sha256 registrado, senha não impressa
-pytest -q             → 52 passed, 3 skipped
-  skips: integration IBGE zip; restore-verify aguarda template (sudo one-shot)
-```
-
-Para habilitar restore-verify local (não destrutivo para `napi_geoai`):
-
-```bash
-bash scripts/ensure_postgis_template.sh   # senha sudo só no terminal Ubuntu
-py -3 scripts/db_ops.py restore-verify --dump backups/<arquivo>.dump
+ensure_postgis_template.sh → template_napi_postgis OK (PostGIS 3.4)
+db_ops doctor              → OK (exit 0), template presente
+db_ops backup              → ~442 KB, sha256 dc208f5c…d4bbf09
+db_ops restore-verify      → match=true; temp removido; napi_geoai intacto
+tests/test_db_ops_*        → 8 passed
 ```
 
 ## CI
