@@ -13,7 +13,12 @@ requires-python = ">=3.12"
 authors = [
   { name = "Anuar Mincache" },
 ]
-dependencies = []
+dependencies = [
+  "geopandas>=1.0,<2",
+  "shapely>=2.0,<3",
+  "pyproj>=3.6,<4",
+  "httpx>=0.27,<1",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -27,6 +32,9 @@ packages = ["geoai"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = [
+  "integration: testes que dependem de artefatos baixados (ex.: ZIP IBGE)",
+]
 
 [tool.ruff]
 target-version = "py312"

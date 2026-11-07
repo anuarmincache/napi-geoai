@@ -8,7 +8,7 @@ Guia validado localmente com **Python 3.12**, **uv** e PowerShell no Windows 10/
 - [uv](https://docs.astral.sh/uv/) (gerenciador de ambientes e pacotes)
 - Acesso ao repositório `anuarmincache/napi-geoai`
 
-Opcional para desenvolvimento geoespacial local: QGIS Desktop com o plugin MCP (porta local configurada no Cursor). O QGIS **não** é necessário para lint e testes desta fase.
+Opcional para desenvolvimento geoespacial local: QGIS Desktop com o plugin MCP em `127.0.0.1:9875` (ver [QGIS_MCP.md](QGIS_MCP.md)). O QGIS **não** é necessário para lint e a maior parte dos testes unitários; o download IBGE é opcional via `scripts/prepare_parana_boundary.py`.
 
 ## Setup
 
@@ -50,20 +50,21 @@ pytest -q
 
 Se a ativação do script for bloqueada pela política de execução, use `uv run` como acima. Alterar `Set-ExecutionPolicy` não é o procedimento padrão deste guia.
 
-Resultados esperados nesta fase: Ruff sem erros; pytest com os testes de importação do pacote `geoai` passando.
+Resultados esperados nesta fase: Ruff sem erros; pytest passando (importação + limites/conector IBGE com mocks/fixtures).
 
 ## Escopo desta fase
 
 Incluído:
 
-- pacote `geoai/`
+- pacote `geoai/` (metadados, conector IBGE, validação de limites)
+- script `scripts/prepare_parana_boundary.py`
+- projeto QGIS técnico do Paraná (`qgis/`)
 - `pyproject.toml` com Ruff e pytest
 - `.gitignore`
 - workflow GitHub Actions de lint/testes (sem QGIS Desktop)
 
 Fora do escopo:
 
-- conectores oficiais de dados
-- mapas ou resultados territoriais
+- mapas de aptidão solar ou indicadores energéticos
 - FastAPI / Streamlit em produção
 - Airflow / Kafka

@@ -1,0 +1,14 @@
+{
+  "name": "PR_UF_2025",
+  "url": "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/UFs/PR/PR_UF_2025.zip",
+  "edition": "municipio_2025",
+  "territory": "Paraná (UF)",
+  "license_note": "Arquivos públicos do IBGE/Geociências (geoftp). Uso sujeito às condições institucionais do IBGE; citar a origem e a edição da malha.",
+  "expected_crs": "EPSG:4674",
+  "retrieved_at": "2026-11-07T17:37:23.766915+00:00",
+  "content_sha256": "9429eaf1b5a15f6b4d2dc2b9762da6f0642c237bfa54b5dab13d078a3dfe2998",
+  "content_length": 346662,
+  "http_etag": "\"54a26-64bbf9ae80e80\"",
+  "http_last_modified": "Thu, 26 Feb 2026 20:02:50 GMT",
+  "local_zip": "data/raw/ibge/PR_UF_2025.zip"
+}

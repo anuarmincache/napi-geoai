@@ -1,0 +1,31 @@
+{
+  "type": "FeatureCollection",
+  "name": "parana_mini_fixture",
+  "crs": {
+    "type": "name",
+    "properties": { "name": "urn:ogc:def:crs:EPSG::4674" }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "SIGLA_UF": "PR",
+        "NM_UF": "Paraná",
+        "CD_UF": "41",
+        "note": "Fixture sintética para testes offline — não é a malha IBGE oficial."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-54.5, -26.5],
+            [-50.5, -26.5],
+            [-50.5, -23.5],
+            [-54.5, -23.5],
+            [-54.5, -26.5]
+          ]
+        ]
+      }
+    }
+  ]
+}

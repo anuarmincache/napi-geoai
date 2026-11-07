@@ -1,0 +1,23 @@
+{
+  "product": "limite_territorial_parana",
+  "not_a_solar_suitability_map": true,
+  "source_crs": "EPSG:4674",
+  "recommended_map_crs": "EPSG:31982",
+  "map_crs_limitation": "EPSG:31982 (UTM 22S) cobre a maior parte do Paraná; a porção ocidental pertence à zona UTM 21S (EPSG:31981). Medições métricas estaduais (área total, comprimento de limites) exigem projeção apropriada/justificada (ex.: Albers ou cálculo por zona), não UTM 22S isolado.",
+  "units_note": "Fonte em graus (EPSG:4674). Para visualização métrica local, EPSG:31982 (metros) é adequado à maior parte do PR; ver map_crs_limitation para área estadual.",
+  "validation": {
+    "feature_count": 1,
+    "crs": "EPSG:4674",
+    "is_geographic": true,
+    "all_valid": true,
+    "invalid_count": 0,
+    "empty_count": 0,
+    "non_polygon_count": 0,
+    "has_z": false,
+    "crs_missing": false,
+    "crs_mismatch": false,
+    "explanations": []
+  },
+  "validation_exportable": true,
+  "output_geojson": "data/derived/parana_uf_2025.geojson"
+}

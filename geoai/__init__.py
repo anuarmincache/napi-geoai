@@ -1,8 +1,7 @@
 """Pacote científico do NAPI GeoAI.
 
-Nesta fase o pacote expõe apenas metadados básicos e um ponto de entrada
-testável. Processamento geoespacial, conectores e interfaces virão em
-issues posteriores.
+Expõe metadados do pacote e submódulos de conectores/limites territoriais.
+Interfaces web e orquestração pesada ficam fora desta fase.
 """
 
 from __future__ import annotations
