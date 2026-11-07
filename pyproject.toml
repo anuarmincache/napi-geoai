@@ -25,6 +25,9 @@ dev = [
   "pytest>=8.3,<9",
   "ruff>=0.9,<1",
 ]
+db = [
+  "psycopg[binary]>=3.2,<4",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["geoai"]
@@ -34,6 +37,7 @@ testpaths = ["tests"]
 pythonpath = ["."]
 markers = [
   "integration: testes que dependem de artefatos baixados (ex.: ZIP IBGE)",
+  "postgis: testes que exigem PostgreSQL/PostGIS (DATABASE_URL)",
 ]
 
 [tool.ruff]

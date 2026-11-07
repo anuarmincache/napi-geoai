@@ -77,7 +77,7 @@ A fundação Python desta fase foi validada localmente com `uv`, Python 3.12, `r
 uv python install 3.12
 uv venv --python 3.12
 .\.venv\Scripts\Activate.ps1
-uv pip install -e ".[dev]"
+uv pip install -e ".[dev,db]"
 ruff check .
 pytest -q
 ```
@@ -87,6 +87,8 @@ O pacote `geoai/` inclui fundação Python e, no MVP 02, conector IBGE + valida�
 Documentação do recorte: [docs/FONTES_LIMITES_PARANA.md](docs/FONTES_LIMITES_PARANA.md), [docs/QGIS_MCP.md](docs/QGIS_MCP.md), [docs/MVP02_RESULTADOS.md](docs/MVP02_RESULTADOS.md). O CRS de mapa EPSG:31982 (UTM 22S) é para visualização da maior parte do estado; a faixa oeste exige UTM 21S/outra projeção justificada para métricas estaduais.
 
 Catálogo de fontes e contratos de ingestão (MVP 03): [docs/FONTES_OFICIAIS.md](docs/FONTES_OFICIAIS.md), [docs/CONTRATOS_INGESTAO.md](docs/CONTRATOS_INGESTAO.md).
+
+Fundação PostGIS local (MVP 04): [docs/BANCO_DADOS.md](docs/BANCO_DADOS.md), [docs/MVP04_RESULTADOS.md](docs/MVP04_RESULTADOS.md). Com Docker disponível: `docker compose up -d`, definir `DATABASE_URL` a partir de `.env.example`, `py -3 scripts/migrate_db.py` e `py -3 scripts/import_parana_boundary_db.py`. Testes marcados `postgis` exigem banco real; no CI usam o serviço gratuito `postgis/postgis`. A conta Supabase remota **não** é usada neste MVP.
 
 ## Reprodutibilidade e responsabilidade
 

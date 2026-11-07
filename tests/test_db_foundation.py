@@ -1,0 +1,175 @@
+"""Testes sem PostGIS: descoberta de migrações e validação dos artefatos MVP 02."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+from pathlib import Path
+
+import pytest
+from geoai.db.import_parana import (
+    EXPECTED_CRS,
+    EXPECTED_FEATURE_COUNT,
+    EXPECTED_IBGE_CODE,
+    EXPECTED_UF,
+    SOURCE_ID,
+    ImportArtifacts,
+    default_artifacts,
+    sha256_file,
+    validate_preconditions,
+)
+from geoai.db.migrate import discovery_migrations
+
+REPO = Path(__file__).resolve().parents[1]
+
+
+def test_discovery_migrations_finds_0001() -> None:
+    migs = discovery_migrations(REPO / "db" / "migrations")
+    assert migs, "Nenhuma migração encontrada"
+    versions = [v for v, _ in migs]
+    assert "0001_init_postgis" in versions
+    sql = (REPO / "db" / "migrations" / "0001_init_postgis.sql").read_text(
+        encoding="utf-8"
+    )
+    assert "CREATE EXTENSION" in sql
+    assert "postgis" in sql
+    assert "territorial_units" in sql
+    assert "4674" in sql
+    assert "USING GIST" in sql
+    # Não hardcodar extensions.geometry (quebra imagem Docker com PostGIS em public)
+    assert "extensions.geometry" not in sql
+    assert "DEFAULT now()" in sql
+    assert "now() AT TIME ZONE" not in sql
+
+
+def test_discovery_rejects_bad_name(tmp_path: Path) -> None:
+    bad = tmp_path / "init.sql"
+    bad.write_text("-- noop\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="inválido"):
+        discovery_migrations(tmp_path)
+
+
+def test_source_id_matches_mvp03_catalog() -> None:
+    assert SOURCE_ID == "ibge.malhas_municipais.pr_uf_2025"
+
+
+def test_parana_artifacts_validate() -> None:
+    arts = default_artifacts(REPO)
+    payload = validate_preconditions(arts)
+    assert payload["ibge_code"] == EXPECTED_IBGE_CODE
+    assert payload["uf_sigla"] == EXPECTED_UF
+    assert payload["validation"]["source_crs"] == EXPECTED_CRS
+    assert (
+        payload["validation"]["validation"]["feature_count"] == EXPECTED_FEATURE_COUNT
+    )
+    assert len(payload["content_sha256"]) == 64
+    assert payload["geometry"]["type"] == "MultiPolygon"
+    # content_sha256 no provenance é do ZIP; derived é do GeoJSON
+    prov = payload["provenance"]
+    assert prov["content_sha256"] != prov["derived_geojson_sha256"]
+    assert prov["derived_geojson_sha256"] == payload["content_sha256"]
+
+
+def test_geojson_sha_stable() -> None:
+    path = REPO / "data" / "derived" / "parana_uf_2025.geojson"
+    raw = path.read_bytes()
+    assert b"\r\n" not in raw, "GeoJSON deve usar LF (ver .gitattributes)"
+    a = sha256_file(path)
+    b = hashlib.sha256(raw).hexdigest()
+    assert a == b
+    # Hash persistido no provenance (prova externa ao conteúdo em memória do teste)
+    prov = json.loads(
+        (REPO / "data" / "derived" / "parana_uf_2025.provenance.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert a == prov["derived_geojson_sha256"]
+    assert a == "615c56730d598f6b3868518fa8cfcac60614620a7b835c93fc01425debba5a07"
+
+
+def test_validate_rejects_tampered_validation(tmp_path: Path) -> None:
+    arts = default_artifacts(REPO)
+    geo = tmp_path / "parana_uf_2025.geojson"
+    prov = tmp_path / "parana_uf_2025.provenance.json"
+    val = tmp_path / "parana_uf_2025.validation.json"
+    geo.write_bytes(arts.geojson_path.read_bytes())
+    prov.write_bytes(arts.provenance_path.read_bytes())
+    val.write_text(
+        '{"source_crs":"EPSG:4326","validation":{"feature_count":1,"crs":"EPSG:4326","all_valid":true}}',
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="CRS"):
+        validate_preconditions(
+            ImportArtifacts(geojson_path=geo, provenance_path=prov, validation_path=val)
+        )
+
+
+def test_validate_rejects_derived_sha_mismatch(tmp_path: Path) -> None:
+    arts = default_artifacts(REPO)
+    geo = tmp_path / "parana_uf_2025.geojson"
+    prov = tmp_path / "parana_uf_2025.provenance.json"
+    val = tmp_path / "parana_uf_2025.validation.json"
+    geo.write_bytes(arts.geojson_path.read_bytes())
+    val.write_bytes(arts.validation_path.read_bytes())
+    provenance = json.loads(arts.provenance_path.read_text(encoding="utf-8"))
+    provenance["derived_geojson_sha256"] = "0" * 64
+    prov.write_text(json.dumps(provenance), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="SHA-256"):
+        validate_preconditions(
+            ImportArtifacts(geojson_path=geo, provenance_path=prov, validation_path=val)
+        )
+
+
+def test_validate_rejects_tampered_geojson_with_persisted_hash(tmp_path: Path) -> None:
+    """Adulteração do GeoJSON detectada pelo hash fixado no provenance."""
+    arts = default_artifacts(REPO)
+    geo = tmp_path / "parana_uf_2025.geojson"
+    prov = tmp_path / "parana_uf_2025.provenance.json"
+    val = tmp_path / "parana_uf_2025.validation.json"
+    # Mantém provenance/validation originais (hash persistido do arquivo bom)
+    prov.write_bytes(arts.provenance_path.read_bytes())
+    val.write_bytes(arts.validation_path.read_bytes())
+    # Adultera o GeoJSON
+    data = json.loads(arts.geojson_path.read_text(encoding="utf-8"))
+    data["features"][0]["properties"]["NM_UF"] = "Paraná adulterado"
+    geo.write_text(json.dumps(data), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="SHA-256"):
+        validate_preconditions(
+            ImportArtifacts(geojson_path=geo, provenance_path=prov, validation_path=val)
+        )
+
+
+def test_validate_rejects_missing_cd_uf(tmp_path: Path) -> None:
+    arts = default_artifacts(REPO)
+    geo = tmp_path / "parana_uf_2025.geojson"
+    prov = tmp_path / "parana_uf_2025.provenance.json"
+    val = tmp_path / "parana_uf_2025.validation.json"
+    data = json.loads(arts.geojson_path.read_text(encoding="utf-8"))
+    del data["features"][0]["properties"]["CD_UF"]
+    geo.write_text(json.dumps(data), encoding="utf-8")
+    # Recalcula hash para isolar o erro de propriedade (não de SHA)
+    provenance = json.loads(arts.provenance_path.read_text(encoding="utf-8"))
+    provenance["derived_geojson_sha256"] = hashlib.sha256(geo.read_bytes()).hexdigest()
+    prov.write_text(json.dumps(provenance), encoding="utf-8")
+    val.write_bytes(arts.validation_path.read_bytes())
+
+    with pytest.raises(ValueError, match="CD_UF ausente"):
+        validate_preconditions(
+            ImportArtifacts(geojson_path=geo, provenance_path=prov, validation_path=val)
+        )
+
+
+def test_database_url_required_message() -> None:
+    from geoai.db.config import require_database_url
+
+    monkey_key = "DATABASE_URL"
+    old = os.environ.pop(monkey_key, None)
+    try:
+        with pytest.raises(RuntimeError, match="DATABASE_URL"):
+            require_database_url(load_dotenv=False)
+    finally:
+        if old is not None:
+            os.environ[monkey_key] = old

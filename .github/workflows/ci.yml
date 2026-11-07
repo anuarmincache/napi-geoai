@@ -15,6 +15,24 @@ jobs:
       matrix:
         python-version: ["3.12"]
 
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: napi_geoai
+          POSTGRES_USER: napi
+          POSTGRES_PASSWORD: napi_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U napi -d napi_geoai"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://napi:napi_ci@localhost:5432/napi_geoai
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,12 +45,13 @@ jobs:
       - name: Install package and tools
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
+          python -m pip install -e ".[dev,db]"
 
       - name: Ruff
         run: ruff check .
 
-      - name: Pytest
+      - name: Pytest (unit + PostGIS)
         run: pytest -q
 
       # QGIS Desktop / QGIS MCP are intentionally not executed in CI.
+      # Conta Supabase remota não é usada neste workflow.
