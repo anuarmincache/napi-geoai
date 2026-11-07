@@ -1,45 +1,45 @@
-# MVP 04 — Resultados (Issue #14)
+# MVP 04 — Resultados (Issue #14 / PR #15)
 
 ## Entregáveis
 
 | Item | Caminho |
 |---|---|
 | Modelo / limitações locais | `docs/BANCO_DADOS.md` |
-| Migração inicial | `db/migrations/0001_init_postgis.sql` |
-| Compose PostGIS gratuito | `docker-compose.yml` |
-| Migrador | `geoai/db/migrate.py`, `scripts/migrate_db.py` |
-| Importador Paraná | `geoai/db/import_parana.py`, `scripts/import_parana_boundary_db.py` |
-| Testes unitários (sem DB) | `tests/test_db_foundation.py` |
-| Testes PostGIS | `tests/test_db_postgis.py` (marcador `postgis`) |
-| CI com serviço PostGIS | `.github/workflows/ci.yml` |
+| Migração inicial (PostGIS portátil) | `db/migrations/0001_init_postgis.sql` |
+| Compose (loopback only) | `docker-compose.yml` |
+| Setup WSL nativo | `scripts/setup_postgis_wsl.sh` |
+| Migrador / importador | `geoai/db/*`, `scripts/*` |
+| Testes | `tests/test_db_foundation.py`, `tests/test_db_postgis.py` |
+| CI PostGIS | `.github/workflows/ci.yml` |
 
-## Critérios de aceite (Issue #14)
+## Correções pós-revisão ChatGPT (PR #15)
 
-- [x] Esquema inicial versionado (fontes, runs, artefatos, unidades territoriais)
-- [x] Geometria em EPSG:4674 com índice GiST
-- [x] Importação validada do limite do Paraná a partir dos artefatos MVP 02
-- [x] Idempotência / reprodutibilidade coberta por testes
-- [x] Sem stand-in SQLite espacial
-- [x] Sem uso da conta Supabase remota neste PR
-- [x] Alternativas locais documentadas quando Docker/Postgres ausentes
+| Problema | Correção |
+|---|---|
+| CI: `extensions.geometry` inexistente (PostGIS em `public`) | DDL resolve schema via `pg_extension`; import usa `search_path` |
+| `SOURCE_ID` BCIM ≠ catálogo MVP 03 | `ibge.malhas_municipais.pr_uf_2025` |
+| `timestamptz DEFAULT (now() AT TIME ZONE 'utc')` | `DEFAULT now()` |
+| Defaults silenciosos CD_UF/SIGLA_UF | Rejeição se ausentes |
+| SHA GeoJSON opcional | `derived_geojson_sha256` obrigatório no provenance |
+| Compose `0.0.0.0:5432` | `127.0.0.1:5432:5432` |
+| `.env` não carrega sozinho | `load_dotenv_file()` + documentação |
+| Rollback em DB compartilhado | fixture `clean_probe` |
 
-## Ambiente de execução deste PR
+## Ambiente
 
-Na estação Windows do mantenedor: Docker e PostgreSQL locais **não** estavam
-disponíveis; WSL exige `sudo` interativo. Por isso:
+- Ubuntu-24.04 **WSL2** confirmado; pacotes Postgres/PostGIS **a instalar** via script (sudo interativo do usuário).
+- Sem Supabase remoto; sem serviços pagos.
 
-1. Código + migrações + testes unitários rodam offline.
-2. Testes `postgis` rodam no GitHub Actions (serviço `postgis/postgis:16-3.4`).
-3. Decisão pendente do mantenedor para instalar Docker Desktop **ou** Postgres/PostGIS
-   via WSL/Windows — ver `docs/BANCO_DADOS.md`. Nenhum serviço pago foi provisionado.
+### Resultados locais (pós-correção)
 
-### Resultados locais (2026-11-07)
+Validação contra a mesma imagem do CI (`postgis/postgis:16-3.4` via Docker **no WSL**,
+porta `127.0.0.1:5432`) enquanto a instalação **nativa** apt aguarda `sudo` do usuário:
 
 ```text
-ruff check .     → All checks passed
-pytest -q        → 39 passed, 5 skipped (marcador postgis / DATABASE_URL ausente)
-import --dry-run → ibge_code=41, uf_sigla=PR, mesh_edition=municipio_2025
+ruff check .                 → All checks passed
+scripts/migrate_db.py        → Aplicada: 0001_init_postgis
+import Paraná                → succeeded, CD_UF=41, SRID 4674
+pytest -q                    → 45 passed, 2 skipped
 ```
 
-Os 5 skips são esperados sem PostGIS local; o workflow CI executa a suíte completa
-com `DATABASE_URL` do serviço Compose embutido no Actions.
+Instalação nativa: `bash scripts/setup_postgis_wsl.sh` (senha sudo só no terminal Ubuntu).

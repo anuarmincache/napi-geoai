@@ -1,4 +1,4 @@
-"""Testes de integridade PostGIS — exigem DATABASE_URL (CI ou Docker local)."""
+"""Testes de integridade PostGIS — exigem DATABASE_URL (CI ou Postgres local)."""
 
 from __future__ import annotations
 
@@ -10,8 +10,9 @@ import pytest
 pytest.importorskip("psycopg")
 
 from geoai.db.config import DatabaseConfig
-from geoai.db.import_parana import default_artifacts, import_parana_boundary
+from geoai.db.import_parana import SOURCE_ID, default_artifacts, import_parana_boundary
 from geoai.db.migrate import apply_migrations, list_pending_migrations
+from geoai.db.postgis import configure_search_path, resolve_postgis_schema
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -29,6 +30,24 @@ def db_cfg() -> DatabaseConfig:
     return DatabaseConfig(database_url=DATABASE_URL, schema="geoai")
 
 
+@pytest.fixture()
+def clean_probe(db_cfg: DatabaseConfig):
+    """Garante isolamento do código de probe de rollback (ibge_code=99)."""
+    import psycopg
+
+    yield
+    with psycopg.connect(db_cfg.database_url) as conn:
+        configure_search_path(conn)
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM geoai.territorial_units WHERE ibge_code = '99'"
+            )
+            cur.execute(
+                "DELETE FROM geoai.data_sources WHERE source_id = 'rollback_probe'"
+            )
+        conn.commit()
+
+
 @requires_postgis
 @pytest.mark.postgis
 def test_migrations_apply_and_are_idempotent(db_cfg: DatabaseConfig) -> None:
@@ -44,6 +63,9 @@ def test_migrations_apply_and_are_idempotent(db_cfg: DatabaseConfig) -> None:
             conn, directory=REPO / "db" / "migrations", schema=db_cfg.schema
         )
         assert pending == []
+        pgis = resolve_postgis_schema(conn)
+        assert pgis in {"public", "extensions"}
+        configure_search_path(conn)
         with conn.cursor() as cur:
             cur.execute(
                 """
@@ -73,6 +95,25 @@ def test_import_parana_idempotent_and_valid(db_cfg: DatabaseConfig) -> None:
     apply_migrations(db_cfg, directory=REPO / "db" / "migrations")
     arts = default_artifacts(REPO)
 
+    # Isola o caso: remove unidade PR desta edição antes da 1ª carga do teste
+    with psycopg.connect(db_cfg.database_url) as conn:
+        configure_search_path(conn)
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                DELETE FROM geoai.territorial_units
+                WHERE ibge_code = '41' AND mesh_edition = 'municipio_2025'
+                """
+            )
+            cur.execute(
+                """
+                DELETE FROM geoai.data_artifacts
+                WHERE source_id = %s AND version_label = 'municipio_2025'
+                """,
+                (SOURCE_ID,),
+            )
+        conn.commit()
+
     r1 = import_parana_boundary(db_cfg, artifacts=arts)
     assert r1.status == "succeeded"
     assert r1.already_present is False
@@ -84,6 +125,7 @@ def test_import_parana_idempotent_and_valid(db_cfg: DatabaseConfig) -> None:
     assert r2.territorial_unit_id == r1.territorial_unit_id
 
     with psycopg.connect(db_cfg.database_url) as conn:
+        configure_search_path(conn)
         with conn.cursor() as cur:
             cur.execute(
                 """
@@ -97,9 +139,9 @@ def test_import_parana_idempotent_and_valid(db_cfg: DatabaseConfig) -> None:
             cur.execute(
                 """
                 SELECT
-                    extensions.ST_IsValid(geom),
-                    extensions.ST_SRID(geom),
-                    extensions.GeometryType(geom),
+                    ST_IsValid(geom),
+                    ST_SRID(geom),
+                    GeometryType(geom),
                     uf_sigla,
                     name
                 FROM geoai.territorial_units
@@ -116,20 +158,30 @@ def test_import_parana_idempotent_and_valid(db_cfg: DatabaseConfig) -> None:
             cur.execute(
                 """
                 SELECT COUNT(*) FROM geoai.ingestion_runs
-                WHERE source_id = 'ibge_bcim_uf_2025' AND status = 'succeeded'
-                """
+                WHERE source_id = %s AND status = 'succeeded'
+                """,
+                (SOURCE_ID,),
             )
             assert int(cur.fetchone()[0]) >= 2
+
+            cur.execute(
+                """
+                SELECT organization, product FROM geoai.data_sources
+                WHERE source_id = %s
+                """,
+                (SOURCE_ID,),
+            )
+            org, product = cur.fetchone()
+            assert org == "IBGE"
+            assert "Malhas" in product
+            assert "BCIM" not in product
 
             # Consulta espacial: ponto em Maringá (aprox.) deve intersectar o PR
             cur.execute(
                 """
-                SELECT extensions.ST_Intersects(
+                SELECT ST_Intersects(
                     geom,
-                    extensions.ST_SetSRID(
-                        extensions.ST_MakePoint(-51.9386, -23.4273),
-                        4674
-                    )
+                    ST_SetSRID(ST_MakePoint(-51.9386, -23.4273), 4674)
                 )
                 FROM geoai.territorial_units
                 WHERE ibge_code = '41'
@@ -137,15 +189,11 @@ def test_import_parana_idempotent_and_valid(db_cfg: DatabaseConfig) -> None:
             )
             assert cur.fetchone()[0] is True
 
-            # Ponto fora (oceano Atlântico) não intersecta
             cur.execute(
                 """
-                SELECT extensions.ST_Intersects(
+                SELECT ST_Intersects(
                     geom,
-                    extensions.ST_SetSRID(
-                        extensions.ST_MakePoint(-30.0, -20.0),
-                        4674
-                    )
+                    ST_SetSRID(ST_MakePoint(-30.0, -20.0), 4674)
                 )
                 FROM geoai.territorial_units
                 WHERE ibge_code = '41'
@@ -156,13 +204,16 @@ def test_import_parana_idempotent_and_valid(db_cfg: DatabaseConfig) -> None:
 
 @requires_postgis
 @pytest.mark.postgis
-def test_import_failure_rolls_back(db_cfg: DatabaseConfig) -> None:
-    """Falha pós-insert (geometria inválida forçada) não deixa unidade órfã."""
+def test_import_failure_rolls_back(
+    db_cfg: DatabaseConfig, clean_probe: None
+) -> None:
+    """Falha pós-insert não deixa unidade órfã (transação)."""
     import psycopg
 
     apply_migrations(db_cfg, directory=REPO / "db" / "migrations")
 
     with psycopg.connect(db_cfg.database_url) as conn:
+        configure_search_path(conn)
         with conn.cursor() as cur:
             cur.execute(
                 "SELECT COUNT(*) FROM geoai.territorial_units WHERE ibge_code = '99'"
@@ -170,6 +221,7 @@ def test_import_failure_rolls_back(db_cfg: DatabaseConfig) -> None:
             before = int(cur.fetchone()[0])
 
     with psycopg.connect(db_cfg.database_url) as conn:
+        configure_search_path(conn)
         try:
             with conn.transaction():
                 with conn.cursor() as cur:
@@ -189,19 +241,19 @@ def test_import_failure_rolls_back(db_cfg: DatabaseConfig) -> None:
                             ibge_code, uf_sigla, name, mesh_edition, geom
                         ) VALUES (
                             '99', 'XX', 'RollbackProbe', 'test',
-                            extensions.ST_GeomFromText(
+                            ST_GeomFromText(
                                 'MULTIPOLYGON(((0 0, 1 0, 1 1, 0 1, 0 0)))',
                                 4674
                             )
                         )
                         """
                     )
-                    # Força falha após insert
                     raise RuntimeError("simulated_failure")
         except RuntimeError as exc:
             assert "simulated_failure" in str(exc)
 
     with psycopg.connect(db_cfg.database_url) as conn:
+        configure_search_path(conn)
         with conn.cursor() as cur:
             cur.execute(
                 "SELECT COUNT(*) FROM geoai.territorial_units WHERE ibge_code = '99'"

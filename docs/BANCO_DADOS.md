@@ -6,108 +6,129 @@ Persistência espacial versionada para o NAPI GeoAI: fontes, corridas de ingest�
 artefatos com SHA-256 e unidades territoriais em **EPSG:4674** (SIRGAS 2000).
 
 Este MVP **não** conecta nem altera a conta Supabase remota. O alvo de
-desenvolvimento/CI é PostgreSQL + PostGIS local (Docker) ou serviço equivalente
-gratuito no GitHub Actions.
+desenvolvimento é PostgreSQL + PostGIS **local**; o CI usa o serviço gratuito
+`postgis/postgis` no GitHub Actions.
 
-## Decisão de ambiente (máquina Windows atual)
+## Decisão de ambiente (máquina Windows / WSL2)
 
-Verificação em 2026-11-07 neste workspace de trabalho:
+Verificação em 2026-11-07:
 
 | Componente | Status |
 |---|---|
-| `docker` / Docker Desktop | **Ausente** |
-| `psql` / PostgreSQL em `127.0.0.1:5432` | **Ausente** |
-| WSL2 Ubuntu | Presente, mas operações com `sudo` pedem senha interativa |
-| Conta Supabase remota | **Fora de escopo** deste PR (não usar) |
+| Ubuntu-24.04 | **WSL2** (`VERSION 2`), kernel Microsoft |
+| Pacotes `postgresql-16` / `postgresql-16-postgis-3` | **Não instalados** (candidatos no apt) |
+| Porta `127.0.0.1:5432` | Fechada até a instalação |
+| Docker Desktop (Windows) | Ausente |
+| Docker **dentro do WSL** | Presente (outros stacks); **não** usado como caminho preferido deste MVP |
+| Conta Supabase remota | **Fora de escopo** |
 
-### Alternativas gratuitas (escolha do mantenedor)
+### Caminho escolhido pelo responsável
 
-1. **Recomendada:** instalar [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-   (licença gratuita para uso pessoal/pequeno time) e subir o Compose deste repo.
-2. **WSL2:** instalar `postgresql` + `postgis` via `apt` no Ubuntu WSL
-   (requer senha `sudo` uma vez).
-3. **Windows nativo:** instalador PostgreSQL + extensão PostGIS (EDB/OSGeo).
-4. **Somente CI:** validar PostGIS no GitHub Actions (já previsto neste MVP);
-   desenvolvimento local fica bloqueado até (1)–(3).
+**PostgreSQL + PostGIS nativo no Ubuntu WSL2** (não Docker Desktop por ora).
 
-**Serviços pagos** (Supabase Pro, RDS, etc.) **não** devem ser usados nesta etapa
-sem decisão explícita. Nenhum connection string remoto foi commitado.
+Script: [`scripts/setup_postgis_wsl.sh`](../scripts/setup_postgis_wsl.sh).
+
+```bash
+# No terminal Ubuntu (digite a senha sudo pessoalmente; não compartilhe):
+cd /mnt/c/Users/Admin/OneDrive/Área\ de\ Trabalho/napi-geoai-mvp04
+bash scripts/setup_postgis_wsl.sh
+```
+
+Alternativas gratuitas (se necessário depois): Compose deste repo (porta só em
+`127.0.0.1`), instalador Windows, ou validação só no CI. **Serviços pagos** e a
+conta Supabase existente **não** entram sem nova decisão.
 
 ## Stack e layout
 
 ```
-db/migrations/0001_init_postgis.sql   # DDL idempotente
-docker-compose.yml                    # postgis/postgis:16-3.4
-.env.example                          # DATABASE_URL local
-geoai/db/                             # migrate + import Paraná
+db/migrations/0001_init_postgis.sql   # DDL portátil (PostGIS em public ou extensions)
+docker-compose.yml                    # alternativa; bind 127.0.0.1:5432
+.env.example                          # nomes de variáveis (sem segredos reais)
+geoai/db/                             # migrate, import, resolve PostGIS schema
 scripts/migrate_db.py
 scripts/import_parana_boundary_db.py
+scripts/setup_postgis_wsl.sh
 ```
 
 Schemas:
 
-- `extensions` — extensão PostGIS (padrão alinhado ao Supabase).
+- `extensions` — criado sempre; PostGIS é instalado aí **somente se ainda não existir**.
+- Se a imagem já trouxe PostGIS em `public` (CI Docker), a extensão permanece em
+  `public` e o DDL resolve o schema via `pg_extension`.
 - `geoai` — tabelas de aplicação.
+
+Funções `ST_*` no Python usam `search_path` configurado em runtime
+(`geoai.db.postgis.configure_search_path`), sem hardcode `extensions.ST_*`.
 
 ## Modelo inicial
 
 | Tabela | Papel |
 |---|---|
-| `geoai.data_sources` | Catálogo de fontes (ex.: IBGE malha UF) |
+| `geoai.data_sources` | Catálogo de fontes (`source_id` alinhado ao MVP 03) |
 | `geoai.ingestion_runs` | Auditoria de cada corrida de carga |
 | `geoai.data_artifacts` | Artefato + SHA-256 + referência de storage |
 | `geoai.territorial_units` | Geometria `MultiPolygon,4674` + GiST; unicidade `(ibge_code, mesh_edition)` |
 | `geoai.schema_migrations` | Versões SQL aplicadas |
 
+Timestamps: `timestamptz DEFAULT now()` (instante absoluto; exibir em UTC na app).
+
 Não há stand-in espacial em SQLite: testes de banco exigem PostGIS real
-(`DATABASE_URL` ou marcador `postgis`).
+(`DATABASE_URL` / marcador `postgis`).
 
-## Como subir (quando Docker estiver disponível)
-
-```powershell
-copy .env.example .env
-docker compose up -d
-py -3 -m pip install -e ".[dev,db]"
-py -3 scripts/migrate_db.py
-py -3 scripts/import_parana_boundary_db.py
-py -3 -m pytest -q
-py -3 -m pytest -q -m postgis
-```
-
-`DATABASE_URL` de exemplo (Compose):
+## `DATABASE_URL` e `.env`
 
 ```text
 postgresql://napi:napi_local_dev_only@127.0.0.1:5432/napi_geoai
 ```
 
+- WSL2 encaminha `127.0.0.1:5432` do Windows para o Postgres escutando em localhost
+  no Ubuntu (quando o serviço está ativo).
+- Copiar `.env.example` → `.env` **não** injeta variáveis sozinho. Os scripts
+  chamam `load_dotenv_file()`; no PowerShell você também pode exportar:
+
+```powershell
+$env:DATABASE_URL="postgresql://napi:napi_local_dev_only@127.0.0.1:5432/napi_geoai"
+```
+
+## Como validar (após instalação WSL)
+
+```powershell
+$env:DATABASE_URL="postgresql://napi:napi_local_dev_only@127.0.0.1:5432/napi_geoai"
+py -3 -m pip install -e ".[dev,db]"
+py -3 scripts/migrate_db.py
+py -3 scripts/import_parana_boundary_db.py
+py -3 -m ruff check .
+py -3 -m pytest -q
+```
+
 ## Importação Paraná (reprodutibilidade)
 
-Entrada (MVP 02, já versionada):
+Entrada (MVP 02):
 
 - `data/derived/parana_uf_2025.geojson`
 - `data/derived/parana_uf_2025.provenance.json`
 - `data/derived/parana_uf_2025.validation.json`
 
-Pré-checagens: CRS `EPSG:4674`, 1 feature, geometria válida, SHA-256 do GeoJSON,
-`CD_UF=41`, `SIGLA_UF=PR`.
+Checksums:
 
-Pós-carga no PostGIS: `ST_IsValid`, `ST_SRID=4674`, `GeometryType=MULTIPOLYGON`.
+- `provenance.content_sha256` → **ZIP bruto** IBGE.
+- `provenance.derived_geojson_sha256` → **GeoJSON derivado** (obrigatório na importação).
 
-Reexecução com o mesmo SHA é **idempotente** (`already_present=true`); não duplica
-a unidade territorial.
+`source_id` no banco: `ibge.malhas_municipais.pr_uf_2025` (mesmo do catálogo MVP 03).
+
+Pré-checagens: CRS `EPSG:4674`, 1 feature, geometria válida, SHA do GeoJSON,
+`CD_UF`/`SIGLA_UF`/`NM_UF` presentes (sem defaults silenciosos).
+
+Pós-carga: `ST_IsValid`, `ST_SRID=4674`, `GeometryType=MULTIPOLYGON`,
+consulta espacial (ponto em Maringá ∩ PR).
 
 ## Compatibilidade futura com Supabase
 
-- Extensão em schema `extensions`.
-- SQL puro versionado (sem dependência de GUI).
-- Sem secrets no repositório.
+- Schema `extensions` preparado; extensão criada lá em bancos limpos.
+- SQL versionado; sem secrets no Git; sem executar nada na conta existente.
 
-Quando houver decisão de usar um projeto Supabase **novo/dedicado**, basta apontar
-`DATABASE_URL` e rodar as mesmas migrações — sem misturar com outros projetos.
+## Segurança local
 
-## Limitações conhecidas
-
-- Sem Docker/Postgres local nesta máquina, os testes marcados `postgis` são
-  **skipped** no desktop e executados no CI.
-- A senha do Compose é apenas para desenvolvimento local; troque antes de qualquer
-  exposição de rede.
+- Compose (se usado): porta `127.0.0.1:5432:5432` apenas.
+- Credenciais do exemplo são só para desenvolvimento local.
+- Não expor Postgres à rede; não commit de `.env`.

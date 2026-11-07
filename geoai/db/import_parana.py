@@ -9,9 +9,18 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from geoai.connectors.ibge import IBGE_SOURCE_ID
 from geoai.db.config import DatabaseConfig
+from geoai.db.postgis import configure_search_path
 
-SOURCE_ID = "ibge_bcim_uf_2025"
+# Alinhado ao catálogo MVP 03 (não usar rótulos BCIM legados).
+SOURCE_ID = IBGE_SOURCE_ID
+SOURCE_PRODUCT = "Malhas Territoriais / Malhas Municipais — UF Paraná"
+SOURCE_ORG = "IBGE"
+SOURCE_LICENSE = (
+    "Arquivos públicos IBGE/Geociências (geoftp); citar órgão, produto e edição."
+)
+
 EXPECTED_IBGE_CODE = "41"
 EXPECTED_UF = "PR"
 EXPECTED_CRS = "EPSG:4674"
@@ -65,7 +74,10 @@ def validate_preconditions(artifacts: ImportArtifacts) -> dict[str, Any]:
     """
     Valida artefatos MVP 02 antes de tocar no banco.
 
-    Retorna o GeoJSON já carregado (FeatureCollection).
+    ``provenance.content_sha256`` refere-se ao **ZIP bruto IBGE**, não ao
+    GeoJSON derivado. O checksum do derivado é
+    ``provenance.derived_geojson_sha256`` (obrigatório) e é confrontado com
+    o arquivo em disco.
     """
     for path in (
         artifacts.geojson_path,
@@ -76,7 +88,6 @@ def validate_preconditions(artifacts: ImportArtifacts) -> dict[str, Any]:
             raise FileNotFoundError(f"Artefato ausente: {path}")
 
     validation_doc = load_json(artifacts.validation_path)
-    # MVP 02: métricas podem estar aninhadas em "validation" ou no topo.
     metrics = validation_doc.get("validation")
     if not isinstance(metrics, dict):
         metrics = validation_doc
@@ -94,20 +105,21 @@ def validate_preconditions(artifacts: ImportArtifacts) -> dict[str, Any]:
         raise ValueError("geometria deve constar como válida no validation.json")
 
     provenance = load_json(artifacts.provenance_path)
-    # Provenance do ZIP IBGE; o SHA do GeoJSON derivado é recalculado e
-    # confrontado com um sidecar opcional ou com o próprio arquivo.
     actual_sha = sha256_file(artifacts.geojson_path)
     declared_geojson_sha = provenance.get("derived_geojson_sha256")
-    if isinstance(declared_geojson_sha, str) and len(declared_geojson_sha) == 64:
-        if declared_geojson_sha.lower() != actual_sha.lower():
-            raise ValueError(
-                "SHA-256 do GeoJSON diverge do provenance.derived_geojson_sha256: "
-                f"arquivo={actual_sha} provenance={declared_geojson_sha}"
-            )
+    if not isinstance(declared_geojson_sha, str) or len(declared_geojson_sha) != 64:
+        raise ValueError(
+            "provenance.derived_geojson_sha256 é obrigatório (SHA-256 do GeoJSON "
+            "derivado). Não confundir com content_sha256 (ZIP bruto IBGE)."
+        )
+    if declared_geojson_sha.lower() != actual_sha.lower():
+        raise ValueError(
+            "SHA-256 do GeoJSON diverge do provenance.derived_geojson_sha256: "
+            f"arquivo={actual_sha} provenance={declared_geojson_sha}"
+        )
+
     zip_sha = provenance.get("content_sha256")
-    if zip_sha is not None and (
-        not isinstance(zip_sha, str) or len(zip_sha) != 64
-    ):
+    if zip_sha is not None and (not isinstance(zip_sha, str) or len(zip_sha) != 64):
         raise ValueError("provenance.content_sha256 (ZIP) inválido")
 
     geojson = load_json(artifacts.geojson_path)
@@ -121,7 +133,9 @@ def validate_preconditions(artifacts: ImportArtifacts) -> dict[str, Any]:
         )
 
     feature = features[0]
-    props = feature.get("properties") or {}
+    props = feature.get("properties")
+    if not isinstance(props, dict):
+        raise ValueError("Feature sem properties")
     geom = feature.get("geometry")
     if not isinstance(geom, dict) or geom.get("type") not in {
         "Polygon",
@@ -129,12 +143,21 @@ def validate_preconditions(artifacts: ImportArtifacts) -> dict[str, Any]:
     }:
         raise ValueError("Geometria deve ser Polygon ou MultiPolygon")
 
-    code = str(props.get("CD_UF") or props.get("codigo") or EXPECTED_IBGE_CODE)
+    if "CD_UF" not in props:
+        raise ValueError("propriedade CD_UF ausente — importação recusada")
+    if "SIGLA_UF" not in props:
+        raise ValueError("propriedade SIGLA_UF ausente — importação recusada")
+
+    code = str(props["CD_UF"])
     if code != EXPECTED_IBGE_CODE:
         raise ValueError(f"CD_UF inesperado: {code!r}")
-    sigla = str(props.get("SIGLA_UF") or props.get("sigla") or EXPECTED_UF).upper()
+    sigla = str(props["SIGLA_UF"]).upper()
     if sigla != EXPECTED_UF:
         raise ValueError(f"SIGLA_UF inesperada: {sigla!r}")
+
+    name = props.get("NM_UF")
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError("propriedade NM_UF ausente ou vazia — importação recusada")
 
     return {
         "geojson": geojson,
@@ -147,11 +170,10 @@ def validate_preconditions(artifacts: ImportArtifacts) -> dict[str, Any]:
         "content_bytes": artifacts.geojson_path.stat().st_size,
         "ibge_code": code,
         "uf_sigla": sigla,
-        "name": str(props.get("NM_UF") or props.get("nome") or "Paraná"),
+        "name": name.strip(),
         "mesh_edition": str(
             provenance.get("edition")
             or provenance.get("mesh_edition")
-            or validation_doc.get("mesh_edition")
             or "municipio_2025"
         ),
         "download_url": provenance.get("url") or provenance.get("download_url"),
@@ -172,8 +194,8 @@ def import_parana_boundary(
     """
     Upsert idempotente: mesma (ibge_code, mesh_edition) + mesmo SHA não duplica.
 
-    Em reexecução com mesmo SHA: status succeeded, already_present=True.
-    Em reexecução com SHA diferente: atualiza geom/artifact e registra novo run.
+    Funções PostGIS são resolvidas via ``search_path`` (schema public ou
+    extensions), sem hardcode ``extensions.ST_*``.
     """
     try:
         import psycopg
@@ -201,6 +223,7 @@ def import_parana_boundary(
     now = _utcnow()
 
     with psycopg.connect(cfg.database_url) as conn:
+        configure_search_path(conn, app_schema=cfg.schema)
         with conn.transaction():
             with conn.cursor() as cur:
                 cur.execute(
@@ -210,20 +233,22 @@ def import_parana_boundary(
                         entry_url, download_url, verification_policy,
                         edition, status
                     ) VALUES (
-                        %s, %s, %s, %s, %s, %s, %s, %s, 'active'
+                        %s, %s, %s, %s, %s, %s, %s, %s, 'prototype'
                     )
                     ON CONFLICT (source_id) DO UPDATE SET
                         updated_at = EXCLUDED.updated_at,
+                        product = EXCLUDED.product,
+                        organization = EXCLUDED.organization,
                         edition = COALESCE(EXCLUDED.edition, geoai.data_sources.edition)
                     """,
                     (
                         SOURCE_ID,
-                        "IBGE",
-                        "Malha territorial / BCIM UF",
-                        "Uso conforme termos IBGE; cite a fonte.",
+                        SOURCE_ORG,
+                        SOURCE_PRODUCT,
+                        SOURCE_LICENSE,
                         payload.get("entry_url"),
                         payload.get("download_url"),
-                        "sha256_geojson+validation_mvp02",
+                        "sha256_geojson_derived+validation_mvp02",
                         version_label,
                     ),
                 )
@@ -289,7 +314,6 @@ def import_parana_boundary(
                     )
                     artifact_id = int(cur.fetchone()[0])
 
-                # MultiPolygon via ST_Multi + ST_SetSRID(ST_GeomFromGeoJSON)
                 cur.execute(
                     """
                     INSERT INTO geoai.territorial_units (
@@ -297,11 +321,8 @@ def import_parana_boundary(
                         artifact_id, attributes, updated_at
                     ) VALUES (
                         %s, %s, %s, %s,
-                        extensions.ST_Multi(
-                            extensions.ST_SetSRID(
-                                extensions.ST_GeomFromGeoJSON(%s),
-                                4674
-                            )
+                        ST_Multi(
+                            ST_SetSRID(ST_GeomFromGeoJSON(%s), 4674)
                         ),
                         %s, %s, %s
                     )
@@ -326,14 +347,13 @@ def import_parana_boundary(
                 )
                 unit_id = int(cur.fetchone()[0])
 
-                # Integridade espacial pós-carga
                 cur.execute(
                     """
                     SELECT
-                        extensions.ST_IsValid(geom),
-                        extensions.ST_SRID(geom),
-                        extensions.GeometryType(geom),
-                        extensions.ST_NumGeometries(geom)
+                        ST_IsValid(geom),
+                        ST_SRID(geom),
+                        GeometryType(geom),
+                        ST_NumGeometries(geom)
                     FROM geoai.territorial_units
                     WHERE id = %s
                     """,
