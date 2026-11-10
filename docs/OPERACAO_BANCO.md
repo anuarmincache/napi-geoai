@@ -66,24 +66,31 @@ não é superuser e não pode `CREATE EXTENSION`:
 
 ```bash
 # Ubuntu WSL — digite a senha sudo no terminal
-bash scripts/ensure_postgis_template.sh
+# Script IDEMPOTENTE: se o template já está adequado, sai sem alterações.
+# NÃO faz DROP/terminate se o template já existe.
+PGPORT=5433 bash scripts/ensure_postgis_template.sh
 ```
 
-Isso cria `template_napi_postgis` (IS_TEMPLATE) **sem dados** de `napi_geoai`.
-No CI, a role do serviço PostGIS é superuser e o restore habilita a extensão
-diretamente.
+Isso cria `template_napi_postgis` (IS_TEMPLATE) **sem dados** de `napi_geoai`
+somente quando ausente. Se existir mas estiver incorreto, **falha com
+diagnóstico** (sem destruição automática). No CI, a role do serviço PostGIS é
+superuser e cria a extensão no temporário.
 
 ```powershell
+py -3 scripts/db_ops.py backup --output-dir backups
 py -3 scripts/db_ops.py restore-verify --dump backups\napi_geoai_YYYYMMDD.dump
 ```
 
 Fluxo:
 
-1. Lê métricas do banco **principal** (somente SELECT).
+1. `backup` grava dump `-Fc` + manifesto `*.dump.manifest.json` (snapshot no
+   momento do dump: contagens, fingerprints de unidades/artefatos/`ingestion_runs`).
 2. Cria `napi_geoai_tmp_*` (via `TEMPLATE template_napi_postgis` quando existir).
-3. `pg_restore` **sem** `--clean` no temporário.
-4. Compara contagens, SRID, geometrias válidas, SHA de artefatos, migrações.
-5. Remove **somente** o temporário.
+3. `pg_restore --exit-on-error` **sem** `--clean`; se PostGIS já está no alvo,
+   remove entradas `EXTENSION` do TOC (conflito esperado) — qualquer outro erro
+   falha o restore (`exit != 0` ⇒ sem `match=true`).
+4. Compara o restaurado ao **manifesto** (não a um snapshot live posterior).
+5. Remove **somente** o temporário (`confirm=True` + prefixo `napi_geoai_tmp_`).
 
 Recusado por construção: `DROP`/`pg_restore --clean` em `napi_geoai`,
 `postgres`, `template0`, `template1`, `template_napi_postgis`.

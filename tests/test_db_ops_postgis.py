@@ -13,6 +13,7 @@ from geoai.db.backup import (
     PROTECTED_DB_NAMES,
     create_backup,
     drop_temp_database,
+    load_backup_manifest,
     verify_restore,
 )
 from geoai.db.config import DatabaseConfig
@@ -20,7 +21,7 @@ from geoai.db.doctor import run_doctor
 from geoai.db.migrate import apply_migrations
 from geoai.db.pg_tools import find_pg_tool
 from geoai.db.security_audit import run_security_audit
-from geoai.db.url_safety import redact_database_url
+from geoai.db.url_safety import parse_database_url, redact_database_url
 
 REPO = Path(__file__).resolve().parents[1]
 DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
@@ -65,10 +66,7 @@ def test_security_audit_readonly(db_cfg: DatabaseConfig) -> None:
     crits = [f for f in report.findings if f.severity == "crit"]
     assert not crits
     finding_names = {f.name for f in report.findings}
-    if "example_password" in finding_names:
-        # menção à senha de exemplo só no finding dedicado
-        assert True
-    else:
+    if "example_password" not in finding_names:
         assert "napi_local_dev_only" not in str(report.to_dict())
 
 
@@ -109,21 +107,29 @@ def test_backup_restore_verify_isolated(
 
     apply_migrations(db_cfg, directory=REPO / "db" / "migrations")
     primary = redact_database_url(db_cfg.database_url)
+    primary_name = parse_database_url(db_cfg.database_url).dbname
 
-    # Contagem antes — deve permanecer após o ciclo
     with psycopg.connect(db_cfg.database_url) as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM geoai.territorial_units")
             before_units = int(cur.fetchone()[0])
+            cur.execute("SELECT COUNT(*) FROM geoai.ingestion_runs")
+            before_runs = int(cur.fetchone()[0])
             cur.execute("SELECT datname FROM pg_database")
             before_dbs = {r[0] for r in cur.fetchall()}
 
-    assert "napi_geoai" in before_dbs or parse_primary_name(db_cfg) in before_dbs
+    assert primary_name in before_dbs
+    assert "template_napi_postgis" in before_dbs or _can_create_postgis(db_cfg)
 
     bak = create_backup(db_cfg, output_dir=tmp_path / "backups")
     assert bak.dump_path.is_file()
+    assert bak.manifest_path.is_file()
     assert bak.bytes > 0
     assert len(bak.sha256) == 64
+    manifest = load_backup_manifest(bak.dump_path)
+    assert manifest is not None
+    assert manifest["dump_sha256"] == bak.sha256
+    assert "ingestion_runs" in manifest["snapshot"]
 
     result = verify_restore(
         db_cfg,
@@ -132,8 +138,12 @@ def test_backup_restore_verify_isolated(
         temp_suffix="pytest",
     )
     assert result.match, result.differences
-    assert result.source.territorial_units == before_units
+    assert result.reference_kind == "manifest"
+    assert result.reference.territorial_units == before_units
     assert result.restored.territorial_units == before_units
+    assert result.reference.ingestion_runs == before_runs
+    assert result.restored.ingestion_runs == before_runs
+    assert result.restored.runs_fingerprint == result.reference.runs_fingerprint
     assert result.temp_db.startswith("napi_geoai_tmp_")
     assert result.temp_db not in PROTECTED_DB_NAMES
 
@@ -145,17 +155,12 @@ def test_backup_restore_verify_isolated(
             after_dbs = {r[0] for r in cur.fetchall()}
 
     assert after_units == before_units
-    # temporário removido
     assert result.temp_db not in after_dbs
-    # banco principal intacto
-    assert parse_primary_name(db_cfg) in after_dbs
-    assert primary  # smoke: redaction worked
-
-
-def parse_primary_name(cfg: DatabaseConfig) -> str:
-    from geoai.db.url_safety import parse_database_url
-
-    return parse_database_url(cfg.database_url).dbname
+    assert primary_name in after_dbs
+    # Template e principal preservados
+    if "template_napi_postgis" in before_dbs:
+        assert "template_napi_postgis" in after_dbs
+    assert primary
 
 
 @requires_postgis
@@ -163,3 +168,5 @@ def parse_primary_name(cfg: DatabaseConfig) -> str:
 def test_refuse_drop_protected_database(db_cfg: DatabaseConfig) -> None:
     with pytest.raises(ValueError, match="protegido|inválido"):
         drop_temp_database(db_cfg, "napi_geoai", confirm=True)
+    with pytest.raises(ValueError, match="protegido|inválido"):
+        drop_temp_database(db_cfg, "template_napi_postgis", confirm=True)

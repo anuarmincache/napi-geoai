@@ -41,6 +41,7 @@ def cmd_backup(args: argparse.Namespace) -> int:
         json.dumps(
             {
                 "dump_path": str(result.dump_path),
+                "manifest_path": str(result.manifest_path),
                 "sha256": result.sha256,
                 "bytes": result.bytes,
                 "source_db": result.source_db,
