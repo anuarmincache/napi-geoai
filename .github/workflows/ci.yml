@@ -9,7 +9,8 @@ on:
 jobs:
   lint-and-test:
     name: Lint and test (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    # Pin 24.04 (Noble): ubuntu-latest (Resolute) não empacota postgresql-client-16.
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -49,8 +50,18 @@ jobs:
 
       - name: Install PostgreSQL 16 client (match PostGIS service major)
         run: |
+          set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y postgresql-client-16
+          if ! sudo apt-get install -y postgresql-client-16; then
+            # Fallback PGDG (Noble) se o pacote sumir do mirror da imagem.
+            sudo apt-get install -y curl ca-certificates gnupg
+            curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+              | sudo gpg --dearmor -o /usr/share/keyrings/postgresql-pgdg.gpg
+            echo "deb [signed-by=/usr/share/keyrings/postgresql-pgdg.gpg] http://apt.postgresql.org/pub/repos/apt noble-pgdg main" \
+              | sudo tee /etc/apt/sources.list.d/pgdg.list
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client-16
+          fi
           # Preferir binários 16 no PATH (evita pg_dump mais novo → SET transaction_timeout).
           echo "/usr/lib/postgresql/16/bin" >> "$GITHUB_PATH"
 
