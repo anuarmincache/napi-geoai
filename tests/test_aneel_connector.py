@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import httpx
@@ -18,6 +19,36 @@ from geoai.connectors.errors import NetworkConnectorError, ValidationConnectorEr
 from geoai.connectors.http_fetch import sha256_file, write_cache_meta
 
 FIXTURE = Path(__file__).parent / "fixtures" / "aneel_siga_mini.csv"
+
+
+def _iso_ago(**delta: float) -> str:
+    return (datetime.now(UTC) - timedelta(**delta)).isoformat()
+
+
+def _write_invalid_siga_cache(dest: Path, *, checked_ago_hours: float) -> None:
+    dest.write_text("bad;header\n1;2\n", encoding="utf-8")
+    stamp = _iso_ago(hours=checked_ago_hours)
+    write_cache_meta(
+        dest,
+        ProvenanceRecord(
+            source_id="aneel.siga.empreendimentos_geracao",
+            url=ANEEL_SIGA_CSV_URL,
+            retrieved_at=stamp,
+            content_sha256=sha256_file(dest),
+            content_length=dest.stat().st_size,
+            http_etag='"stale-invalid"',
+            last_checked_at=stamp,
+        ),
+    )
+
+
+def _network_forbidden_client() -> httpx.Client:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError(
+            f"rede não deve ser chamada para cache inválido: {request.url}"
+        )
+
+    return httpx.Client(transport=httpx.MockTransport(handler))
 
 
 def test_parse_siga_fixture_filters_pr() -> None:
@@ -86,22 +117,67 @@ def test_download_rejects_invalid_csv_before_cache(tmp_path: Path) -> None:
     assert not dest.with_suffix(".csv.cache.json").exists()
 
 
-def test_download_rejects_invalid_cached_csv(tmp_path: Path) -> None:
+def test_download_rejects_invalid_cached_csv_within_ttl(tmp_path: Path) -> None:
     dest = tmp_path / "siga.csv"
-    dest.write_text("bad;header\n1;2\n", encoding="utf-8")
+    _write_invalid_siga_cache(dest, checked_ago_hours=1)
+    client = _network_forbidden_client()
+    with pytest.raises(ValidationConnectorError, match="sem campos"):
+        download_siga_csv(
+            dest,
+            use_cache=True,
+            cache_ttl_s=86_400,
+            client=client,
+        )
+    client.close()
+    assert dest.read_text(encoding="utf-8").startswith("bad;header")
+
+
+def test_download_rejects_invalid_cached_csv_outside_ttl(tmp_path: Path) -> None:
+    """Fora do TTL ainda valida o CSV local antes de qualquer revalidação HTTP."""
+    dest = tmp_path / "siga.csv"
+    _write_invalid_siga_cache(dest, checked_ago_hours=48)
+    client = _network_forbidden_client()
+    with pytest.raises(ValidationConnectorError, match="sem campos"):
+        download_siga_csv(
+            dest,
+            use_cache=True,
+            cache_ttl_s=86_400,
+            client=client,
+        )
+    client.close()
+
+
+def test_download_rejects_invalid_cached_csv(tmp_path: Path) -> None:
+    """Alias estável: cache inválido → ValidationConnectorError sem rede."""
+    test_download_rejects_invalid_cached_csv_within_ttl(tmp_path)
+
+
+def test_download_reuses_valid_cached_csv_within_ttl(tmp_path: Path) -> None:
+    dest = tmp_path / "siga.csv"
+    dest.write_bytes(FIXTURE.read_bytes())
+    stamp = _iso_ago(hours=1)
     write_cache_meta(
         dest,
         ProvenanceRecord(
             source_id="aneel.siga.empreendimentos_geracao",
             url=ANEEL_SIGA_CSV_URL,
-            retrieved_at="2026-11-07T00:00:00+00:00",
+            retrieved_at=stamp,
             content_sha256=sha256_file(dest),
             content_length=dest.stat().st_size,
-            last_checked_at="2026-11-07T00:00:00+00:00",
+            http_etag='"siga-ok"',
+            last_checked_at=stamp,
         ),
     )
-    with pytest.raises(ValidationConnectorError):
-        download_siga_csv(dest, use_cache=True, cache_ttl_s=86_400, client=None)
+    client = _network_forbidden_client()
+    result = download_siga_csv(
+        dest,
+        use_cache=True,
+        cache_ttl_s=86_400,
+        client=client,
+    )
+    client.close()
+    assert result.provenance.cache_hit is True
+    assert result.provenance.content_sha256 == sha256_file(dest)
 
 
 def test_download_siga_http_error(tmp_path: Path) -> None:

@@ -13,7 +13,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from geoai.db.config import DatabaseConfig
-from geoai.db.pg_tools import require_pg_tool, run_pg_tool
+from geoai.db.pg_tools import (
+    assert_pg_client_matches_server,
+    require_pg_tool,
+    run_pg_tool,
+)
 from geoai.db.postgis import configure_search_path
 from geoai.db.url_safety import (
     database_url_with_dbname,
@@ -90,81 +94,79 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def collect_snapshot(cfg: DatabaseConfig) -> SnapshotMetrics:
-    import psycopg
+def collect_snapshot_on_conn(conn, cfg: DatabaseConfig) -> SnapshotMetrics:
+    """Métricas na conexão corrente (respeita snapshot REPEATABLE READ ativo)."""
+    configure_search_path(conn, app_schema=cfg.schema)
+    with conn.cursor() as cur:
+        cur.execute(f"SELECT COUNT(*) FROM {cfg.schema}.territorial_units")
+        units = int(cur.fetchone()[0])
+        cur.execute(
+            f"""
+            SELECT
+              COUNT(*) FILTER (WHERE ST_SRID(geom) = 4674),
+              COUNT(*) FILTER (WHERE ST_IsValid(geom))
+            FROM {cfg.schema}.territorial_units
+            """
+        )
+        srid_ok, valid_ok = cur.fetchone()
+        cur.execute(f"SELECT COUNT(*) FROM {cfg.schema}.data_sources")
+        sources = int(cur.fetchone()[0])
+        cur.execute(f"SELECT COUNT(*) FROM {cfg.schema}.data_artifacts")
+        artifacts = int(cur.fetchone()[0])
+        cur.execute(f"SELECT COUNT(*) FROM {cfg.schema}.ingestion_runs")
+        runs = int(cur.fetchone()[0])
+        cur.execute(
+            f"SELECT content_sha256 FROM {cfg.schema}.data_artifacts ORDER BY 1"
+        )
+        shas = frozenset(r[0] for r in cur.fetchall())
+        cur.execute(
+            f"SELECT version FROM {cfg.schema}.schema_migrations ORDER BY version"
+        )
+        migrations = tuple(r[0] for r in cur.fetchall())
 
-    with psycopg.connect(cfg.database_url) as conn:
-        configure_search_path(conn, app_schema=cfg.schema)
-        with conn.cursor() as cur:
-            cur.execute(f"SELECT COUNT(*) FROM {cfg.schema}.territorial_units")
-            units = int(cur.fetchone()[0])
-            cur.execute(
-                f"""
-                SELECT
-                  COUNT(*) FILTER (WHERE ST_SRID(geom) = 4674),
-                  COUNT(*) FILTER (WHERE ST_IsValid(geom))
-                FROM {cfg.schema}.territorial_units
-                """
+        # Fingerprints determinísticos (ordem fixa) — além de contagens.
+        cur.execute(
+            f"""
+            SELECT COALESCE(
+              md5(string_agg(
+                ibge_code || '|' || mesh_edition || '|' ||
+                ST_AsText(ST_Normalize(geom)),
+                E'\\n' ORDER BY ibge_code, mesh_edition, id
+              )),
+              md5('')
             )
-            srid_ok, valid_ok = cur.fetchone()
-            cur.execute(f"SELECT COUNT(*) FROM {cfg.schema}.data_sources")
-            sources = int(cur.fetchone()[0])
-            cur.execute(f"SELECT COUNT(*) FROM {cfg.schema}.data_artifacts")
-            artifacts = int(cur.fetchone()[0])
-            cur.execute(f"SELECT COUNT(*) FROM {cfg.schema}.ingestion_runs")
-            runs = int(cur.fetchone()[0])
-            cur.execute(
-                f"SELECT content_sha256 FROM {cfg.schema}.data_artifacts ORDER BY 1"
+            FROM {cfg.schema}.territorial_units
+            """
+        )
+        units_fp = str(cur.fetchone()[0])
+        cur.execute(
+            f"""
+            SELECT COALESCE(
+              md5(string_agg(
+                source_id || '|' || version_label || '|' || content_sha256,
+                E'\\n' ORDER BY source_id, version_label, content_sha256, id
+              )),
+              md5('')
             )
-            shas = frozenset(r[0] for r in cur.fetchall())
-            cur.execute(
-                f"SELECT version FROM {cfg.schema}.schema_migrations ORDER BY version"
+            FROM {cfg.schema}.data_artifacts
+            """
+        )
+        artifacts_fp = str(cur.fetchone()[0])
+        cur.execute(
+            f"""
+            SELECT COALESCE(
+              md5(string_agg(
+                source_id || '|' || status || '|' ||
+                records_processed::text || '|' ||
+                COALESCE(error_summary, ''),
+                E'\\n' ORDER BY id
+              )),
+              md5('')
             )
-            migrations = tuple(r[0] for r in cur.fetchall())
-
-            # Fingerprints determinísticos (ordem fixa) — além de contagens.
-            cur.execute(
-                f"""
-                SELECT COALESCE(
-                  md5(string_agg(
-                    ibge_code || '|' || mesh_edition || '|' ||
-                    ST_AsText(ST_Normalize(geom)),
-                    E'\\n' ORDER BY ibge_code, mesh_edition, id
-                  )),
-                  md5('')
-                )
-                FROM {cfg.schema}.territorial_units
-                """
-            )
-            units_fp = str(cur.fetchone()[0])
-            cur.execute(
-                f"""
-                SELECT COALESCE(
-                  md5(string_agg(
-                    source_id || '|' || version_label || '|' || content_sha256,
-                    E'\\n' ORDER BY source_id, version_label, content_sha256, id
-                  )),
-                  md5('')
-                )
-                FROM {cfg.schema}.data_artifacts
-                """
-            )
-            artifacts_fp = str(cur.fetchone()[0])
-            cur.execute(
-                f"""
-                SELECT COALESCE(
-                  md5(string_agg(
-                    source_id || '|' || status || '|' ||
-                    records_processed::text || '|' ||
-                    COALESCE(error_summary, ''),
-                    E'\\n' ORDER BY id
-                  )),
-                  md5('')
-                )
-                FROM {cfg.schema}.ingestion_runs
-                """
-            )
-            runs_fp = str(cur.fetchone()[0])
+            FROM {cfg.schema}.ingestion_runs
+            """
+        )
+        runs_fp = str(cur.fetchone()[0])
 
     return SnapshotMetrics(
         territorial_units=units,
@@ -179,6 +181,13 @@ def collect_snapshot(cfg: DatabaseConfig) -> SnapshotMetrics:
         artifacts_fingerprint=artifacts_fp,
         runs_fingerprint=runs_fp,
     )
+
+
+def collect_snapshot(cfg: DatabaseConfig) -> SnapshotMetrics:
+    import psycopg
+
+    with psycopg.connect(cfg.database_url) as conn:
+        return collect_snapshot_on_conn(conn, cfg)
 
 
 def snapshot_to_manifest(snapshot: SnapshotMetrics) -> dict:
@@ -250,7 +259,18 @@ def create_backup(
     output_dir: Path,
     filename: str | None = None,
 ) -> BackupResult:
-    """Gera dump custom (-Fc) + manifesto JSON acoplado."""
+    """Gera dump custom (-Fc) + manifesto JSON acoplado.
+
+    Consistência manifesto/dump sob escrita concorrente:
+    abre transação ``REPEATABLE READ``, exporta ``pg_export_snapshot()``,
+    coleta métricas nessa visão e passa ``--snapshot`` ao ``pg_dump``
+    enquanto a transação permanece aberta. Assim manifesto e dump enxergam
+    o mesmo estado MVCC (não pausa writers; writers posteriores não entram
+    na visão exportada).
+    """
+    import psycopg
+    from psycopg import IsolationLevel
+
     parts = parse_database_url(cfg.database_url)
     output_dir.mkdir(parents=True, exist_ok=True)
     try:
@@ -264,8 +284,7 @@ def create_backup(
     if dump_path.exists():
         raise FileExistsError(f"dump já existe: {dump_path}")
 
-    # Snapshot ANTES do dump — referência para restore-verify via manifesto.
-    snapshot = collect_snapshot(cfg)
+    assert_pg_client_matches_server(cfg.database_url, tools=("pg_dump",))
 
     tool = require_pg_tool("pg_dump")
     env = {}
@@ -279,26 +298,38 @@ def create_backup(
         dump_arg = remote_tmp
     else:
         dump_arg = str(dump_path)
-    args = [
-        "-h",
-        parts.host or "127.0.0.1",
-        "-p",
-        str(parts.port or 5432),
-        "-U",
-        parts.user or "napi",
-        "-d",
-        parts.dbname,
-        "-Fc",
-        "-f",
-        dump_arg,
-    ]
-    try:
-        run_pg_tool(tool, args, env=env)
-        if remote_tmp is not None:
-            dump_path.write_bytes(wsl_read_bytes(remote_tmp))
-    finally:
-        if remote_tmp is not None:
-            wsl_rm(remote_tmp)
+
+    with psycopg.connect(cfg.database_url) as snap_conn:
+        snap_conn.autocommit = False
+        snap_conn.isolation_level = IsolationLevel.REPEATABLE_READ
+        with snap_conn.transaction():
+            with snap_conn.cursor() as cur:
+                cur.execute("SELECT pg_export_snapshot()")
+                export_id = str(cur.fetchone()[0])
+            snapshot = collect_snapshot_on_conn(snap_conn, cfg)
+            args = [
+                "-h",
+                parts.host or "127.0.0.1",
+                "-p",
+                str(parts.port or 5432),
+                "-U",
+                parts.user or "napi",
+                "-d",
+                parts.dbname,
+                "-Fc",
+                "--snapshot",
+                export_id,
+                "-f",
+                dump_arg,
+            ]
+            try:
+                run_pg_tool(tool, args, env=env)
+                if remote_tmp is not None:
+                    dump_path.write_bytes(wsl_read_bytes(remote_tmp))
+            finally:
+                if remote_tmp is not None:
+                    wsl_rm(remote_tmp)
+
     try:
         dump_path.chmod(0o600)
     except OSError:
@@ -456,12 +487,14 @@ def restore_dump_to_database(
     Restaura dump em banco temporário já criado.
 
     Exige exit code 0 do ``pg_restore`` (com ``--exit-on-error``).
+    Cliente ``pg_restore`` deve ter o mesmo major do servidor.
     Se o alvo já possui PostGIS, exclui EXTENSION do TOC antes do restore.
     """
     assert_safe_temp_dbname(target_dbname)
     if not dump_path.is_file():
         raise FileNotFoundError(dump_path)
     parts = parse_database_url(cfg.database_url)
+    assert_pg_client_matches_server(cfg.database_url, tools=("pg_restore",))
     tool = require_pg_tool("pg_restore")
     env = {}
     if parts.password is not None:

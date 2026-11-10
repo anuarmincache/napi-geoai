@@ -20,23 +20,20 @@
 | Referência live vs dump antigo | Manifesto `*.dump.manifest.json` acoplado ao dump |
 | Limpeza de temp | `finally` só dropa `napi_geoai_tmp_*` se criado; protegidos recusados |
 
-## Evidência local (WSL nativo :5433) — pós-correção (2026-11-10)
+## Correções pós-revisão (commit 784644e / CI + cache)
 
-Estado preservado: `napi_geoai` e `template_napi_postgis` **não** foram droados.
+| Ponto da revisão | Correção |
+|---|---|
+| `pg_restore` / `transaction_timeout` no CI | `postgresql-client-16` + PATH `/usr/lib/postgresql/16/bin` + assert major cliente=servidor |
+| Cache CSV ANEEL inválido | `content_validator` antes de reuso/TTL/304; testes com datas relativas + MockTransport |
+| Manifesto vs dump sob escrita concorrente | `REPEATABLE READ` + `pg_export_snapshot` + `pg_dump --snapshot` |
+| Template `TEMPLATE`/`OWNER` vs GRANT literais | Nomes fixos `template_napi_postgis`/`napi`; só `PGPORT` configurável (5433) |
 
-```text
-ruff check .                  → All checks passed
-pytest (ops + restante*)      → 46 passed, 2 skipped (*sem test_aneel_connector pré-existente)
-tests/test_db_ops_*           → 9 passed
-db_ops doctor                 → OK (exit 0); template presente
-db_ops backup                 → sha256=216c164f…7158cc + manifesto
-db_ops restore-verify         → match=true; reference_kind=manifest
-                              → ingestion_runs=11; fingerprints iguais
-                              → temp napi_geoai_tmp_* removido
-```
+## Evidência local (WSL nativo :5433)
 
-\* `test_download_rejects_invalid_cached_csv` (ANEEL) falha de forma independente deste MVP;
-não faz parte do escopo da Issue #16 / revisão do PR #17.
+Estado preservado: `napi_geoai` e `template_napi_postgis` **não** são droados por estes fluxos.
+
+Ver logs atualizados no comentário do PR após Ruff/pytest/CI desta rodada.
 
 ## Fora de escopo
 

@@ -195,6 +195,11 @@ def download_http_file(
     )
 
     try:
+        # Integridade de conteúdo ≠ SHA do meta: validar artefato local
+        # antes de qualquer reuso (TTL) ou revalidação condicional (304).
+        if cache_ok and cached is not None and content_validator is not None:
+            content_validator(destination)
+
         if cache_ok and cached is not None and _within_ttl(cached, cache_ttl_s):
             now = _now_iso()
             record = _provenance_from_cache(
@@ -227,6 +232,7 @@ def download_http_file(
                 with http.stream("GET", url, headers=headers) as response:
                     status = response.status_code
                     if status == 304 and cache_ok and cached is not None:
+                        # Conteúdo local já validado acima; só atualiza meta.
                         now = _now_iso()
                         record = _provenance_from_cache(
                             cached,

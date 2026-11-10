@@ -179,6 +179,43 @@ def test_validator_failure_does_not_promote(tmp_path: Path) -> None:
     assert not dest.exists()
 
 
+def test_validator_rejects_cached_file_before_reuse(tmp_path: Path) -> None:
+    dest = tmp_path / "x.bin"
+    dest.write_bytes(b"bad-cache")
+    stamp = _iso_hours_ago(1)
+    write_cache_meta(
+        dest,
+        ProvenanceRecord(
+            source_id="test.x",
+            url="https://example.test/x.bin",
+            retrieved_at=stamp,
+            content_sha256=sha256_file(dest),
+            content_length=dest.stat().st_size,
+            http_etag='"x"',
+            last_checked_at=stamp,
+        ),
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("rede não deve ser chamada")
+
+    def validator(path: Path) -> None:
+        raise ValidationConnectorError("cache local inválido")
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    with pytest.raises(ValidationConnectorError, match="cache local inválido"):
+        download_http_file(
+            "https://example.test/x.bin",
+            dest,
+            source_id="test.x",
+            client=client,
+            content_validator=validator,
+            use_cache=True,
+            cache_ttl_s=3600,
+        )
+    client.close()
+
+
 def test_http_404_not_retried(tmp_path: Path) -> None:
     calls = {"n": 0}
 

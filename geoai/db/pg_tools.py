@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -96,6 +97,64 @@ def run_pg_tool(
             f"{tool.name} falhou (exit {result.returncode}): {err[:500]}"
         )
     return result
+
+
+def parse_pg_tool_major(version_text: str) -> int:
+    """Extrai major version de saída ``pg_dump (PostgreSQL) X.Y``."""
+    match = re.search(r"\(PostgreSQL\)\s+(\d+)\.", version_text)
+    if not match:
+        match = re.search(r"(\d+)\.\d+", version_text)
+    if not match:
+        raise RuntimeError(f"não foi possível interpretar versão: {version_text!r}")
+    return int(match.group(1))
+
+
+def pg_tool_major(name: str) -> int:
+    tool = require_pg_tool(name)
+    result = run_pg_tool(tool, ["--version"], check=True)
+    text = result.stdout or result.stderr or ""
+    if isinstance(text, bytes):
+        text = text.decode("utf-8", errors="replace")
+    return parse_pg_tool_major(str(text))
+
+
+def server_major_from_url(database_url: str) -> int:
+    import psycopg
+
+    with psycopg.connect(database_url) as conn:
+        with conn.cursor() as cur:
+            cur.execute("SHOW server_version_num")
+            return int(cur.fetchone()[0]) // 10_000
+
+
+def assert_pg_client_matches_server(
+    database_url: str,
+    *,
+    tools: tuple[str, ...] = ("pg_dump", "pg_restore"),
+) -> None:
+    """Garante major do cliente = major do servidor (evita transaction_timeout etc.)."""
+    server_major = server_major_from_url(database_url)
+    mismatches: list[str] = []
+    for name in tools:
+        try:
+            client_major = pg_tool_major(name)
+        except RuntimeError as exc:
+            mismatches.append(f"{name}: {exc}")
+            continue
+        if client_major != server_major:
+            mismatches.append(
+                f"{name} major={client_major} != server major={server_major}"
+            )
+    if mismatches:
+        raise RuntimeError(
+            "cliente PostgreSQL incompatível com o servidor: "
+            + "; ".join(mismatches)
+            + ". Instale postgresql-client-"
+            + str(server_major)
+            + " (ou alinhe PATH a /usr/lib/postgresql/"
+            + str(server_major)
+            + "/bin)."
+        )
 
 
 def to_wsl_path(path: Path) -> str:

@@ -8,11 +8,19 @@ from geoai.db.backup import (
     assert_safe_temp_dbname,
     filter_restore_toc_exclude_extensions,
 )
+from geoai.db.pg_tools import parse_pg_tool_major
 from geoai.db.url_safety import (
     database_url_with_dbname,
     parse_database_url,
     redact_database_url,
 )
+
+
+def test_parse_pg_tool_major() -> None:
+    assert parse_pg_tool_major("pg_dump (PostgreSQL) 16.10") == 16
+    assert parse_pg_tool_major("pg_restore (PostgreSQL) 16.4") == 16
+    with pytest.raises(RuntimeError):
+        parse_pg_tool_major("not a version string")
 
 
 def test_redact_database_url_hides_password() -> None:

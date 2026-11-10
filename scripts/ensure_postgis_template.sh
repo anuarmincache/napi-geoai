@@ -4,12 +4,18 @@
 # - Se presente e adequado: sai sem alterações.
 # - Se presente mas incorreto: FALHA com diagnóstico (NÃO faz DROP/terminate).
 # Não toca em napi_geoai. Cluster alvo padrão: porta 5433 (WSL deste host).
+#
+# Nomes fixos (sem parametrização via env): template_napi_postgis / owner napi.
+# Apenas PGPORT é configurável (dígitos), padrão 5433.
 set -euo pipefail
 
-TEMPLATE="${TEMPLATE_NAPI_POSTGIS:-template_napi_postgis}"
-OWNER="${TEMPLATE_OWNER:-napi}"
-# Neste computador o cluster nativo escuta em 5433 — não assumir 5432.
+readonly TEMPLATE="template_napi_postgis"
+readonly OWNER="napi"
 PGPORT="${PGPORT:-5433}"
+if [[ ! "$PGPORT" =~ ^[0-9]+$ ]]; then
+  echo "ERRO: PGPORT inválido: $PGPORT (use apenas dígitos, ex.: 5433)" >&2
+  exit 2
+fi
 export PGPORT
 
 psql_as_postgres() {
@@ -74,10 +80,10 @@ psql_as_postgres -d postgres <<SQL
 CREATE DATABASE ${TEMPLATE} OWNER ${OWNER} IS_TEMPLATE true;
 SQL
 
-psql_as_postgres -d "$TEMPLATE" <<'SQL'
+psql_as_postgres -d "$TEMPLATE" <<SQL
 CREATE EXTENSION IF NOT EXISTS postgis;
-REVOKE CONNECT ON DATABASE template_napi_postgis FROM PUBLIC;
-GRANT CONNECT ON DATABASE template_napi_postgis TO napi;
+REVOKE CONNECT ON DATABASE ${TEMPLATE} FROM PUBLIC;
+GRANT CONNECT ON DATABASE ${TEMPLATE} TO ${OWNER};
 SQL
 
 ver="$(psql_as_postgres -d "$TEMPLATE" -tAc "SELECT PostGIS_Version();" | head -n1)"

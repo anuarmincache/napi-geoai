@@ -83,8 +83,10 @@ py -3 scripts/db_ops.py restore-verify --dump backups\napi_geoai_YYYYMMDD.dump
 
 Fluxo:
 
-1. `backup` grava dump `-Fc` + manifesto `*.dump.manifest.json` (snapshot no
-   momento do dump: contagens, fingerprints de unidades/artefatos/`ingestion_runs`).
+1. `backup` grava dump `-Fc` + manifesto `*.dump.manifest.json` sob o mesmo
+   snapshot MVCC (`REPEATABLE READ` + `pg_export_snapshot` / `pg_dump
+   --snapshot`): contagens e fingerprints (unidades/artefatos/`ingestion_runs`)
+   coerentes com o dump mesmo se houver escrita concorrente.
 2. Cria `napi_geoai_tmp_*` (via `TEMPLATE template_napi_postgis` quando existir).
 3. `pg_restore --exit-on-error` **sem** `--clean`; se PostGIS já está no alvo,
    remove entradas `EXTENSION` do TOC (conflito esperado) — qualquer outro erro
