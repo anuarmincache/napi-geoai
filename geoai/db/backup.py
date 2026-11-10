@@ -322,6 +322,8 @@ def create_backup(
                 "-f",
                 dump_arg,
             ]
+            for schema in _POSTGIS_EXCLUDE_SCHEMAS:
+                args.extend(["--exclude-schema", schema])
             try:
                 run_pg_tool(tool, args, env=env)
                 if remote_tmp is not None:
@@ -450,12 +452,18 @@ def drop_temp_database(cfg: DatabaseConfig, name: str, *, confirm: bool) -> None
 
 
 # Objetos já materializados pela extensão PostGIS no template/alvo.
+# Inclui schemas satélite do image postgis/postgis (tiger/topology).
 _POSTGIS_TOC_SKIP_MARKERS = (
     " EXTENSION ",
     " SPATIAL_REF_SYS",
     " GEOMETRY_COLUMNS",
     " GEOGRAPHY_COLUMNS",
+    " TIGER ",
+    " TOPOLOGY ",
 )
+
+# Schemas de extensões PostGIS — fora do domínio geoai; não entram no dump.
+_POSTGIS_EXCLUDE_SCHEMAS = ("tiger", "topology")
 
 
 def filter_restore_toc_exclude_extensions(toc_text: str) -> str:
@@ -463,8 +471,8 @@ def filter_restore_toc_exclude_extensions(toc_text: str) -> str:
     Remove do TOC entradas da extensão PostGIS e tabelas/views dela.
 
     Usado quando o alvo já tem PostGIS (template ou CREATE prévio), para
-    evitar conflito em CREATE EXTENSION / COPY spatial_ref_sys sem engolir
-    outros erros do restore.
+    evitar conflito em CREATE EXTENSION / COPY spatial_ref_sys / objetos
+    tiger·topology sem engolir outros erros do restore.
     """
     kept: list[str] = []
     for line in toc_text.splitlines():

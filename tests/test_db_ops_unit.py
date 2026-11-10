@@ -49,7 +49,7 @@ def test_temp_dbname_guards() -> None:
             assert_safe_temp_dbname(bad)
 
 
-def test_filter_restore_toc_excludes_extension() -> None:
+def test_filter_restore_toc_excludes_extension_and_tiger() -> None:
     toc = """\
 ;
 ; Selected TOC Entries:
@@ -57,6 +57,8 @@ def test_filter_restore_toc_excludes_extension() -> None:
 210; 3079 16386 EXTENSION - postgis
 211; 0 0 COMMENT - EXTENSION postgis
 3461; 0 18322 TABLE DATA public spatial_ref_sys postgres
+400; 1259 20001 TABLE tiger geocode_settings postgres
+401; 0 20001 TABLE DATA tiger geocode_settings postgres
 345; 1259 16400 TABLE geoai territorial_units napi
 """
     filtered = filter_restore_toc_exclude_extensions(toc)
@@ -64,6 +66,8 @@ def test_filter_restore_toc_excludes_extension() -> None:
     assert "EXTENSION" not in filtered.upper()
     assert "spatial_ref_sys" not in filtered.lower()
     assert "postgis" not in filtered.lower()
+    assert "geocode_settings" not in filtered.lower()
+    assert "tiger" not in filtered.lower()
 
 
 def test_doctor_format_json_roundtrip_structure() -> None:
