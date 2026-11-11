@@ -92,6 +92,8 @@ Fundação PostGIS local (MVP 04): [docs/BANCO_DADOS.md](docs/BANCO_DADOS.md), [
 
 Operação / robustez (MVP 05): [docs/OPERACAO_BANCO.md](docs/OPERACAO_BANCO.md) — `py -3 scripts/db_ops.py doctor|backup|restore-verify|security-audit`. Neste host WSL o Postgres nativo escuta em **5433**.
 
+Arquitetura modular e qualidade (MVP 06): [docs/ARQUITETURA_MODULAR.md](docs/ARQUITETURA_MODULAR.md), [docs/MVP06_RESULTADOS.md](docs/MVP06_RESULTADOS.md) — contratos de qualidade, domínios temáticos e metadados didáticos **sem** site/ML/novos conectores.
+
 ## Reprodutibilidade e responsabilidade
 
 Não serão apresentados dados ilustrativos como resultados científicos. Critérios de aptidão, restrições territoriais e pesos devem ser transparentes, revisados e submetidos a análise de sensibilidade. Nenhuma decisão de investimento deve ser tomada exclusivamente com base em mapas preliminares.

@@ -14,6 +14,7 @@
 - [x] Criar pacote Python isolado da interface.
 - [x] Implementar conectores documentados para IBGE e ANEEL com mocks e testes.
 - [x] Definir contrato de metadados (fonte, versão, CRS, resolução, data, licença, checksum).
+- [x] Arquitetura modular + qualidade + metadados didáticos (MVP 06 / Issue #19).
 - [ ] Preparar ingestão de dados INPE/LABREN e MapBiomas em formatos disponíveis.
 - [x] Validar a geração de recorte geoespacial do Paraná no QGIS.
 

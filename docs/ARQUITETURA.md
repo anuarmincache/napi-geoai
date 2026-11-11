@@ -43,18 +43,24 @@ IBGE/ANEEL/INPE/MapBiomas/...
 - **ChatGPT:** especificação científica, revisão, documentação e orquestração colaborativa via GitHub.
 - **GitHub Actions:** lint e testes rápidos; pipelines de dados pesados devem executar em infraestrutura apropriada.
 
-## Organização sugerida (a implementar)
+## Organização atual (MVP 06)
+
+Ver detalhe e diagrama em [`docs/ARQUITETURA_MODULAR.md`](ARQUITETURA_MODULAR.md)
+e decisão em [`docs/adr/0001-domain-modules.md`](adr/0001-domain-modules.md).
 
 ```text
-app/                   # Streamlit
-api/                   # FastAPI
-geoai/                 # motor geoespacial e analítico
-connectors/            # adaptadores de dados oficiais
-qgis/                  # projetos/estilos (sem rasters pesados)
-tests/                 # testes unitários e integração
-docs/                  # arquitetura, fontes e decisões
-locales/               # pt_BR, en_US
-.github/workflows/     # CI
+geoai/                 # motor Python (ciência + contratos)
+  connectors/          # adaptadores oficiais (MVP 03)
+  boundaries/          # limites territoriais (MVP 02)
+  db/                  # PostGIS + ops (MVP 04–05)
+  quality/             # schemas + QualityReport (MVP 06)
+  domains/             # registro temático + IndicatorSpec
+  presentation/        # DidacticMetadata (contrato UX; sem site)
+qgis/                  # projetos/estilos
+tests/
+docs/
+.github/workflows/
+# Planejado (ainda não): app/ (Streamlit), api/ (FastAPI), locales/
 ```
 
 ## Por que ainda não Airflow ou Kafka?
