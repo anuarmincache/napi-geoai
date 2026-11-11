@@ -327,21 +327,37 @@ def list_municipalities(
     return tuple(rows)
 
 
+def municipality_label(rec: MunicipalityRecord) -> str:
+    """Rótulo estável para seletores: Nome (código IBGE)."""
+
+    return f"{rec.name} ({rec.code})"
+
+
 def search_municipalities(
     bundle: MunicipalityLayerBundle,
     query: str,
     *,
-    limit: int = 25,
+    limit: int | None = None,
 ) -> tuple[MunicipalityRecord, ...]:
+    """Busca por substring de nome (sem acento) ou código IBGE.
+
+    - Consulta vazia: devolve o catálogo completo (todos os 399), salvo
+      ``limit`` explícito.
+    - Consulta sem correspondência: devolve tupla vazia (sem fallback).
+    """
+
+    rows = list_municipalities(bundle)
     q = _norm_name(query or "")
     if not q:
-        return list_municipalities(bundle)[:limit]
-    hits: list[MunicipalityRecord] = []
-    for rec in list_municipalities(bundle):
-        if q in _norm_name(rec.name) or q in rec.code:
-            hits.append(rec)
-        if len(hits) >= limit:
-            break
+        hits = rows
+    else:
+        hits = tuple(
+            rec
+            for rec in rows
+            if q in _norm_name(rec.name) or q in rec.code
+        )
+    if limit is not None:
+        hits = hits[: max(0, int(limit))]
     return tuple(hits)
 
 
@@ -433,7 +449,12 @@ def municipality_map_html(
     gdf_plot = bundle.gdf.to_crs(epsg=4326)
     minx, miny, maxx, maxy = gdf_plot.total_bounds
     center = [(miny + maxy) / 2.0, (minx + maxx) / 2.0]
-    fmap = folium.Map(location=center, zoom_start=7, tiles="OpenStreetMap")
+    fmap = folium.Map(
+        location=center,
+        zoom_start=7,
+        tiles="OpenStreetMap",
+        control_scale=True,
+    )
     selected = str(selected_code).strip() if selected_code else None
 
     def style_fn(feat: dict[str, Any]) -> dict[str, Any]:
@@ -466,17 +487,33 @@ def municipality_map_html(
         ),
     ).add_to(fmap)
 
+    # Enquadramento: Paraná inteiro na 1ª visita; seleção com padding
+    # (evita zoom excessivo / faixa preta no iframe Streamlit).
     if selected:
         hit = gdf_plot[gdf_plot["CD_MUN"].astype(str) == selected]
         if not hit.empty:
             b = hit.total_bounds
-            fmap.fit_bounds([[b[1], b[0]], [b[3], b[2]]])
+            fmap.fit_bounds([[b[1], b[0]], [b[3], b[2]]], padding=(28, 28))
         else:
-            fmap.fit_bounds([[miny, minx], [maxy, maxx]])
+            fmap.fit_bounds([[miny, minx], [maxy, maxx]], padding=(12, 12))
     else:
-        fmap.fit_bounds([[miny, minx], [maxy, maxx]])
+        fmap.fit_bounds([[miny, minx], [maxy, maxx]], padding=(12, 12))
 
-    folium.LayerControl().add_to(fmap)
+    # Fundo claro no container Leaflet — reduz retângulo preto no iframe.
+    try:
+        from branca.element import Element
+
+        fmap.get_root().html.add_child(
+            Element(
+                "<style>"
+                "html,body{margin:0;height:100%;background:#e8eef5;}"
+                ".leaflet-container{background:#e8eef5!important;}"
+                "</style>"
+            )
+        )
+    except Exception:  # pragma: no cover - branca sempre presente com folium
+        pass
+
     return fmap.get_root().render()
 
 

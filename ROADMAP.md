@@ -49,3 +49,5 @@
 ## Critérios globais de aceite
 
 Sem credenciais no Git; sem resultados científicos fabricados; testes documentados; proveniência rastreável; alterações importantes por pull requests; publicação institucional apenas após aprovação explícita.
+
+- [x] MVP 09.1 — UX busca/seleção/mapa do explorador territorial (#28)

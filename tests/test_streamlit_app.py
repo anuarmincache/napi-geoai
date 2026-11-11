@@ -58,3 +58,33 @@ def test_home_shows_napi_branding(_streamlit_paths: None) -> None:
     assert "NAPI GeoAI" in joined or any(
         "NAPI" in str(getattr(t, "value", t)) for t in at.title
     )
+
+
+def test_explorer_search_ux_no_false_fallback(_streamlit_paths: None) -> None:
+    """Busca sem resultado não reinstaura silenciosamente os 399."""
+
+    explorer = REPO / "app" / "pages" / "5_Explorador_Territorial.py"
+    at = AppTest.from_file(str(explorer), default_timeout=90)
+    at.run()
+    assert not at.exception, at.exception
+
+    # Campo de busca (primeiro text_input da página)
+    assert at.text_input
+    at.text_input[0].set_value("cidade-inexistente-xyz")
+    at.run()
+    assert not at.exception, at.exception
+    warning_text = "\n".join(str(w.value) for w in at.warning)
+    assert "Nenhum município encontrado" in warning_text
+
+    # Contagem visível não deve alegar 399 resultados para essa consulta
+    md = "\n".join(str(m.value) for m in at.markdown)
+    assert "0 de 399" in md.replace("**", "")
+
+
+def test_explorer_starts_without_forced_city(_streamlit_paths: None) -> None:
+    explorer = REPO / "app" / "pages" / "5_Explorador_Territorial.py"
+    at = AppTest.from_file(str(explorer), default_timeout=90)
+    at.run()
+    assert not at.exception, at.exception
+    info_blobs = "\n".join(str(x.value) for x in at.info)
+    assert "Mapa geral" in info_blobs or "399" in info_blobs
