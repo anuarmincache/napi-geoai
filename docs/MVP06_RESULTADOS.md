@@ -21,6 +21,11 @@
 
 Site/dashboard, ML, novos conectores, ingestão massiva, Supabase remoto, Kafka/Airflow.
 
-## Evidência
+## Evidência (2026-11-11)
 
-Registrada no PR da Issue #19 após `ruff` / `pytest` / CI.
+```text
+ruff check .     → All checks passed
+pytest -q        → 69 passed, 2 skipped
+napi_geoai + template_napi_postgis (:5433) preservados
+CI               → ver PR #21
+```
