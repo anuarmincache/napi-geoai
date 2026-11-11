@@ -9,7 +9,8 @@ on:
 jobs:
   lint-and-test:
     name: Lint and test (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    # Pin 24.04 (Noble): ubuntu-latest (Resolute) não empacota postgresql-client-16.
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -47,10 +48,54 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev,db]"
 
+      - name: Install PostgreSQL 16 client (match PostGIS service major)
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          if ! sudo apt-get install -y postgresql-client-16; then
+            # Fallback PGDG (Noble) se o pacote sumir do mirror da imagem.
+            sudo apt-get install -y curl ca-certificates gnupg
+            curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+              | sudo gpg --dearmor -o /usr/share/keyrings/postgresql-pgdg.gpg
+            echo "deb [signed-by=/usr/share/keyrings/postgresql-pgdg.gpg] http://apt.postgresql.org/pub/repos/apt noble-pgdg main" \
+              | sudo tee /etc/apt/sources.list.d/pgdg.list
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client-16
+          fi
+          # Preferir binários 16 no PATH (evita pg_dump mais novo → SET transaction_timeout).
+          echo "/usr/lib/postgresql/16/bin" >> "$GITHUB_PATH"
+
+      - name: Verify pg_dump/pg_restore major matches server (16)
+        run: |
+          set -euo pipefail
+          pg_dump --version
+          pg_restore --version
+          python - <<'PY'
+          import os, re, subprocess
+          import psycopg
+          url = os.environ["DATABASE_URL"]
+          with psycopg.connect(url) as conn:
+              with conn.cursor() as cur:
+                  cur.execute("SHOW server_version_num")
+                  server_num = int(cur.fetchone()[0])
+          server_major = server_num // 10000
+          for tool in ("pg_dump", "pg_restore"):
+              out = subprocess.check_output([tool, "--version"], text=True)
+              m = re.search(r"(\d+)\.\d+", out)
+              assert m, out
+              client_major = int(m.group(1))
+              print(f"{tool}: {out.strip()} (major={client_major})")
+              if client_major != server_major:
+                  raise SystemExit(
+                      f"{tool} major {client_major} != server major {server_major}"
+                  )
+          print(f"OK: client/server major={server_major}")
+          PY
+
       - name: Ruff
         run: ruff check .
 
-      - name: Pytest (unit + PostGIS)
+      - name: Pytest (unit + PostGIS + ops)
         run: pytest -q
 
       # QGIS Desktop / QGIS MCP are intentionally not executed in CI.

@@ -38,6 +38,7 @@ pythonpath = ["."]
 markers = [
   "integration: testes que dependem de artefatos baixados (ex.: ZIP IBGE)",
   "postgis: testes que exigem PostgreSQL/PostGIS (DATABASE_URL)",
+  "ops: testes de backup/restore/diagnóstico operacional",
 ]
 
 [tool.ruff]
