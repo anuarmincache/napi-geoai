@@ -20,20 +20,29 @@
 | Referência live vs dump antigo | Manifesto `*.dump.manifest.json` acoplado ao dump |
 | Limpeza de temp | `finally` só dropa `napi_geoai_tmp_*` se criado; protegidos recusados |
 
-## Correções pós-revisão (commit 784644e / CI + cache)
+## Correções pós-revisão (CI + cache + consistência)
 
 | Ponto da revisão | Correção |
 |---|---|
-| `pg_restore` / `transaction_timeout` no CI | `postgresql-client-16` + PATH `/usr/lib/postgresql/16/bin` + assert major cliente=servidor |
+| `pg_restore` / `transaction_timeout` no CI | Runner `ubuntu-24.04` + `postgresql-client-16` + assert major cliente=servidor |
 | Cache CSV ANEEL inválido | `content_validator` antes de reuso/TTL/304; testes com datas relativas + MockTransport |
 | Manifesto vs dump sob escrita concorrente | `REPEATABLE READ` + `pg_export_snapshot` + `pg_dump --snapshot` |
 | Template `TEMPLATE`/`OWNER` vs GRANT literais | Nomes fixos `template_napi_postgis`/`napi`; só `PGPORT` configurável (5433) |
+| Restore CI com image PostGIS | Dump/TOC excluem schemas `tiger`/`topology` |
 
-## Evidência local (WSL nativo :5433)
+## Finalização (2026-11-11)
 
-Estado preservado: `napi_geoai` e `template_napi_postgis` **não** são droados por estes fluxos.
+- Branch `feat/postgis-ops-safety` atualizada com `main` (banner Paraná) — merge limpo, sem perda das correções do PR #17.
+- `napi_geoai` (:5433) e `template_napi_postgis` preservados.
 
-Ver logs atualizados no comentário do PR após Ruff/pytest/CI desta rodada.
+```text
+ruff check .                         → All checks passed
+pytest -q                            → 59 passed, 2 skipped
+db_ops doctor                        → OK (exit 0); template presente
+db_ops backup                        → sha256=8c1e4dc1…e83e32aa + manifesto
+db_ops restore-verify                → match=true; reference_kind=manifest
+                                     → fingerprints iguais; temp removido
+```
 
 ## Fora de escopo
 
