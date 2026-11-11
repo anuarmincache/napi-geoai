@@ -38,6 +38,39 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
         connector_module="geoai.connectors.ibge",
     ),
     SourceSpec(
+        source_id="ibge.malhas_municipais.pr_municipios_2025",
+        organization="IBGE",
+        product="Malhas Territoriais / Malhas Municipais — municípios Paraná",
+        access_mode=AccessMode.HTTP_FILE,
+        entry_url=(
+            "https://geoftp.ibge.gov.br/organizacao_do_territorio/"
+            "malhas_territoriais/malhas_municipais/"
+        ),
+        download_url=(
+            "https://geoftp.ibge.gov.br/organizacao_do_territorio/"
+            "malhas_territoriais/malhas_municipais/municipio_2025/UFs/PR/"
+            "PR_Municipios_2025.zip"
+        ),
+        formats=("zip/shp", "geojson-derived-presentation"),
+        license_note=(
+            "Arquivos públicos IBGE/Geociências (geoftp); citar órgão, produto e "
+            "edição. Sem SPDX IBGE dedicado; verificar condições institucionais."
+        ),
+        official_update_cadence="edição anual (municipio_YYYY) — produto versionado",
+        verification_policy="TTL local 7d + conditional GET; force_refresh sob demanda",
+        catalogued_at=CATALOGUED_AT,
+        spatial_coverage="Paraná (399 municípios)",
+        crs_or_coords="EPSG:4674 (SIRGAS 2000)",
+        granularity="município (polígono)",
+        auth_required=False,
+        status=SourceStatus.PROTOTYPE,
+        notes=(
+            "MVP 09: 399 CD_MUN; AREA_KM2 oficial; GeoJSON de apresentação "
+            "simplificado em data/derived."
+        ),
+        connector_module="geoai.connectors.ibge",
+    ),
+    SourceSpec(
         source_id="aneel.siga.empreendimentos_geracao",
         organization="ANEEL",
         product="SIGA — empreendimentos de geração (CSV principal)",

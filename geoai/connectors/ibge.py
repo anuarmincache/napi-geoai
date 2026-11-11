@@ -20,6 +20,12 @@ IBGE_PR_UF_2025_URL = (
     "malhas_territoriais/malhas_municipais/municipio_2025/UFs/PR/PR_UF_2025.zip"
 )
 
+IBGE_PR_MUNICIPIOS_2025_URL = (
+    "https://geoftp.ibge.gov.br/organizacao_do_territorio/"
+    "malhas_territoriais/malhas_municipais/municipio_2025/UFs/PR/"
+    "PR_Municipios_2025.zip"
+)
+
 IBGE_LICENSE_NOTE = (
     "Arquivos públicos do IBGE/Geociências (geoftp). Uso sujeito às condições "
     "institucionais do IBGE; citar a origem e a edição da malha."
@@ -27,6 +33,8 @@ IBGE_LICENSE_NOTE = (
 
 EXPECTED_SOURCE_CRS = "EPSG:4674"
 IBGE_SOURCE_ID = "ibge.malhas_municipais.pr_uf_2025"
+IBGE_MUNICIPIOS_SOURCE_ID = "ibge.malhas_municipais.pr_municipios_2025"
+EXPECTED_PR_MUNICIPALITY_COUNT = 399
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,6 +74,15 @@ IBGE_PR_UF_2025 = IbgeMalhaSource(
 )
 
 
+def _territory_label(url: str) -> str:
+    upper = url.upper()
+    if "PR_MUNICIPIOS" in upper:
+        return "Paraná (municípios)"
+    if "PR_UF" in upper:
+        return "Paraná (UF)"
+    return "unknown"
+
+
 def download_ibge_zip(
     url: str,
     destination: Path,
@@ -76,16 +93,22 @@ def download_ibge_zip(
     force_refresh: bool = False,
     cache_ttl_s: float | None = 604_800.0,
     retries: int = 3,
+    source_id: str | None = None,
 ) -> IbgeMalhaSource:
     """Baixa um ZIP do geoftp.ibge.gov.br e grava metadados de proveniência.
 
     Mantém a API do MVP 02; cache agora distingue integridade de atualidade.
     """
 
+    resolved_source = source_id or (
+        IBGE_MUNICIPIOS_SOURCE_ID
+        if "PR_Municipios" in url
+        else IBGE_SOURCE_ID
+    )
     provenance = download_http_file(
         url,
         destination,
-        source_id=IBGE_SOURCE_ID,
+        source_id=resolved_source,
         license_note=IBGE_LICENSE_NOTE,
         timeout_s=timeout_s,
         retries=retries,
@@ -100,7 +123,7 @@ def download_ibge_zip(
         name=filename,
         url=url,
         edition="municipio_2025" if "municipio_2025" in url else "unknown",
-        territory="Paraná (UF)" if "PR_UF" in url.upper() else "unknown",
+        territory=_territory_label(url),
         license_note=IBGE_LICENSE_NOTE,
         expected_crs=EXPECTED_SOURCE_CRS,
         retrieved_at=provenance.retrieved_at,

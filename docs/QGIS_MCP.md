@@ -38,3 +38,24 @@ Esperado: `reachable: true`, `pong: true`, versão `3.44.15-Solothurn`.
 - QGIS MCP controla o Desktop **local** para projetos, estilos e exportação de mapas técnicos.
 - Não substitui o motor Python (`geoai/`) nem pipelines de produção.
 - Não publicar aplicação Streamlit/FastAPI nesta fase.
+
+## MVP 09 — validação municipal (399)
+
+Processamento real no Desktop (não na Cloud):
+
+1. Preferir QGIS MCP `execute_code` com a lógica de `scripts/_qgis_mun_worker.py`.
+2. Alternativa: `python-qgis-ltr.bat scripts/_qgis_mun_worker.py` (pode falhar sob Device Guard).
+3. Orquestrador: `py -3 scripts/run_qgis_municipal_validation.py`.
+
+Saída versionada: `data/derived/parana_municipios_2025_qgis_report.json`.
+
+| Campo | Conteúdo |
+|---|---|
+| engine | QGIS / GDAL / PROJ + algoritmos |
+| input | caminho, SHA-256, CRS, contagem |
+| parameters | `native:checkvalidity` + `QgsDistanceArea` (EPSG:7019) |
+| results | validade 399/0/0, prefixo 41, diffs de área |
+| scope_note | SHA do ZIP ≠ SHA do GeoJSON de apresentação |
+
+CI valida o **contrato** do relatório; não executa QGIS Desktop.
+

@@ -18,6 +18,7 @@ PAGES = (
     REPO / "app" / "pages" / "2_Mapa_Parana.py",
     REPO / "app" / "pages" / "3_Fontes_e_qualidade.py",
     REPO / "app" / "pages" / "4_Sobre_e_deploy.py",
+    REPO / "app" / "pages" / "5_Explorador_Territorial.py",
 )
 
 

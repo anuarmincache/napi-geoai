@@ -1,0 +1,42 @@
+{
+  "product": "malha_municipal_parana",
+  "not_a_solar_suitability_map": true,
+  "source_id": "ibge.malhas_municipais.pr_municipios_2025",
+  "source_crs": "EPSG:4674",
+  "recommended_map_crs": "EPSG:31982",
+  "map_crs_limitation": "EPSG:31982 (UTM 22S) cobre a maior parte do Paraná; a porção ocidental pertence à zona UTM 21S (EPSG:31981). Medições métricas estaduais (área total, comprimento de limites) exigem projeção apropriada/justificada (ex.: Albers ou cálculo por zona), não UTM 22S isolado.",
+  "feature_count": 399,
+  "unique_cd_mun": 399,
+  "area_km2_attribute": "AREA_KM2",
+  "area_km2_note": "Área oficial publicada na malha IBGE (km²). Não recalcular em EPSG:4674; UTM 22S não cobre sozinha o oeste do PR.",
+  "presentation_simplify_tolerance_deg": 0.002,
+  "validation_full": {
+    "feature_count": 399,
+    "crs": "EPSG:4674",
+    "is_geographic": true,
+    "all_valid": true,
+    "invalid_count": 0,
+    "empty_count": 0,
+    "non_polygon_count": 0,
+    "has_z": false,
+    "crs_missing": false,
+    "crs_mismatch": false,
+    "explanations": []
+  },
+  "validation_presentation": {
+    "feature_count": 399,
+    "crs": "EPSG:4674",
+    "is_geographic": true,
+    "all_valid": true,
+    "invalid_count": 0,
+    "empty_count": 0,
+    "non_polygon_count": 0,
+    "has_z": false,
+    "crs_missing": false,
+    "crs_mismatch": false,
+    "explanations": []
+  },
+  "validation_exportable": true,
+  "output_geojson": "data/derived/parana_municipios_2025_presentation.geojson",
+  "repo_root_note": "napi-geoai-mvp04"
+}

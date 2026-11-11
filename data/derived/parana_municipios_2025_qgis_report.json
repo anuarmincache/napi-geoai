@@ -1,0 +1,91 @@
+{
+  "product": "parana_municipios_qgis_validation",
+  "generated_at": "2026-11-11T22:42:01.146976+00:00",
+  "engine": {
+    "qgis_version": "3.44.15-Solothurn",
+    "gdal_version": "3.13.3",
+    "proj_version": "9.8.1",
+    "execution": "qgis_mcp_execute_code",
+    "algorithms": [
+      "native:checkvalidity",
+      "QgsDistanceArea.measureArea"
+    ]
+  },
+  "input": {
+    "kind": "zip_shapefile",
+    "path": "data/raw/ibge/PR_Municipios_2025.zip",
+    "sha256": "1a9b6ff7d1e2a42665dc3e9a9bde46a542d6609c7d775092c4e767d9899d3e6f",
+    "bytes": 12049154,
+    "feature_count": 399,
+    "crs_authid": "EPSG:4674",
+    "crs_wkt_head": "GEOGCS[\"SIRGAS 2000\",DATUM[\"Sistema_de_Referencia_Geocentrico_para_las_AmericaS_2000\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHOR"
+  },
+  "parameters": {
+    "checkvalidity_method": 2,
+    "ignore_ring_self_intersection": false,
+    "area_method": "QgsDistanceArea ellipsoidal on source CRS",
+    "ellipsoid": "EPSG:7019 (GRS80 / SIRGAS 2000)",
+    "area_units": "km2 (m2/1e6)",
+    "note_area": "Medição elipsoidal independente; AREA_KM2 IBGE permanece atributo oficial. Não usar GeoJSON simplificado para provar área."
+  },
+  "results": {
+    "valid_count": 399,
+    "invalid_count": 0,
+    "error_count": 0,
+    "cd_mun_prefix_41_ok": true,
+    "area_km2_finite_positive_ok": true,
+    "unique_cd_mun": 399,
+    "area_rel_diff_max": 5.426e-05,
+    "area_rel_diff_median": 9.3e-07,
+    "worst_rel_diff_top5": [
+      {
+        "CD_MUN": "4113007",
+        "NM_MUN": "Jussara",
+        "AREA_KM2_IBGE": 207.013,
+        "AREA_KM2_QGIS_ELLIPSOIDAL": 207.024233,
+        "ABS_DIFF_KM2": 0.011233,
+        "REL_DIFF": 5.426e-05
+      },
+      {
+        "CD_MUN": "4127205",
+        "NM_MUN": "Terra Boa",
+        "AREA_KM2_IBGE": 323.63,
+        "AREA_KM2_QGIS_ELLIPSOIDAL": 323.619923,
+        "ABS_DIFF_KM2": 0.010077,
+        "REL_DIFF": 3.114e-05
+      },
+      {
+        "CD_MUN": "4118204",
+        "NM_MUN": "Paranaguá",
+        "AREA_KM2_IBGE": 821.427,
+        "AREA_KM2_QGIS_ELLIPSOIDAL": 821.408007,
+        "ABS_DIFF_KM2": 0.018993,
+        "REL_DIFF": 2.312e-05
+      },
+      {
+        "CD_MUN": "4126652",
+        "NM_MUN": "Sulina",
+        "AREA_KM2_IBGE": 170.759,
+        "AREA_KM2_QGIS_ELLIPSOIDAL": 170.761618,
+        "ABS_DIFF_KM2": 0.002618,
+        "REL_DIFF": 1.533e-05
+      },
+      {
+        "CD_MUN": "4107546",
+        "NM_MUN": "Espigão Alto do Iguaçu",
+        "AREA_KM2_IBGE": 325.584,
+        "AREA_KM2_QGIS_ELLIPSOIDAL": 325.580712,
+        "ABS_DIFF_KM2": 0.003288,
+        "REL_DIFF": 1.01e-05
+      }
+    ]
+  },
+  "presentation_artifact": {
+    "path": "data/derived/parana_municipios_2025_presentation.geojson",
+    "sha256": "5d80bddac46ac9cb7a7666a26f921043c4fac8455a41123a38b2369f6d25969f",
+    "bytes": 1716558,
+    "note": "SHA do GeoJSON de apresentação (Streamlit). Escopo distinto da validação QGIS no ZIP."
+  },
+  "scope_note": "SHA-256 comprova vínculo com bytes do input processado (ZIP IBGE). Validação geométrica/QGIS tem escopo e proveniência próprios e não substitui o SHA do artefato de apresentação Streamlit.",
+  "not_a_solar_suitability_map": true
+}

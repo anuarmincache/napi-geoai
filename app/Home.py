@@ -83,7 +83,8 @@ for idx, card in enumerate(cards):
                 st.markdown(f"- {item}")
 
 st.info(
-    "Navegação: **Domínios**, **Mapa Paraná**, **Fontes e qualidade**, "
-    "**Sobre e deploy**. Em telas estreitas, abra o menu lateral (☰)."
+    "Navegação: **Domínios**, **Mapa Paraná**, **Explorador territorial**, "
+    "**Fontes e qualidade**, **Sobre e deploy**. Em telas estreitas, abra o "
+    "menu lateral (☰)."
 )
 render_footer()

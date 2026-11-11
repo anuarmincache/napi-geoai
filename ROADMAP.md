@@ -30,6 +30,7 @@
 
 - [x] Streamlit didático com mapa oficial do Paraná (MVP 07 / Issue #22).
 - [x] Preparar publicação profissional no Community Cloud sem publicar (MVP 08 / Issue #24).
+- [x] Explorador territorial dos 399 municípios do Paraná (MVP 09 / Issue #26).
 - [ ] FastAPI com endpoints versionados, documentação e health check.
 - [ ] Streamlit com seletor PT-BR / EN completo e mais camadas.
 - [ ] Exportação de resultados e metadados.
