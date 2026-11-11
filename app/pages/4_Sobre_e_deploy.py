@@ -42,7 +42,7 @@ st.markdown(
 2. App nova → repo `anuarmincache/napi-geoai`, branch **`main`** (após merge
    aprovado) ou branch de prévia autorizada.
 3. **Main file path:** `app/Home.py`
-4. Python **3.12**; requirements: `requirements-streamlit.txt`
+4. Python **3.12**; dependências auto: `app/requirements.txt` (`-e ..[ui]`).
 5. Sem `DATABASE_URL`; sem segredos no Git.
 6. Nome/URL da aplicação: **aprovar antes** de tornar pública.
 7. Rollback: redeploy do commit anterior ou pausar o app no painel.

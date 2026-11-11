@@ -15,9 +15,11 @@ remoto e sem inventar camadas temáticas.
 | Item | Valor / evidência |
 |---|---|
 | Entry point | `app/Home.py` |
-| Requirements Cloud | `requirements-streamlit.txt` → `-e .[ui]` |
+| Requirements Cloud (auto) | **`app/requirements.txt`** → `-e ..[ui]` (mesmo dir do entrypoint) |
+| Atalho local | `requirements-streamlit.txt` → `-e .[ui]` (raiz; **não** auto-detectado) |
 | Python | **3.12** (`.python-version`, `requires-python >=3.12`) |
 | Tema / UX | `.streamlit/config.toml` + CSS em `app/_bootstrap.py` |
+| CORS / XSRF | CORS no default (`true`); `enableXsrfProtection = true` |
 | Artefatos IBGE | `data/derived/parana_uf_2025.{geojson,provenance,validation}.json` no Git |
 | PostGIS local `:5433` | **não** usado pela demo; **não** expor |
 | Segredos | `.env` no `.gitignore`; nenhum secret no repo |
@@ -53,12 +55,22 @@ Em mobile/estreito: menu lateral ☰; ajustar “Altura do mapa” na página do
 4. Main file path: **`app/Home.py`**.
 5. Advanced:
    - Python version: **3.12**
-   - Requirements file: `requirements-streamlit.txt` (padrão se na raiz)
+   - Dependências: a Cloud deve achar sozinha `app/requirements.txt`
+     (não depende de `requirements-streamlit.txt`, que **não** é nome oficial).
 6. **Não** definir secrets `DATABASE_URL` / chaves Supabase nesta etapa.
 7. Escolher **nome e URL** (`….streamlit.app`) — **pausar** se ainda não aprovados.
-8. Deploy → inspecionar logs (install `-e .[ui]`, sem erro de GDAL/wheel).
+8. Deploy → inspecionar logs (`-e ..[ui]` / napi-geoai[ui], sem erro de GDAL/wheel).
 9. Smoke manual pós-deploy: Home carrega; mapa Folium; badges de domínio; JSON de qualidade.
 10. Privacidade: manter privada ou pública **somente** com decisão explícita.
+
+### Detecção oficial de dependências
+
+Ordem da Community Cloud (pasta do entrypoint, depois raiz): `uv.lock` →
+`Pipfile` → `environment.yml` → **`requirements.txt`** → `pyproject.toml`
+([docs](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/app-dependencies)).
+`app/requirements.txt` prevalece sobre o `pyproject.toml` da raiz e evita o
+gerenciador Poetry implícito. O editável `-e ..[ui]` aponta para a raiz do
+monorepo (pai de `app/`).
 
 ### Rollback
 

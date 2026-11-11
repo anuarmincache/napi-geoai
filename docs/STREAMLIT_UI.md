@@ -56,7 +56,8 @@ Guia operacional: [MVP08_DEPLOY.md](MVP08_DEPLOY.md). Plano Supabase futuro:
 | Item | Valor |
 |---|---|
 | Entry point | `app/Home.py` |
-| Requirements | `requirements-streamlit.txt` → `pip install -e ".[ui]"` |
+| Requirements (Cloud) | `app/requirements.txt` → `-e ..[ui]` (auto-detectado) |
+| Requirements (local) | `pip install -e ".[ui]"` ou `requirements-streamlit.txt` |
 | Python | 3.12 (`.python-version`) |
 | Segredos | só no painel Streamlit Cloud — nunca no Git |
 | Postgres local (:5433) | **não** acessível da Cloud |

@@ -5,7 +5,8 @@
 | Base | `main` @ `550218e` (MVP 07 merged) |
 | Objetivo | Preparar publicação profissional Community Cloud **sem publicar** |
 | UI | Polish UX/a11y/responsivo; tema `.streamlit/config.toml` |
-| Hospedagem | `requirements-streamlit.txt`, `.python-version` 3.12, `packages.txt` |
+| Hospedagem | `app/requirements.txt` (Cloud), `.python-version` 3.12, `packages.txt` |
+| CORS/XSRF | CORS default; XSRF explícito `true` |
 | Docs | `MVP08_DEPLOY.md`, `SUPABASE_FUTURE.md` |
 | Testes | AppTest + `test_cloud_ready` |
 | Supabase | **não** provisionado |

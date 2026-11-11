@@ -1,0 +1,10 @@
+# Dependências detectadas automaticamente pela Streamlit Community Cloud.
+# Colocado no mesmo diretório do entrypoint (app/Home.py) para prevalecer
+# sobre pyproject.toml na raiz (ordem oficial: pasta do entrypoint → raiz).
+# Ref: https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/app-dependencies
+#
+# Caminho editável relativo a este arquivo (pai = raiz do monorepo).
+# Não inclui psycopg/Supabase — demo usa data/derived versionado.
+# Segredos: só no painel Cloud, nunca neste arquivo.
+
+-e ..[ui]

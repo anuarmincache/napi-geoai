@@ -1,9 +1,12 @@
 # Configuração Streamlit — local e Community Cloud (MVP 08).
 # Sem segredos. Não altera o motor científico.
+#
+# CORS/XSRF: defaults seguros da plataforma.
+# - enableCORS omitido → default true (compatível com embeds/Cloud).
+# - enableXsrfProtection true → proteção CSRF mantida (default Streamlit).
 
 [server]
 headless = true
-enableCORS = false
 enableXsrfProtection = true
 
 [browser]
