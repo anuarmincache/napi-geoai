@@ -1,4 +1,4 @@
-"""Entrada Streamlit — NAPI GeoAI (MVP 07)."""
+"""Entrada Streamlit — NAPI GeoAI (MVP 08)."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from _bootstrap import (
     cached_domain_cards,
     cached_parana_layer,
     configure_page,
+    render_footer,
     render_status_badge,
     sidebar_brand,
 )
@@ -17,11 +18,12 @@ sidebar_brand()
 
 st.markdown(
     """
-<div class="napi-hero">
-  <h1 style="margin:0 0 0.35rem 0;">NAPI GeoAI</h1>
-  <p style="margin:0; color:#334155; font-size:1.05rem;">
+<div class="napi-hero" role="banner">
+  <h1 style="margin:0 0 0.4rem 0;">NAPI GeoAI</h1>
+  <p>
     Plataforma de inteligência geoespacial para planejamento energético e
-    empreendedorismo sustentável — demonstração didática com dados oficiais.
+    empreendedorismo sustentável — demonstração institucional com dados
+    oficiais versionados.
   </p>
 </div>
 """,
@@ -30,9 +32,10 @@ st.markdown(
 
 st.markdown(
     """
-Esta interface **reutiliza** os contratos e artefatos dos MVPs 01–06.
-Não calcula aptidão solar, não inventa indicadores e **não** publica
-dados no Supabase neste MVP.
+Esta interface **reutiliza** contratos e artefatos dos MVPs 01–07 via
+`geoai.portal`. Não calcula aptidão solar, não inventa indicadores e **não**
+conecta Supabase nesta etapa. Pronta para revisão visual antes de qualquer
+publicação no Streamlit Community Cloud.
 """
 )
 
@@ -41,16 +44,26 @@ col_a, col_b, col_c = st.columns(3)
 col_a.metric(
     "Camada PR (IBGE)",
     "disponível" if bundle.available else "ausente",
+    help="Artefato versionado em data/derived — fail-closed se inválido.",
 )
-col_b.metric("Feições no mapa", bundle.feature_count)
+col_b.metric(
+    "Feições no mapa",
+    bundle.feature_count,
+    help="Contagem apenas se a camada passou na validação.",
+)
 col_c.metric(
     "SHA GeoJSON",
     "ok"
     if bundle.content_sha256_ok
     else ("pendente" if bundle.content_sha256_ok is None else "divergente"),
+    help="Integridade do arquivo derivado frente ao checksum registrado.",
 )
 
 st.subheader("Quatro domínios")
+st.caption(
+    "Status disponível / parcial / planejado vem dos contratos — "
+    "a UI não redefine regras de negócio."
+)
 cards = cached_domain_cards()
 cols = st.columns(2)
 for idx, card in enumerate(cards):
@@ -61,7 +74,7 @@ for idx, card in enumerate(cards):
             unsafe_allow_html=True,
         )
         st.write(card.spec.summary_pt)
-        with st.expander("O que já existe / o que é planejado"):
+        with st.expander("O que já existe / o que é planejado", expanded=False):
             st.markdown("**Disponível agora**")
             for item in card.availability.available_now_pt:
                 st.markdown(f"- {item}")
@@ -70,6 +83,7 @@ for idx, card in enumerate(cards):
                 st.markdown(f"- {item}")
 
 st.info(
-    "Use o menu lateral: **Domínios**, **Mapa Paraná**, "
-    "**Fontes e qualidade**, **Sobre e deploy**."
+    "Navegação: **Domínios**, **Mapa Paraná**, **Fontes e qualidade**, "
+    "**Sobre e deploy**. Em telas estreitas, abra o menu lateral (☰)."
 )
+render_footer()

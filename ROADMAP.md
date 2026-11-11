@@ -29,6 +29,7 @@
 ## Marco 3 — API e aplicação bilíngue
 
 - [x] Streamlit didático com mapa oficial do Paraná (MVP 07 / Issue #22).
+- [x] Preparar publicação profissional no Community Cloud sem publicar (MVP 08 / Issue #24).
 - [ ] FastAPI com endpoints versionados, documentação e health check.
 - [ ] Streamlit com seletor PT-BR / EN completo e mais camadas.
 - [ ] Exportação de resultados e metadados.
@@ -36,9 +37,11 @@
 
 ## Marco 4 — Infraestrutura e publicação
 
-- [ ] Planejar PostGIS, armazenamento geoespacial e backups.
+- [x] Planejar PostGIS local + operação (MVPs 04–05); Cloud usa artefatos versionados.
 - [ ] Definir autenticação, segurança, limites de carga e observabilidade.
+- [ ] Publicar demo Streamlit Cloud após aprovação explícita (nome/URL).
 - [ ] Avaliar implantação institucional e incorporação ao site NAPI.
+- [ ] Supabase remoto somente com necessidade dinâmica (ver docs/SUPABASE_FUTURE.md).
 - [ ] Acrescentar orquestração (Airflow) apenas quando justificada.
 - [ ] Avaliar mensageria (Kafka) apenas com requisitos de eventos em tempo real.
 

@@ -49,7 +49,9 @@ DEFAULT_DEMO_POLICY = ConnectionPolicy(
         "a UI deste MVP não o altera.",
         "Supabase Pro da organização NÃO é provisionado neste MVP.",
         "Publicação no Streamlit Community Cloud deve usar só artefatos "
-        "versionados ou segredos configurados no painel — nunca .env no Git.",
+        "versionados; segredos só no painel — nunca .env no Git.",
+        "MVP 08 prepara o deploy (docs/MVP08_DEPLOY.md) sem publicar "
+        "automaticamente nem provisionar Supabase.",
     ),
 )
 

@@ -96,6 +96,8 @@ Arquitetura modular e qualidade (MVP 06): [docs/ARQUITETURA_MODULAR.md](docs/ARQ
 
 Interface demonstrativa (MVP 07): [docs/STREAMLIT_UI.md](docs/STREAMLIT_UI.md), [docs/MVP07_RESULTADOS.md](docs/MVP07_RESULTADOS.md).
 
+Preparação Community Cloud (MVP 08): [docs/MVP08_DEPLOY.md](docs/MVP08_DEPLOY.md), [docs/MVP08_RESULTADOS.md](docs/MVP08_RESULTADOS.md). **Não** há publicação automática; Supabase permanece fora desta etapa ([docs/SUPABASE_FUTURE.md](docs/SUPABASE_FUTURE.md)).
+
 ```powershell
 py -3 -m pip install -e ".[dev,ui]"
 py -3 -m streamlit run app/Home.py

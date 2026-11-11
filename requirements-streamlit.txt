@@ -1,5 +1,11 @@
-# Dependências para demonstração Streamlit / Community Cloud (MVP 07).
-# Não inclui psycopg — a demo usa artefatos locais versionados.
-# Segredos: apenas pelo painel Streamlit Cloud, nunca neste arquivo.
+# Atalho local / documentação (MVP 08).
+# Na Community Cloud o arquivo efetivamente detectado é app/requirements.txt
+# (mesmo diretório do entrypoint app/Home.py — precedência oficial).
+# Não use este nome como único manifesto na Cloud: requirements-streamlit.txt
+# NÃO é reconhecido automaticamente pelo painel.
+#
+# Instalação local na raiz do repo:
+#   pip install -r requirements-streamlit.txt
+# equivale a instalar o extra [ui] do pacote.
 
 -e .[ui]
