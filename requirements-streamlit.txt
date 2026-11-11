@@ -1,5 +1,7 @@
-# Dependências para demonstração Streamlit / Community Cloud (MVP 07).
+# Dependências para demonstração Streamlit / Community Cloud (MVP 08).
+# A Cloud clona o repositório e resolve esta linha a partir da raiz.
 # Não inclui psycopg — a demo usa artefatos locais versionados.
 # Segredos: apenas pelo painel Streamlit Cloud, nunca neste arquivo.
+# Python: 3.12 (ver .python-version e painel Advanced settings).
 
 -e .[ui]

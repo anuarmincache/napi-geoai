@@ -6,7 +6,7 @@ import streamlit as st
 from geoai.connectors.catalog import list_sources
 from geoai.portal import quality_snapshot_for_demo
 
-from _bootstrap import cached_parana_layer, configure_page, sidebar_brand
+from _bootstrap import cached_parana_layer, configure_page, render_footer, sidebar_brand
 
 configure_page("Fontes e qualidade")
 sidebar_brand()
@@ -39,6 +39,8 @@ st.markdown(
     """
 **Escopo:** `validate_tabular_record` avalia atributos do registro, não a
 geometria PostGIS. A validação geométrica já está no artefato
-`parana_uf_2025.validation.json` (MVP 02).
+`parana_uf_2025.validation.json` (MVP 02). Metadados ausentes aparecem como
+qualidade **não determinada** — a UI não inventa datas nem atributos.
 """
 )
+render_footer()

@@ -7,7 +7,7 @@ import streamlit.components.v1 as components
 from geoai.portal import attribution_lines, didactic_copy_text, folium_map_html
 from geoai.presentation import AudienceLevel
 
-from _bootstrap import cached_parana_layer, configure_page, sidebar_brand
+from _bootstrap import cached_parana_layer, configure_page, render_footer, sidebar_brand
 
 configure_page("Mapa Paraná")
 sidebar_brand()
@@ -28,6 +28,7 @@ if not bundle.validated_for_map:
         "A interface não apresenta geometria não verificada "
         "(SHA, CRS ou validação)."
     )
+    render_footer()
     st.stop()
 
 level_label = st.radio(
@@ -39,6 +40,7 @@ level_label = st.radio(
     ],
     format_func=lambda item: item[1],
     horizontal=True,
+    help="Altera apenas o texto didático, não a geometria.",
 )
 level = level_label[0]
 title, description = didactic_copy_text(bundle, level)
@@ -47,8 +49,27 @@ st.write(description)
 
 c1, c2 = st.columns([2, 1])
 with c2:
-    fill_opacity = st.slider("Opacidade do preenchimento", 0.05, 0.85, 0.35, 0.05)
-    line_weight = st.slider("Espessura do contorno", 1.0, 5.0, 2.0, 0.5)
+    fill_opacity = st.slider(
+        "Opacidade do preenchimento",
+        0.05,
+        0.85,
+        0.35,
+        0.05,
+        help="Contraste visual do polígono sobre o mapa-base OSM.",
+    )
+    line_weight = st.slider(
+        "Espessura do contorno",
+        1.0,
+        5.0,
+        2.0,
+        0.5,
+    )
+    map_height = st.select_slider(
+        "Altura do mapa (px)",
+        options=[360, 420, 480, 560, 640],
+        value=560,
+        help="Ajuste para notebooks ou telas estreitas.",
+    )
     st.markdown("#### Metadados")
     for line in attribution_lines(bundle):
         st.markdown(f'<p class="napi-meta">{line}</p>', unsafe_allow_html=True)
@@ -75,11 +96,12 @@ with c1:
             fill_opacity=float(fill_opacity),
             line_weight=float(line_weight),
         )
-        components.html(html, height=560, scrolling=False)
+        components.html(html, height=int(map_height), scrolling=False)
     except Exception as exc:  # noqa: BLE001
         st.error(f"Falha ao renderizar mapa: {exc}")
 
 st.info(
-    "Controle real suportado: nível didático + estilo do contorno. "
-    "Não há filtro temático adicional porque só existe a feição UF."
+    "Controles: nível didático, estilo do contorno e altura do iframe. "
+    "Não há filtro temático adicional — só a feição UF."
 )
+render_footer()

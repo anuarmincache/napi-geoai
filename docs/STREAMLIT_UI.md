@@ -1,4 +1,4 @@
-# Interface Streamlit — MVP 07
+# Interface Streamlit — MVP 07 / 08
 
 ## Inventário reutilizado
 
@@ -39,17 +39,29 @@ Não exige Supabase nem `DATABASE_URL` para a demonstração do mapa.
 
 SHA divergente / CRS ausente → erro claro, **sem** exibir mapa como validado.
 
-## Deploy futuro (não automático)
+## UX / acessibilidade (MVP 08)
+
+- Tema institucional em `.streamlit/config.toml` (navy `#1f4e79`)
+- Tipografia Source Sans 3 / IBM Plex; contraste e foco visível
+- `prefers-reduced-motion` respeitado no CSS
+- Badges com texto (não só cor); `help=` em controles principais
+- Altura do mapa ajustável; layout wide + sidebar em mobile (☰)
+- Footer com limites da demonstração
+
+## Deploy Community Cloud
+
+Guia operacional: [MVP08_DEPLOY.md](MVP08_DEPLOY.md). Plano Supabase futuro:
+[SUPABASE_FUTURE.md](SUPABASE_FUTURE.md).
 
 | Item | Valor |
 |---|---|
-| Entry point Cloud | `app/Home.py` |
+| Entry point | `app/Home.py` |
 | Requirements | `requirements-streamlit.txt` → `pip install -e ".[ui]"` |
-| Python | 3.12 |
+| Python | 3.12 (`.python-version`) |
 | Segredos | só no painel Streamlit Cloud — nunca no Git |
 | Postgres local (:5433) | **não** acessível da Cloud |
 | `DATABASE_URL` | opcional; demo do mapa **não** depende dela |
-| Supabase | não provisionado neste MVP |
+| Supabase | não provisionado |
+| Publicação | **manual**, após aprovação do responsável |
 
-Smoke CI: `tests/test_streamlit_app.py` (`streamlit.testing.v1.AppTest`).
-Esta etapa **não** publica no Community Cloud.
+Smoke CI: `tests/test_streamlit_app.py` + `tests/test_cloud_ready.py`.

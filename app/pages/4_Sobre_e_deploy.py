@@ -5,7 +5,7 @@ from __future__ import annotations
 import streamlit as st
 from geoai.portal import demo_connection_policy, future_supabase_policy_stub
 
-from _bootstrap import configure_page, sidebar_brand
+from _bootstrap import configure_page, render_footer, sidebar_brand
 
 configure_page("Sobre e deploy")
 sidebar_brand()
@@ -35,21 +35,24 @@ st.json(demo.to_dict())
 st.subheader("Backend remoto futuro (não ativo)")
 st.json(future.to_dict())
 
-st.subheader("Como publicar depois (Streamlit Community Cloud)")
+st.subheader("Checklist Community Cloud (manual)")
 st.markdown(
     """
-1. Conectar o repositório GitHub à conta Streamlit Cloud do responsável.
-2. **Main file path / entry point:** `app/Home.py` (obrigatório).
-3. Python 3.12; `requirements-streamlit.txt` ou `pip install -e ".[ui]"`.
-4. A Cloud **não** alcança Postgres WSL `:5433` — use só artefatos em
-   `data/derived` (ou backend remoto futuro autorizado).
-5. Não definir `DATABASE_URL` local na Cloud.
-6. Segredos só no painel Streamlit — nunca no Git / CI.
-7. Supabase: não criar projeto nesta etapa.
-8. Esta página **não** dispara deploy automático.
+1. Conta Streamlit Cloud do **responsável**, vinculada ao GitHub.
+2. App nova → repo `anuarmincache/napi-geoai`, branch **`main`** (após merge
+   aprovado) ou branch de prévia autorizada.
+3. **Main file path:** `app/Home.py`
+4. Python **3.12**; requirements: `requirements-streamlit.txt`
+5. Sem `DATABASE_URL`; sem segredos no Git.
+6. Nome/URL da aplicação: **aprovar antes** de tornar pública.
+7. Rollback: redeploy do commit anterior ou pausar o app no painel.
+8. Guia completo: `docs/MVP08_DEPLOY.md`
+
+Esta página **não** dispara deploy. Supabase **não** é provisionado aqui.
 """
 )
 
 st.warning(
     "PostgreSQL/PostGIS local na porta 5433 permanece intacto e fora da Internet."
 )
+render_footer()

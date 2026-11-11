@@ -7,6 +7,7 @@ import streamlit as st
 from _bootstrap import (
     cached_domain_cards,
     configure_page,
+    render_footer,
     render_status_badge,
     sidebar_brand,
 )
@@ -22,7 +23,11 @@ st.caption(
 
 cards = cached_domain_cards()
 labels = {c.spec.title_pt: c for c in cards}
-choice = st.selectbox("Domínio", list(labels.keys()))
+choice = st.selectbox(
+    "Escolha o domínio",
+    list(labels.keys()),
+    help="Contratos temáticos já registrados no motor científico.",
+)
 card = labels[choice]
 
 st.markdown(
@@ -62,3 +67,5 @@ else:
             st.markdown("**Limitações:**")
             for lim in ind.limitations_pt:
                 st.markdown(f"- {lim}")
+
+render_footer()
