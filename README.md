@@ -98,6 +98,8 @@ Interface demonstrativa (MVP 07): [docs/STREAMLIT_UI.md](docs/STREAMLIT_UI.md), 
 
 Preparação Community Cloud (MVP 08): [docs/MVP08_DEPLOY.md](docs/MVP08_DEPLOY.md), [docs/MVP08_RESULTADOS.md](docs/MVP08_RESULTADOS.md). **Não** há publicação automática; Supabase permanece fora desta etapa ([docs/SUPABASE_FUTURE.md](docs/SUPABASE_FUTURE.md)).
 
+Explorador territorial (MVP 09): [docs/MVP09_EXPLORADOR.md](docs/MVP09_EXPLORADOR.md) — 399 municípios IBGE, busca, cidades-polo e comparação sem indicadores inventados.
+
 ```powershell
 py -3 -m pip install -e ".[dev,ui]"
 py -3 -m streamlit run app/Home.py

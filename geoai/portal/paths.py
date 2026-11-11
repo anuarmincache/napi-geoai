@@ -26,3 +26,15 @@ def parana_provenance_path(repo_root: Path | None = None) -> Path:
 
 def parana_validation_path(repo_root: Path | None = None) -> Path:
     return derived_dir(repo_root) / "parana_uf_2025.validation.json"
+
+
+def municipalities_geojson_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "parana_municipios_2025_presentation.geojson"
+
+
+def municipalities_provenance_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "parana_municipios_2025.provenance.json"
+
+
+def municipalities_validation_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "parana_municipios_2025.validation.json"
