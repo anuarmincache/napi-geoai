@@ -3,6 +3,7 @@
 from geoai.qgis.discover import discover_qgis, qgis_available
 from geoai.qgis.municipal_report import (
     EXPECTED_SOURCE_CRS,
+    cross_check_qgis_report,
     load_qgis_municipal_report,
     report_path,
     validate_qgis_report_contract,
@@ -10,6 +11,7 @@ from geoai.qgis.municipal_report import (
 
 __all__ = [
     "EXPECTED_SOURCE_CRS",
+    "cross_check_qgis_report",
     "discover_qgis",
     "load_qgis_municipal_report",
     "qgis_available",

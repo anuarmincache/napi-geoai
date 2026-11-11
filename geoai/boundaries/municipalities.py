@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import zipfile
 from pathlib import Path
 
@@ -123,7 +124,9 @@ def prepare_parana_municipalities(
         raise BoundaryValidationError(
             f"CD_MUN fora do padrão 41xxxxx (PR): {sample}"
         )
-    if not ((gdf["AREA_KM2"] > 0) & gdf["AREA_KM2"].notna()).all():
+    if not all(
+        math.isfinite(float(v)) and float(v) > 0 for v in gdf["AREA_KM2"]
+    ):
         raise BoundaryValidationError(
             "AREA_KM2 deve ser finita e positiva para todos os municípios."
         )

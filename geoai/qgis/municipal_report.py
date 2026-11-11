@@ -6,10 +6,12 @@ import json
 from pathlib import Path
 from typing import Any
 
+from geoai.boundaries.validate import crs_equals
 from geoai.portal.paths import derived_dir, repo_root_from_here
 
 EXPECTED_SOURCE_CRS = "EPSG:4674"
 EXPECTED_FEATURE_COUNT = 399
+EXPECTED_ZIP_REL = "data/raw/ibge/PR_Municipios_2025.zip"
 
 
 def report_path(repo_root: Path | None = None) -> Path:
@@ -58,6 +60,65 @@ def validate_qgis_report_contract(report: dict[str, Any]) -> list[str]:
         problems.append("input.sha256 ausente")
     if "scope_note" not in report:
         problems.append("scope_note ausente (SHA vs validação geométrica)")
+    return problems
+
+
+def cross_check_qgis_report(
+    report: dict[str, Any],
+    provenance: dict[str, Any],
+    *,
+    validation: dict[str, Any] | None = None,
+) -> list[str]:
+    """Cruza relatório QGIS com proveniência IBGE / validação (fail-closed)."""
+
+    problems = validate_qgis_report_contract(report)
+    inp = report.get("input") or {}
+    zip_sha = provenance.get("content_sha256")
+    report_sha = inp.get("sha256")
+    if not isinstance(zip_sha, str) or not zip_sha:
+        problems.append("proveniência sem content_sha256 do ZIP IBGE")
+    elif report_sha != zip_sha:
+        problems.append(
+            "SHA do input QGIS diverge de content_sha256 da proveniência IBGE"
+        )
+
+    local_zip = str(provenance.get("local_zip") or "").replace("\\", "/")
+    report_path_rel = str(inp.get("path") or "").replace("\\", "/")
+    if local_zip and report_path_rel and local_zip != report_path_rel:
+        problems.append(
+            f"path QGIS {report_path_rel!r} != local_zip {local_zip!r}"
+        )
+    elif report_path_rel and report_path_rel != EXPECTED_ZIP_REL:
+        problems.append(f"path QGIS inesperado: {report_path_rel!r}")
+
+    derived_sha = provenance.get("derived_geojson_sha256")
+    presentation = report.get("presentation_artifact") or {}
+    pres_sha = presentation.get("sha256")
+    if isinstance(derived_sha, str) and derived_sha and isinstance(pres_sha, str):
+        if pres_sha != derived_sha:
+            problems.append(
+                "SHA presentation_artifact QGIS diverge de derived_geojson_sha256"
+            )
+
+    if validation:
+        declared = validation.get("source_crs")
+        if declared and not crs_equals(declared, EXPECTED_SOURCE_CRS):
+            problems.append(
+                f"validation.source_crs {declared!r} != {EXPECTED_SOURCE_CRS}"
+            )
+        if declared and inp.get("crs_authid") and not crs_equals(
+            declared, inp.get("crs_authid")
+        ):
+            problems.append(
+                "CRS do relatório QGIS diverge de validation.source_crs"
+            )
+
+    expected_prov = provenance.get("expected_crs")
+    if expected_prov and not crs_equals(expected_prov, EXPECTED_SOURCE_CRS):
+        problems.append(
+            f"proveniência expected_crs {expected_prov!r} != {EXPECTED_SOURCE_CRS}"
+        )
+
     return problems
 
 

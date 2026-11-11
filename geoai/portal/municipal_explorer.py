@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,10 @@ from geoai.portal.paths import (
     municipalities_provenance_path,
     municipalities_validation_path,
     repo_root_from_here,
+)
+from geoai.qgis.municipal_report import (
+    cross_check_qgis_report,
+    load_qgis_municipal_report,
 )
 from geoai.quality import is_sha256_hex, verify_content_sha256
 
@@ -89,6 +94,16 @@ def _empty() -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(geometry=[], crs=None)
 
 
+
+def area_km2_values_ok(values: Any) -> bool:
+    """True somente se todos os valores forem finitos e > 0 (rejeita ±inf/NaN)."""
+
+    try:
+        return all(math.isfinite(float(v)) and float(v) > 0 for v in values)
+    except (TypeError, ValueError):
+        return False
+
+
 def load_municipality_layer(repo_root: Path | None = None) -> MunicipalityLayerBundle:
     """Carrega malha municipal de apresentação com fail-closed (SHA/CRS/contagem)."""
 
@@ -158,7 +173,43 @@ def load_municipality_layer(repo_root: Path | None = None) -> MunicipalityLayerB
             content_sha256_ok=sha_ok,
         )
 
-    # Fail-closed: CRS declarado vs esperado SIRGAS 2000.
+    declared_crs = validation.get("source_crs")
+    if not declared_crs:
+        return MunicipalityLayerBundle(
+            gdf=_empty(),
+            provenance=provenance,
+            validation=validation,
+            geojson_path=geo_path,
+            available=False,
+            missing_reason_pt="validation.source_crs ausente.",
+            content_sha256_ok=sha_ok,
+        )
+    if not crs_equals(declared_crs, EXPECTED_SOURCE_CRS):
+        return MunicipalityLayerBundle(
+            gdf=_empty(),
+            provenance=provenance,
+            validation=validation,
+            geojson_path=geo_path,
+            available=False,
+            missing_reason_pt=(
+                f"validation.source_crs incompatível: {declared_crs} "
+                f"(esperado {EXPECTED_SOURCE_CRS})."
+            ),
+            content_sha256_ok=sha_ok,
+        )
+    if not crs_equals(gdf.crs, declared_crs):
+        return MunicipalityLayerBundle(
+            gdf=_empty(),
+            provenance=provenance,
+            validation=validation,
+            geojson_path=geo_path,
+            available=False,
+            missing_reason_pt=(
+                f"CRS efetivo {gdf.crs} diverge de validation.source_crs "
+                f"{declared_crs}."
+            ),
+            content_sha256_ok=sha_ok,
+        )
     if not crs_equals(gdf.crs, EXPECTED_SOURCE_CRS):
         return MunicipalityLayerBundle(
             gdf=_empty(),
@@ -190,10 +241,7 @@ def load_municipality_layer(repo_root: Path | None = None) -> MunicipalityLayerB
     gdf["AREA_KM2"] = gdf["AREA_KM2"].astype(float)
 
     prefix_ok = bool(gdf["CD_MUN"].str.fullmatch(r"41\d{5}").all())
-    area_ok = bool(
-        gdf["AREA_KM2"].notna().all()
-        and (gdf["AREA_KM2"] > 0).all()
-    )
+    area_ok = area_km2_values_ok(gdf["AREA_KM2"])
     geom_present_ok = bool(
         (~gdf.geometry.isna()).all() and (~gdf.geometry.is_empty).all()
     )
@@ -204,6 +252,15 @@ def load_municipality_layer(repo_root: Path | None = None) -> MunicipalityLayerB
     if geom_ok is None:
         geom_ok = validation.get("validation_exportable")
 
+    qgis_problems: list[str] = []
+    qgis_report = load_qgis_municipal_report(root)
+    if qgis_report is not None:
+        qgis_problems = cross_check_qgis_report(
+            qgis_report,
+            provenance,
+            validation=validation,
+        )
+
     if not (
         count_ok
         and unique_ok
@@ -212,6 +269,7 @@ def load_municipality_layer(repo_root: Path | None = None) -> MunicipalityLayerB
         and prefix_ok
         and area_ok
         and geom_present_ok
+        and not qgis_problems
     ):
         reasons = []
         if not count_ok:
@@ -221,13 +279,15 @@ def load_municipality_layer(repo_root: Path | None = None) -> MunicipalityLayerB
         if not prefix_ok:
             reasons.append("CD_MUN fora do padrão 41xxxxx (PR)")
         if not area_ok:
-            reasons.append("AREA_KM2 inválida (NaN/<=0)")
+            reasons.append("AREA_KM2 inválida (não finita ou <=0)")
         if not geom_present_ok:
             reasons.append("geometrias nulas ou vazias")
         if geom_ok is not True:
             reasons.append("validação geométrica não confirmada")
         if sha_ok is not True:
             reasons.append("SHA derivado ausente/não verificado")
+        if qgis_problems:
+            reasons.append("relatório QGIS inconsistente: " + "; ".join(qgis_problems))
         return MunicipalityLayerBundle(
             gdf=_empty(),
             provenance=provenance,

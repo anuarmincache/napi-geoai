@@ -39,7 +39,7 @@ métricas finas.
 
 ## Serviços portáveis (`geoai.portal`)
 
-- `load_municipality_layer` — fail-closed (SHA/CRS/códigos PR/AREA_KM2/geometria)
+- `load_municipality_layer` — fail-closed (SHA/CRS declarado×efetivo/códigos PR/AREA_KM2 via math.isfinite/geometria + cruzamento QGIS↔proveniência)
 - `geoai.qgis` — contrato do relatório QGIS (sem PyQGIS na Cloud)
 - `search_municipalities` / `get_municipality` / `list_municipalities`
 - `polo_city_records` — 20 atalhos regionais (não ranking)
