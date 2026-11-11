@@ -28,7 +28,28 @@ py -3 -m streamlit run app/Home.py
 
 Não exige Supabase nem `DATABASE_URL` para a demonstração do mapa.
 
+## Integridade do mapa (fail-closed)
+
+`load_parana_layer` só marca `available=True` se:
+
+1. GeoJSON legível com geometria;
+2. CRS verificável (`source_crs` na validação ou CRS no arquivo) = EPSG:4674;
+3. `derived_geojson_sha256` confere com os bytes do GeoJSON;
+4. validação geométrica não declara `all_valid=false`.
+
+SHA divergente / CRS ausente → erro claro, **sem** exibir mapa como validado.
+
 ## Deploy futuro (não automático)
 
-Ver página **Sobre e deploy** na app e `requirements-streamlit.txt`.
-Segredos só no painel Streamlit Cloud. Postgres local não é exposto.
+| Item | Valor |
+|---|---|
+| Entry point Cloud | `app/Home.py` |
+| Requirements | `requirements-streamlit.txt` → `pip install -e ".[ui]"` |
+| Python | 3.12 |
+| Segredos | só no painel Streamlit Cloud — nunca no Git |
+| Postgres local (:5433) | **não** acessível da Cloud |
+| `DATABASE_URL` | opcional; demo do mapa **não** depende dela |
+| Supabase | não provisionado neste MVP |
+
+Smoke CI: `tests/test_streamlit_app.py` (`streamlit.testing.v1.AppTest`).
+Esta etapa **não** publica no Community Cloud.

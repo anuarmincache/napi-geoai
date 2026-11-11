@@ -39,13 +39,14 @@ st.subheader("Como publicar depois (Streamlit Community Cloud)")
 st.markdown(
     """
 1. Conectar o repositório GitHub à conta Streamlit Cloud do responsável.
-2. Entry point: `app/Home.py`.
-3. Python 3.12; instalar `pip install -e ".[ui]"` (ou `requirements-streamlit.txt`).
-4. **Não** apontar `DATABASE_URL` local (:5433) a partir da nuvem.
-5. Segredos (se houver) só no painel Streamlit — nunca no Git.
-6. Supabase: somente após autorização de projeto/custos; este MVP não cria
-   projeto nem copia dados.
-7. Esta página **não** dispara deploy automático.
+2. **Main file path / entry point:** `app/Home.py` (obrigatório).
+3. Python 3.12; `requirements-streamlit.txt` ou `pip install -e ".[ui]"`.
+4. A Cloud **não** alcança Postgres WSL `:5433` — use só artefatos em
+   `data/derived` (ou backend remoto futuro autorizado).
+5. Não definir `DATABASE_URL` local na Cloud.
+6. Segredos só no painel Streamlit — nunca no Git / CI.
+7. Supabase: não criar projeto nesta etapa.
+8. Esta página **não** dispara deploy automático.
 """
 )
 

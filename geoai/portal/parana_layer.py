@@ -1,4 +1,9 @@
-"""Camada territorial do Paraná — carregamento portável (sem Streamlit)."""
+"""Camada territorial do Paraná — carregamento portável (sem Streamlit).
+
+Fail-closed: a camada só fica ``available=True`` quando integridade SHA,
+geometria legível e CRS verificável estão ok. Sem isso a UI não deve
+apresentar o mapa como validado.
+"""
 
 from __future__ import annotations
 
@@ -20,13 +25,9 @@ from geoai.presentation import (
     DidacticMetadata,
     didactic_metadata_for_territorial_pr,
 )
-from geoai.quality import (
-    QualityStatus,
-    is_sha256_hex,
-    territorial_pr_uf_schema,
-    validate_tabular_record,
-    verify_content_sha256,
-)
+from geoai.quality import is_sha256_hex, verify_content_sha256
+
+EXPECTED_SOURCE_CRS = "EPSG:4674"
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,7 +49,7 @@ class ParanaLayerBundle:
 
     @property
     def crs_epsg(self) -> str | None:
-        if not self.available or self.gdf.crs is None:
+        if self.gdf.crs is None:
             return None
         try:
             code = self.gdf.crs.to_epsg()
@@ -56,13 +57,96 @@ class ParanaLayerBundle:
             return str(self.gdf.crs)
         return f"EPSG:{code}" if code else str(self.gdf.crs)
 
+    @property
+    def validated_for_map(self) -> bool:
+        """Alias explícito: só True quando a UI pode exibir o mapa."""
+
+        return self.available
+
 
 def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _empty_gdf() -> gpd.GeoDataFrame:
+    return gpd.GeoDataFrame(geometry=[], crs=None)
+
+
+def _reject(
+    *,
+    geo_path: Path,
+    root: Path,
+    reason: str,
+    provenance: dict[str, Any] | None = None,
+    validation: dict[str, Any] | None = None,
+    content_sha256_ok: bool | None = None,
+    gdf: gpd.GeoDataFrame | None = None,
+) -> ParanaLayerBundle:
+    return ParanaLayerBundle(
+        gdf=gdf if gdf is not None else _empty_gdf(),
+        provenance=dict(provenance or {}),
+        validation=dict(validation or {}),
+        didactic=didactic_metadata_for_territorial_pr(repo_root=root),
+        geojson_path=geo_path,
+        available=False,
+        missing_reason_pt=reason,
+        content_sha256_ok=content_sha256_ok,
+    )
+
+
+def _normalize_crs_code(value: Any) -> str | None:
+    if value is None:
+        return None
+    text = str(value).strip().upper().replace(" ", "")
+    if not text:
+        return None
+    if text.isdigit():
+        return f"EPSG:{text}"
+    if text.startswith("EPSG:"):
+        return text
+    return text
+
+
+def _resolve_crs(
+    gdf: gpd.GeoDataFrame,
+    validation: dict[str, Any],
+) -> tuple[gpd.GeoDataFrame | None, str | None]:
+    """Resolve CRS sem inventar. Retorna (gdf, erro)."""
+
+    declared = _normalize_crs_code(validation.get("source_crs"))
+    current = None
+    if gdf.crs is not None:
+        try:
+            epsg = gdf.crs.to_epsg()
+            current = f"EPSG:{epsg}" if epsg else _normalize_crs_code(gdf.crs)
+        except Exception:  # noqa: BLE001
+            current = _normalize_crs_code(gdf.crs)
+
+    if current is None:
+        if declared == EXPECTED_SOURCE_CRS:
+            # Evidência externa verificável (arquivo de validação MVP 02).
+            return gdf.set_crs(EXPECTED_SOURCE_CRS), None
+        return None, (
+            "GeoJSON sem CRS e sem source_crs verificável na validação; "
+            "não atribuir EPSG:4674 silenciosamente."
+        )
+
+    if declared and current != declared:
+        return None, (
+            f"CRS do GeoJSON ({current}) diverge de source_crs da validação "
+            f"({declared})."
+        )
+
+    if current != EXPECTED_SOURCE_CRS:
+        return None, (
+            f"CRS incompatível para o piloto PR: {current} "
+            f"(esperado {EXPECTED_SOURCE_CRS})."
+        )
+    return gdf, None
+
+
 def load_parana_layer(repo_root: Path | None = None) -> ParanaLayerBundle:
-    """Carrega GeoJSON + metadados versionados; não consulta PostGIS."""
+    """Carrega GeoJSON + metadados; fail-closed para exibição no mapa."""
 
     root = repo_root or repo_root_from_here()
     geo_path = parana_geojson_path(root)
@@ -70,31 +154,95 @@ def load_parana_layer(repo_root: Path | None = None) -> ParanaLayerBundle:
     val_path = parana_validation_path(root)
 
     if not geo_path.is_file():
-        empty = gpd.GeoDataFrame(geometry=[], crs="EPSG:4674")
-        return ParanaLayerBundle(
-            gdf=empty,
-            provenance={},
-            validation={},
-            didactic=didactic_metadata_for_territorial_pr(repo_root=root),
-            geojson_path=geo_path,
-            available=False,
-            missing_reason_pt=(
+        return _reject(
+            geo_path=geo_path,
+            root=root,
+            reason=(
                 f"Artefato ausente: {geo_path.as_posix()}. "
                 "Incorpore o GeoJSON derivado do IBGE sem inventar geometria."
             ),
-            content_sha256_ok=None,
         )
 
     provenance = _read_json(prov_path) if prov_path.is_file() else {}
     validation = _read_json(val_path) if val_path.is_file() else {}
-    gdf = gpd.read_file(geo_path)
-    if gdf.crs is None:
-        gdf = gdf.set_crs("EPSG:4674")
 
-    sha_ok: bool | None = None
+    try:
+        gdf = gpd.read_file(geo_path)
+    except Exception as exc:  # noqa: BLE001
+        return _reject(
+            geo_path=geo_path,
+            root=root,
+            reason=f"GeoJSON inválido ou ilegível: {exc}",
+            provenance=provenance,
+            validation=validation,
+        )
+
+    if gdf.empty or gdf.geometry.isna().all():
+        return _reject(
+            geo_path=geo_path,
+            root=root,
+            reason="GeoJSON sem geometrias utilizáveis.",
+            provenance=provenance,
+            validation=validation,
+            gdf=gdf,
+        )
+
+    gdf_crs, crs_err = _resolve_crs(gdf, validation)
+    if crs_err is not None:
+        return _reject(
+            geo_path=geo_path,
+            root=root,
+            reason=crs_err,
+            provenance=provenance,
+            validation=validation,
+            gdf=gdf,
+        )
+    assert gdf_crs is not None
+    gdf = gdf_crs
+
+    geom_ok = validation.get("validation", {}).get("all_valid")
+    if geom_ok is False:
+        return _reject(
+            geo_path=geo_path,
+            root=root,
+            reason=(
+                "Arquivo de validação indica geometrias inválidas "
+                "(all_valid=false)."
+            ),
+            provenance=provenance,
+            validation=validation,
+            gdf=gdf,
+        )
+
     derived_sha = provenance.get("derived_geojson_sha256")
-    if isinstance(derived_sha, str) and is_sha256_hex(derived_sha):
-        sha_ok = verify_content_sha256(derived_sha, geo_path.read_bytes())
+    if not isinstance(derived_sha, str) or not is_sha256_hex(derived_sha):
+        return _reject(
+            geo_path=geo_path,
+            root=root,
+            reason=(
+                "Proveniência sem derived_geojson_sha256 (64 hex); "
+                "camada não pode ser apresentada como validada."
+            ),
+            provenance=provenance,
+            validation=validation,
+            gdf=gdf,
+            content_sha256_ok=None,
+        )
+
+    sha_ok = verify_content_sha256(derived_sha, geo_path.read_bytes())
+    if not sha_ok:
+        return _reject(
+            geo_path=geo_path,
+            root=root,
+            reason=(
+                "SHA-256 do GeoJSON diverge da proveniência "
+                "(derived_geojson_sha256). Mapa bloqueado."
+            ),
+            provenance=provenance,
+            validation=validation,
+            gdf=gdf,
+            content_sha256_ok=False,
+        )
 
     didactic = didactic_metadata_for_territorial_pr(repo_root=root)
     return ParanaLayerBundle(
@@ -105,7 +253,7 @@ def load_parana_layer(repo_root: Path | None = None) -> ParanaLayerBundle:
         geojson_path=geo_path,
         available=True,
         missing_reason_pt=None,
-        content_sha256_ok=sha_ok,
+        content_sha256_ok=True,
     )
 
 
@@ -131,6 +279,8 @@ def attribution_lines(bundle: ParanaLayerBundle) -> tuple[str, ...]:
     edition = bundle.provenance.get("edition") or d.extra.get("edition")
     if edition:
         lines.append(f"Edição: {edition}")
+    else:
+        lines.append("Edição: indisponível na proveniência")
     if d.updated_at:
         lines.append(f"Recuperado em: {d.updated_at}")
     else:
@@ -145,40 +295,62 @@ def attribution_lines(bundle: ParanaLayerBundle) -> tuple[str, ...]:
 
 
 def quality_snapshot_for_demo(bundle: ParanaLayerBundle) -> dict[str, Any]:
-    """Relatório tabular ilustrativo (não valida geometria PostGIS)."""
+    """Integridade/proveniência dos artefatos — sem inventar coleta ou atributos.
 
-    schema = territorial_pr_uf_schema()
+    Não monta registro tabular fictício nem data de recuperação presumida.
+    """
+
+    retrieved_at = bundle.provenance.get("retrieved_at")
+    edition = bundle.provenance.get("edition")
+    zip_sha = bundle.provenance.get("content_sha256")
+    derived_sha = bundle.provenance.get("derived_geojson_sha256")
+    missing: list[str] = []
+    if not retrieved_at:
+        missing.append("retrieved_at")
+    if not edition:
+        missing.append("edition")
+    if not isinstance(zip_sha, str) or not is_sha256_hex(str(zip_sha)):
+        missing.append("content_sha256")
+    if not isinstance(derived_sha, str) or not is_sha256_hex(str(derived_sha)):
+        missing.append("derived_geojson_sha256")
+
+    geom_flag = bundle.validation.get("validation", {}).get("all_valid")
     if not bundle.available:
         return {
-            "status": QualityStatus.REJECTED.value,
-            "scope": "tabular_record_only",
+            "status": "undetermined"
+            if bundle.content_sha256_ok is not False
+            else "rejected",
+            "determined": False,
+            "layer_validated_for_display": False,
             "message": bundle.missing_reason_pt,
+            "retrieved_at": retrieved_at if retrieved_at else None,
+            "edition": edition if edition else None,
+            "missing_provenance_fields": missing,
+            "content_sha256_ok": bundle.content_sha256_ok,
+            "validation_all_valid": geom_flag,
+            "note": (
+                "Sem simulação de registro tabular nem data de coleta inventada."
+            ),
         }
-    edition = str(bundle.provenance.get("edition") or "municipio_2025")
-    collected = str(
-        bundle.provenance.get("retrieved_at") or "2026-11-07T00:00:00+00:00"
-    )
-    sha = bundle.provenance.get("content_sha256")
-    report = validate_tabular_record(
-        schema,
-        {
-            "ibge_code": "41",
-            "name": "Paraná",
-            "mesh_edition": edition,
-            "srid": 4674,
-        },
-        version_label=edition,
-        collected_at=collected,
-        content_sha256=sha if isinstance(sha, str) else None,
-        limitations=("UI demo: sem inspeção PostGIS",),
+
+    determined = (
+        bundle.content_sha256_ok is True
+        and not missing
+        and geom_flag is True
     )
     return {
-        "status": report.status.value,
-        "scope": report.extra.get("scope"),
-        "findings": [f.to_dict() for f in report.findings],
+        "status": "valid" if determined else "undetermined",
+        "determined": determined,
+        "layer_validated_for_display": True,
+        "retrieved_at": retrieved_at,
+        "edition": edition,
+        "missing_provenance_fields": missing,
         "content_sha256_ok": bundle.content_sha256_ok,
-        "validation_all_valid": bundle.validation.get("validation", {}).get(
-            "all_valid"
+        "validation_all_valid": geom_flag,
+        "source_crs": bundle.validation.get("source_crs") or bundle.crs_epsg,
+        "note": (
+            "Status baseado só em artefatos/proveniência reais; "
+            "não há atributos municipais inventados neste snapshot."
         ),
     }
 
@@ -192,7 +364,9 @@ def folium_map_html(
     """Gera HTML Folium do contorno PR (dependência opcional ``folium``)."""
 
     if not bundle.available:
-        raise FileNotFoundError(bundle.missing_reason_pt or "camada ausente")
+        raise FileNotFoundError(
+            bundle.missing_reason_pt or "camada não validada para exibição"
+        )
 
     try:
         import folium

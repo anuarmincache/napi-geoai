@@ -24,12 +24,14 @@
 Site institucional, ML, novos conectores, aptidão solar, publish Cloud,
 criação de projeto Supabase, alteração do PostGIS :5433.
 
-## Evidência (local)
+## Correções pós-revisão (PR #23)
 
-```text
-ruff check .     → All checks passed
-pytest -q        → 79 passed, 2 skipped
-napi_geoai + template_napi_postgis (:5433) preservados
-```
+| Ponto | Correção |
+|---|---|
+| Fail-closed do mapa | SHA/CRS/geometria inválidos → `available=False`; sem mapa |
+| Proveniência | sem data/atributos inventados; status `undetermined` se faltar meta |
+| Smoke Streamlit | `tests/test_streamlit_app.py` + CI com `.[ui]` |
 
-CI e URL do PR: ver comentário na Issue #22 / PR correspondente.
+## Evidência
+
+Registrada no PR #23 após Ruff / pytest / CI desta rodada.

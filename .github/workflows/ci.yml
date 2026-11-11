@@ -46,7 +46,8 @@ jobs:
       - name: Install package and tools
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[dev,db]"
+          # ui: Streamlit/Folium para smoke AppTest (MVP 07) sem publicar Cloud.
+          python -m pip install -e ".[dev,db,ui]"
 
       - name: Install PostgreSQL 16 client (match PostGIS service major)
         run: |

@@ -19,8 +19,15 @@ st.caption(
 )
 
 bundle = cached_parana_layer()
-if not bundle.available:
-    st.error(bundle.missing_reason_pt or "Camada indisponível.")
+if not bundle.validated_for_map:
+    st.error(
+        bundle.missing_reason_pt
+        or "Camada não validada — mapa bloqueado (fail-closed)."
+    )
+    st.warning(
+        "A interface não apresenta geometria não verificada "
+        "(SHA, CRS ou validação)."
+    )
     st.stop()
 
 level_label = st.radio(
@@ -59,10 +66,7 @@ with c2:
     lim = bundle.validation.get("map_crs_limitation")
     if lim:
         st.caption(lim)
-    if bundle.content_sha256_ok is True:
-        st.success("SHA-256 do GeoJSON confere com a proveniência.")
-    elif bundle.content_sha256_ok is False:
-        st.error("SHA-256 do GeoJSON diverge da proveniência.")
+    st.success("Camada validada para exibição (SHA + CRS + geometria).")
 
 with c1:
     try:
