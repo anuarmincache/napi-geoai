@@ -117,6 +117,16 @@ def prepare_parana_municipalities(
         raise BoundaryValidationError(
             f"CD_UF inesperado fora do Paraná (41): {sorted(uf_codes)}"
         )
+    bad_codes = gdf.loc[~gdf["CD_MUN"].str.fullmatch(r"41\d{5}"), "CD_MUN"]
+    if len(bad_codes):
+        sample = ", ".join(bad_codes.head(5).tolist())
+        raise BoundaryValidationError(
+            f"CD_MUN fora do padrão 41xxxxx (PR): {sample}"
+        )
+    if not ((gdf["AREA_KM2"] > 0) & gdf["AREA_KM2"].notna()).all():
+        raise BoundaryValidationError(
+            "AREA_KM2 deve ser finita e positiva para todos os municípios."
+        )
 
     if len(gdf) != EXPECTED_PR_MUNICIPALITY_COUNT:
         raise BoundaryValidationError(

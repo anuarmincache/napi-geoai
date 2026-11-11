@@ -25,6 +25,7 @@ oficial IBGE, sem inventar indicadores socioeconômicos ou energéticos.
 | `data/derived/parana_municipios_2025_presentation.geojson` | UI/Cloud (simplificado) |
 | `data/derived/parana_municipios_2025.provenance.json` | URL, SHA ZIP, SHA derivado, edição |
 | `data/derived/parana_municipios_2025.validation.json` | Contagem, CRS, validação |
+| `data/derived/parana_municipios_2025_qgis_report.json` | Evidência QGIS (versões, validade, área elipsoidal, SHA) |
 
 Alta fidelidade: ZIP em `data/raw/ibge/` (**não** versionado). Regenerar:
 
@@ -38,7 +39,8 @@ métricas finas.
 
 ## Serviços portáveis (`geoai.portal`)
 
-- `load_municipality_layer` — fail-closed (SHA/CRS/contagem)
+- `load_municipality_layer` — fail-closed (SHA/CRS/códigos PR/AREA_KM2/geometria)
+- `geoai.qgis` — contrato do relatório QGIS (sem PyQGIS na Cloud)
 - `search_municipalities` / `get_municipality` / `list_municipalities`
 - `polo_city_records` — 20 atalhos regionais (não ranking)
 - `compare_municipalities` — nome, código, `AREA_KM2`
@@ -52,3 +54,5 @@ UI Streamlit: `app/pages/5_Explorador_Territorial.py` (thin).
 - Sem população, PIB, irradiação ou rankings.
 - PostGIS local `:5433` não é alterado; Cloud usa só artefatos versionados.
 - Sem publicação Cloud automática e sem Supabase neste MVP.
+- QGIS/PyQGIS só no Desktop local (MCP ou `python-qgis-ltr.bat`); Streamlit Cloud não embute QGIS.
+- GeoPandas permanece o caminho de preparação/UI; PostGIS continua complementar local.

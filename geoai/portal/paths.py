@@ -38,3 +38,8 @@ def municipalities_provenance_path(repo_root: Path | None = None) -> Path:
 
 def municipalities_validation_path(repo_root: Path | None = None) -> Path:
     return derived_dir(repo_root) / "parana_municipios_2025.validation.json"
+
+
+def municipalities_qgis_report_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "parana_municipios_2025_qgis_report.json"
+

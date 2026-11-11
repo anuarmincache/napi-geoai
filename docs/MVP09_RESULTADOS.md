@@ -9,6 +9,8 @@
 | Portal | `geoai.portal.municipal_explorer` |
 | Docs | `docs/MVP09_EXPLORADOR.md` |
 | Publish / Supabase | **não** |
+| QGIS | 3.44.15 / GDAL 3.13.3 / PROJ 9.8.1 — `native:checkvalidity` + área elipsoidal |
+| Relatório QGIS | `data/derived/parana_municipios_2025_qgis_report.json` |
 
 ## Aceite
 
@@ -17,3 +19,5 @@
 - [x] Serviços fora do Streamlit
 - [x] Testes + Ruff + CI
 - [x] PR sem merge automático
+- [x] Processamento QGIS real (validade + área independente) com hashes/versões
+- [x] Fail-closed CRS / códigos 41xxxxx / AREA_KM2 / geometria + testes negativos

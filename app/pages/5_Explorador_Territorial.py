@@ -70,8 +70,9 @@ elif level is AudienceLevel.INTERMEDIATE:
 else:
     st.info(
         "Proveniência/SHA/CRS/contagem em `data/derived/parana_municipios_2025.*`. "
-        "Alta fidelidade: ZIP IBGE regenerável. Serviços em `geoai.portal` "
-        "(independentes do Streamlit)."
+        "Alta fidelidade: ZIP IBGE regenerável. Evidência QGIS Desktop "
+        "(`*_qgis_report.json`: validade + área elipsoidal) é local — "
+        "não embutida no Streamlit Cloud. Serviços em `geoai.portal`."
     )
 
 all_recs = list_municipalities(bundle)

@@ -10,7 +10,8 @@ from typing import Any
 
 import geopandas as gpd
 
-from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
+from geoai.boundaries.validate import crs_equals
+from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT, EXPECTED_SOURCE_CRS
 from geoai.portal.paths import (
     municipalities_geojson_path,
     municipalities_provenance_path,
@@ -157,11 +158,45 @@ def load_municipality_layer(repo_root: Path | None = None) -> MunicipalityLayerB
             content_sha256_ok=sha_ok,
         )
 
+    # Fail-closed: CRS declarado vs esperado SIRGAS 2000.
+    if not crs_equals(gdf.crs, EXPECTED_SOURCE_CRS):
+        return MunicipalityLayerBundle(
+            gdf=_empty(),
+            provenance=provenance,
+            validation=validation,
+            geojson_path=geo_path,
+            available=False,
+            missing_reason_pt=(
+                f"CRS divergente: esperado {EXPECTED_SOURCE_CRS}, "
+                f"obtido {gdf.crs}."
+            ),
+            content_sha256_ok=sha_ok,
+        )
+
+    if "AREA_KM2" not in gdf.columns:
+        return MunicipalityLayerBundle(
+            gdf=_empty(),
+            provenance=provenance,
+            validation=validation,
+            geojson_path=geo_path,
+            available=False,
+            missing_reason_pt="Coluna AREA_KM2 ausente (atributo oficial IBGE).",
+            content_sha256_ok=sha_ok,
+        )
+
     gdf = gdf.copy()
     gdf["CD_MUN"] = gdf["CD_MUN"].astype(str).str.strip()
     gdf["NM_MUN"] = gdf["NM_MUN"].astype(str).str.strip()
-    if "AREA_KM2" in gdf.columns:
-        gdf["AREA_KM2"] = gdf["AREA_KM2"].astype(float)
+    gdf["AREA_KM2"] = gdf["AREA_KM2"].astype(float)
+
+    prefix_ok = bool(gdf["CD_MUN"].str.fullmatch(r"41\d{5}").all())
+    area_ok = bool(
+        gdf["AREA_KM2"].notna().all()
+        and (gdf["AREA_KM2"] > 0).all()
+    )
+    geom_present_ok = bool(
+        (~gdf.geometry.isna()).all() and (~gdf.geometry.is_empty).all()
+    )
 
     count_ok = len(gdf) == EXPECTED_PR_MUNICIPALITY_COUNT
     unique_ok = gdf["CD_MUN"].nunique() == EXPECTED_PR_MUNICIPALITY_COUNT
@@ -169,12 +204,26 @@ def load_municipality_layer(repo_root: Path | None = None) -> MunicipalityLayerB
     if geom_ok is None:
         geom_ok = validation.get("validation_exportable")
 
-    if not (count_ok and unique_ok and geom_ok is True and sha_ok is True):
+    if not (
+        count_ok
+        and unique_ok
+        and geom_ok is True
+        and sha_ok is True
+        and prefix_ok
+        and area_ok
+        and geom_present_ok
+    ):
         reasons = []
         if not count_ok:
             reasons.append(f"contagem={len(gdf)} (esperado 399)")
         if not unique_ok:
             reasons.append("CD_MUN não únicos")
+        if not prefix_ok:
+            reasons.append("CD_MUN fora do padrão 41xxxxx (PR)")
+        if not area_ok:
+            reasons.append("AREA_KM2 inválida (NaN/<=0)")
+        if not geom_present_ok:
+            reasons.append("geometrias nulas ou vazias")
         if geom_ok is not True:
             reasons.append("validação geométrica não confirmada")
         if sha_ok is not True:
