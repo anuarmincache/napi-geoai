@@ -1,0 +1,5 @@
+# Dependências para demonstração Streamlit / Community Cloud (MVP 07).
+# Não inclui psycopg — a demo usa artefatos locais versionados.
+# Segredos: apenas pelo painel Streamlit Cloud, nunca neste arquivo.
+
+-e .[ui]

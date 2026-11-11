@@ -55,12 +55,14 @@ geoai/                 # motor Python (ciência + contratos)
   db/                  # PostGIS + ops (MVP 04–05)
   quality/             # schemas + QualityReport (MVP 06)
   domains/             # registro temático + IndicatorSpec
-  presentation/        # DidacticMetadata (contrato UX; sem site)
+  presentation/        # DidacticMetadata (contrato UX)
+  portal/              # serviços portáveis para UI/API (MVP 07)
+app/                   # Streamlit thin client (MVP 07)
 qgis/                  # projetos/estilos
 tests/
 docs/
 .github/workflows/
-# Planejado (ainda não): app/ (Streamlit), api/ (FastAPI), locales/
+# Planejado: api/ (FastAPI), locales/, portal institucional (#9)
 ```
 
 ## Por que ainda não Airflow ou Kafka?

@@ -28,10 +28,11 @@
 
 ## Marco 3 — API e aplicação bilíngue
 
+- [x] Streamlit didático com mapa oficial do Paraná (MVP 07 / Issue #22).
 - [ ] FastAPI com endpoints versionados, documentação e health check.
-- [ ] Streamlit com seletor PT-BR / EN e mapas interativos.
+- [ ] Streamlit com seletor PT-BR / EN completo e mais camadas.
 - [ ] Exportação de resultados e metadados.
-- [ ] Separar processamento pesado da interface.
+- [ ] Separar processamento pesado da interface (portal já inicia a separação).
 
 ## Marco 4 — Infraestrutura e publicação
 
