@@ -55,9 +55,15 @@ migração `0001_init_postgis` intacta. Ops: `scripts/db_ops.py`.
 ## Contratos de qualidade
 
 Ver `geoai.quality`: `DatasetSchema`, `FieldConstraint`, `QualityReport`
-(`valid` / `warning` / `rejected`). Grandezas energéticas
-(`EnergyQuantityKind`) **não** misturam potência instalada, geração e
-irradiação no mesmo schema.
+(`valid` / `warning` / `rejected`).
+
+`validate_tabular_record` valida **atributos de um registro dict** — não
+geometria PostGIS nem bytes espaciais (salvo `content_bytes` para checar
+SHA-256). Hash: 64 hex; presença ≠ verificação contra arquivo.
+
+Grandezas energéticas (`EnergyQuantityKind`): tipagem **por campo** com
+unidades canônicas (`kW`, `MWh`, `kWh/m²`). Colunas distintas podem
+coexistir; não misturar grandezas no mesmo campo/indicador.
 
 Piloto: `territorial_pr_uf_schema()` — dataset PR já existente
 (`ibge.malhas_municipais.pr_uf_2025` / `geoai.territorial_units`).

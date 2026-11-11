@@ -21,11 +21,16 @@
 
 Site/dashboard, ML, novos conectores, ingestão massiva, Supabase remoto, Kafka/Airflow.
 
-## Evidência (2026-11-11)
+## Correções pós-revisão (PR #21)
 
-```text
-ruff check .     → All checks passed
-pytest -q        → 69 passed, 2 skipped
-napi_geoai + template_napi_postgis (:5433) preservados
-CI               → ver PR #21
-```
+| Ponto | Correção |
+|---|---|
+| Não-finitos / bool | `math.isfinite`; rejeita NaN/Inf/bool; aceita string numérica |
+| SHA-256 | formato 64 hex + verificação opcional contra bytes |
+| Grandezas energéticas | tipagem por campo + unidades canônicas; colunas multi-grandeza OK |
+| Metadados didáticos | `updated_at` ISO nullable + `update_policy`; sem “reprojetada” |
+| Escopo do piloto | `validate_tabular_record`; smoke com artefatos PR em `data/derived` |
+
+## Evidência
+
+Registrada no PR #21 após Ruff / pytest / CI desta rodada.

@@ -52,13 +52,22 @@ def test_didactic_metadata_three_levels() -> None:
     meta = didactic_metadata_for_territorial_pr()
     assert meta.resource_id == "geoai.territorial_units.pr_uf"
     basic = meta.copy_for(AudienceLevel.BASIC)
+    intermediate = meta.copy_for(AudienceLevel.INTERMEDIATE)
     tech = meta.copy_for(AudienceLevel.TECHNICAL)
     assert "Não diz onde instalar energia solar" in basic.description
+    assert "reprojetada" not in intermediate.description.lower()
+    assert "4674" in intermediate.description
     assert "4674" in tech.description
     assert meta.uncertainty_pt
+    assert meta.update_policy
+    assert meta.updated_at is None or "T" in meta.updated_at
+    if meta.updated_at is not None:
+        # proveniência real do artefato PR → ISO-8601
+        assert meta.updated_at.startswith("20")
     assert meta.interactive_map_requirements
     payload = meta.to_dict()
     assert len(payload["copies"]) == 3
+    assert "update_policy" in payload
 
 
 def test_expansion_requirements_documented() -> None:

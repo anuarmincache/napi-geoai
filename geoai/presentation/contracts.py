@@ -6,8 +6,10 @@ mapa interativo e acessibilidade — apenas como especificação.
 
 from __future__ import annotations
 
+import json
 from dataclasses import asdict, dataclass, field
 from enum import StrEnum
+from pathlib import Path
 from typing import Any
 
 
@@ -38,6 +40,9 @@ class DidacticMetadata:
     """Metadados suficientes para renderizar camada/indicador no futuro site.
 
     Não implementa mapa, acessibilidade nem i18n runtime — só o contrato.
+
+    ``updated_at``: ISO-8601 quando conhecido; ``None`` até apuração.
+    ``update_policy``: nota textual de como/quando atualizar (não é data).
     """
 
     resource_id: str
@@ -45,8 +50,9 @@ class DidacticMetadata:
     unit: str | None
     legend_pt: str
     source_attribution_pt: str
-    updated_at: str
+    updated_at: str | None
     uncertainty_pt: str
+    update_policy: str = ""
     methodology_url: str | None = None
     accessibility_notes_pt: str = (
         "Contraste AA; textos alternativos para mapas; "
@@ -125,9 +131,37 @@ def list_expansion_requirements() -> tuple[ExpansionRequirement, ...]:
     return EXPANSION_REQUIREMENTS
 
 
-def didactic_metadata_for_territorial_pr() -> DidacticMetadata:
-    """Exemplo concreto ligado ao dataset territorial PR existente."""
+def _default_repo_root() -> Path:
+    # geoai/presentation/contracts.py → repo root
+    return Path(__file__).resolve().parents[2]
 
+
+def didactic_metadata_for_territorial_pr(
+    *,
+    updated_at: str | None = None,
+    edition: str | None = None,
+    repo_root: Path | None = None,
+) -> DidacticMetadata:
+    """Metadados didáticos do limite PR; datas vêm da proveniência real se houver.
+
+    Não afirma reprojeção: a malha IBGE do piloto já está em EPSG:4674
+    (validação MVP 02).
+    """
+
+    root = repo_root or _default_repo_root()
+    prov_path = root / "data" / "derived" / "parana_uf_2025.provenance.json"
+    resolved_updated = updated_at
+    resolved_edition = edition
+    if prov_path.is_file():
+        payload = json.loads(prov_path.read_text(encoding="utf-8"))
+        if resolved_updated is None:
+            raw = payload.get("retrieved_at")
+            resolved_updated = str(raw) if raw else None
+        if resolved_edition is None:
+            raw_ed = payload.get("edition")
+            resolved_edition = str(raw_ed) if raw_ed else None
+
+    edition_note = resolved_edition or "edição da malha IBGE documentada"
     return DidacticMetadata(
         resource_id="geoai.territorial_units.pr_uf",
         copies=(
@@ -143,8 +177,9 @@ def didactic_metadata_for_territorial_pr() -> DidacticMetadata:
                 level=AudienceLevel.INTERMEDIATE,
                 title="Limite territorial da UF Paraná (IBGE)",
                 description=(
-                    "Geometria da malha municipal/UF do IBGE, reprojetada "
-                    "para SIRGAS 2000 (EPSG:4674) no banco PostGIS."
+                    "Geometria da malha municipal/UF do IBGE já referenciada "
+                    "em SIRGAS 2000 (EPSG:4674), conforme validação do artefato; "
+                    "persistida no PostGIS sem afirmar reprojeção adicional."
                 ),
             ),
             DidacticCopy(
@@ -153,17 +188,28 @@ def didactic_metadata_for_territorial_pr() -> DidacticMetadata:
                 description=(
                     "Tabela geoai.territorial_units; MultiPolygon 4674; "
                     "proveniência via data_artifacts + SourceSpec "
-                    "ibge.malhas_municipais.pr_uf_2025."
+                    "ibge.malhas_municipais.pr_uf_2025; "
+                    f"edição consultada: {edition_note}."
                 ),
             ),
         ),
         unit=None,
         legend_pt="Contorno administrativo da UF",
         source_attribution_pt="IBGE — Malhas territoriais",
-        updated_at="conforme edição da malha / ingestion_runs",
+        updated_at=resolved_updated,
+        update_policy=(
+            "Atualizar quando houver nova edição da malha IBGE; "
+            "consultar ingestion_runs / data_artifacts para carimbo operacional."
+        ),
         uncertainty_pt=(
             "Limites administrativos mudam com novas edições IBGE; "
             "não inferir aptidão nem restrição ambiental a partir deste contorno."
         ),
         methodology_url=None,
+        extra={
+            "edition": resolved_edition,
+            "provenance_path": (
+                str(prov_path.as_posix()) if prov_path.is_file() else None
+            ),
+        },
     )

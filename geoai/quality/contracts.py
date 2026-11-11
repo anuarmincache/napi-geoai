@@ -32,10 +32,14 @@ class GeometryKind(StrEnum):
 
 
 class EnergyQuantityKind(StrEnum):
-    """Grandezas energéticas — não misturar no mesmo campo/indicador.
+    """Grandezas energéticas tipadas **por campo/indicador**.
 
-    Usar um valor por coluna/métrica. ``NOT_APPLICABLE`` para datasets
-    não energéticos (ex.: limites territoriais).
+    Um dataset tabular **pode** ter colunas distintas (ex.: potência em kW e
+    geração em MWh) desde que cada coluna declare ``energy_quantity`` +
+    unidade canônica. Não combinar grandezas distintas no *mesmo* campo nem
+    em um único indicador sem tipagem explícita.
+
+    Unidades canônicas: ver ``CANONICAL_ENERGY_UNITS``.
     """
 
     NOT_APPLICABLE = "not_applicable"
@@ -43,6 +47,14 @@ class EnergyQuantityKind(StrEnum):
     GENERATION_MWH = "generation_mwh"
     IRRADIANCE_KWH_M2 = "irradiance_kwh_m2"
     OTHER = "other"
+
+
+# Unidades aceitas por grandeza (comparação case-sensitive nas formas listadas).
+CANONICAL_ENERGY_UNITS: dict[EnergyQuantityKind, frozenset[str]] = {
+    EnergyQuantityKind.INSTALLED_CAPACITY_KW: frozenset({"kW"}),
+    EnergyQuantityKind.GENERATION_MWH: frozenset({"MWh"}),
+    EnergyQuantityKind.IRRADIANCE_KWH_M2: frozenset({"kWh/m²", "kWh/m2"}),
+}
 
 
 @dataclass(frozen=True, slots=True)

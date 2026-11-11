@@ -14,6 +14,9 @@ def territorial_pr_uf_schema() -> DatasetSchema:
 
     Campos alinhados a ``geoai.territorial_units`` / pipeline MVP 02–04.
     Não publica geometrias nem inventa atributos.
+
+    Usado com ``validate_tabular_record``: valida atributos do registro,
+    **não** a geometria PostGIS nem o GeoJSON em disco.
     """
 
     return DatasetSchema(
