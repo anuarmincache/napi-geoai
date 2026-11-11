@@ -1,0 +1,81 @@
+"""Mapa interativo do contorno oficial do Paraná (IBGE)."""
+
+from __future__ import annotations
+
+import streamlit as st
+import streamlit.components.v1 as components
+from geoai.portal import attribution_lines, didactic_copy_text, folium_map_html
+from geoai.presentation import AudienceLevel
+
+from _bootstrap import cached_parana_layer, configure_page, sidebar_brand
+
+configure_page("Mapa Paraná")
+sidebar_brand()
+
+st.title("Mapa do Paraná")
+st.caption(
+    "Geometria real versionada em `data/derived/parana_uf_2025.geojson`. "
+    "Sem camada de aptidão solar fictícia."
+)
+
+bundle = cached_parana_layer()
+if not bundle.available:
+    st.error(bundle.missing_reason_pt or "Camada indisponível.")
+    st.stop()
+
+level_label = st.radio(
+    "Nível didático",
+    options=[
+        (AudienceLevel.BASIC, "Básico"),
+        (AudienceLevel.INTERMEDIATE, "Intermediário"),
+        (AudienceLevel.TECHNICAL, "Técnico"),
+    ],
+    format_func=lambda item: item[1],
+    horizontal=True,
+)
+level = level_label[0]
+title, description = didactic_copy_text(bundle, level)
+st.subheader(title)
+st.write(description)
+
+c1, c2 = st.columns([2, 1])
+with c2:
+    fill_opacity = st.slider("Opacidade do preenchimento", 0.05, 0.85, 0.35, 0.05)
+    line_weight = st.slider("Espessura do contorno", 1.0, 5.0, 2.0, 0.5)
+    st.markdown("#### Metadados")
+    for line in attribution_lines(bundle):
+        st.markdown(f'<p class="napi-meta">{line}</p>', unsafe_allow_html=True)
+    crs_src = bundle.validation.get("source_crs") or bundle.crs_epsg
+    map_crs = bundle.validation.get("recommended_map_crs")
+    st.markdown(
+        f'<p class="napi-meta">CRS da fonte: {crs_src}</p>',
+        unsafe_allow_html=True,
+    )
+    if map_crs:
+        st.markdown(
+            f'<p class="napi-meta">CRS sugerido p/ mapa métrico: {map_crs}</p>',
+            unsafe_allow_html=True,
+        )
+    lim = bundle.validation.get("map_crs_limitation")
+    if lim:
+        st.caption(lim)
+    if bundle.content_sha256_ok is True:
+        st.success("SHA-256 do GeoJSON confere com a proveniência.")
+    elif bundle.content_sha256_ok is False:
+        st.error("SHA-256 do GeoJSON diverge da proveniência.")
+
+with c1:
+    try:
+        html = folium_map_html(
+            bundle,
+            fill_opacity=float(fill_opacity),
+            line_weight=float(line_weight),
+        )
+        components.html(html, height=560, scrolling=False)
+    except Exception as exc:  # noqa: BLE001
+        st.error(f"Falha ao renderizar mapa: {exc}")
+
+st.info(
+    "Controle real suportado: nível didático + estilo do contorno. "
+    "Não há filtro temático adicional porque só existe a feição UF."
+)

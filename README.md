@@ -94,6 +94,13 @@ Operação / robustez (MVP 05): [docs/OPERACAO_BANCO.md](docs/OPERACAO_BANCO.md)
 
 Arquitetura modular e qualidade (MVP 06): [docs/ARQUITETURA_MODULAR.md](docs/ARQUITETURA_MODULAR.md), [docs/MVP06_RESULTADOS.md](docs/MVP06_RESULTADOS.md) — contratos de qualidade, domínios temáticos e metadados didáticos **sem** site/ML/novos conectores.
 
+Interface demonstrativa (MVP 07): [docs/STREAMLIT_UI.md](docs/STREAMLIT_UI.md), [docs/MVP07_RESULTADOS.md](docs/MVP07_RESULTADOS.md).
+
+```powershell
+py -3 -m pip install -e ".[dev,ui]"
+py -3 -m streamlit run app/Home.py
+```
+
 ## Reprodutibilidade e responsabilidade
 
 Não serão apresentados dados ilustrativos como resultados científicos. Critérios de aptidão, restrições territoriais e pesos devem ser transparentes, revisados e submetidos a análise de sensibilidade. Nenhuma decisão de investimento deve ser tomada exclusivamente com base em mapas preliminares.
