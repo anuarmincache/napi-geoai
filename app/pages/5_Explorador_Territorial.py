@@ -1,4 +1,4 @@
-"""Explorador territorial interativo — 399 municípios do Paraná."""
+"""Explorador territorial interativo — 399 municípios do Paraná (MVP 09.1)."""
 
 from __future__ import annotations
 
@@ -6,11 +6,13 @@ import json
 
 import streamlit as st
 import streamlit.components.v1 as components
+from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
 from geoai.portal import (
     compare_municipalities,
     explorer_attribution_lines,
     get_municipality,
     list_municipalities,
+    municipality_label,
     municipality_map_html,
     polo_city_records,
     search_municipalities,
@@ -24,12 +26,15 @@ from _bootstrap import (
     sidebar_brand,
 )
 
+NONE_SELECTION = "— Mapa geral do Paraná (sem destaque) —"
+
 configure_page("Explorador territorial")
 sidebar_brand()
 
 st.title("Explorador territorial do Paraná")
 st.caption(
-    "Malha municipal oficial IBGE (`municipio_2025`) — 399 municípios. "
+    "Malha municipal oficial IBGE (`municipio_2025`) — **todos os "
+    f"{EXPECTED_PR_MUNICIPALITY_COUNT} municípios** disponíveis. "
     "Limite administrativo **não** é aptidão solar nem viabilidade comercial."
 )
 
@@ -58,9 +63,10 @@ level = st.radio(
 )
 if level is AudienceLevel.BASIC:
     st.info(
-        "Escolha um município na lista ou use um atalho de cidade-polo. "
-        "O mapa destaca a seleção. A comparação usa só nome, código e área "
-        "oficial IBGE."
+        f"Busque por nome ou código IBGE entre os "
+        f"{EXPECTED_PR_MUNICIPALITY_COUNT} municípios. "
+        "Os 20 atalhos de cidades-polo só aceleram a escolha — "
+        "não são um ranking. A comparação usa nome, código e área oficial."
     )
 elif level is AudienceLevel.INTERMEDIATE:
     st.info(
@@ -71,76 +77,187 @@ else:
     st.info(
         "Proveniência/SHA/CRS/contagem em `data/derived/parana_municipios_2025.*`. "
         "Alta fidelidade: ZIP IBGE regenerável. Evidência QGIS Desktop "
-        "(`*_qgis_report.json`: validade + área elipsoidal) é local — "
-        "não embutida no Streamlit Cloud. Serviços em `geoai.portal`."
+        "(`*_qgis_report.json`) é local — não embutida no Streamlit Cloud."
     )
 
 all_recs = list_municipalities(bundle)
-label_to_code = {f"{r.name} ({r.code})": r.code for r in all_recs}
+label_to_code = {municipality_label(r): r.code for r in all_recs}
 labels_all = list(label_to_code.keys())
+code_to_label = {code: lab for lab, code in label_to_code.items()}
 polos = polo_city_records(bundle)
-polo_labels = {f"{r.name} ({r.code})": r.code for r in polos}
+polo_labels = {municipality_label(r): r.code for r in polos}
 
 if "explorer_code" not in st.session_state:
-    st.session_state.explorer_code = all_recs[0].code if all_recs else ""
+    # Primeira visita: mapa geral, sem município pré-selecionado.
+    st.session_state.explorer_code = None
+if "explorer_query" not in st.session_state:
+    st.session_state.explorer_query = ""
+if "polo_choice" not in st.session_state:
+    st.session_state.polo_choice = "(nenhum)"
+if "explorer_select_label" not in st.session_state:
+    st.session_state.explorer_select_label = NONE_SELECTION
 
-c_search, c_polo = st.columns([2, 1])
+
+def _on_polo_change() -> None:
+    choice = st.session_state.get("polo_choice")
+    if choice and choice != "(nenhum)":
+        code = polo_labels[choice]
+        st.session_state.explorer_code = code
+        st.session_state.explorer_query = ""
+        st.session_state.explorer_select_label = code_to_label[code]
+        st.session_state.polo_choice = "(nenhum)"
+        if code in code_to_label:
+            st.session_state.cmp_a = code_to_label[code]
+
+
+def _clear_search() -> None:
+    st.session_state.explorer_query = ""
+
+
+def _on_select_change() -> None:
+    lab = st.session_state.get("explorer_select_label")
+    if lab == NONE_SELECTION:
+        st.session_state.explorer_code = None
+    elif lab in label_to_code:
+        st.session_state.explorer_code = label_to_code[lab]
+        st.session_state.cmp_a = lab
+
+
+st.markdown("### Buscar município")
+st.caption(
+    f"Catálogo completo: **{EXPECTED_PR_MUNICIPALITY_COUNT}** municípios do Paraná. "
+    "Os 20 atalhos ao lado apenas aceleram a navegação."
+)
+
+c_search, c_polo = st.columns([2, 1], gap="medium")
 with c_search:
-    query = st.text_input(
-        "Buscar município (nome ou código IBGE)",
-        value="",
-        help="Acentos são ignorados na busca. A lista abaixo é filtrada.",
-    )
-    hits = search_municipalities(bundle, query, limit=80)
-    filtered_labels = [f"{r.name} ({r.code})" for r in hits] or labels_all
-    current_label = next(
-        (
-            lab
-            for lab, code in label_to_code.items()
-            if code == st.session_state.explorer_code
+    st.text_input(
+        "Busca por nome ou código IBGE",
+        key="explorer_query",
+        placeholder="Digite cidade ou código IBGE, ex.: Maringá / 4115200",
+        help=(
+            "Acentos são ignorados. Com o campo limpo, o seletor lista "
+            f"todos os {EXPECTED_PR_MUNICIPALITY_COUNT} municípios."
         ),
-        filtered_labels[0],
     )
-    if current_label not in filtered_labels:
-        current_label = filtered_labels[0]
-    selected_label = st.selectbox(
-        "Município selecionado",
-        options=filtered_labels,
-        index=filtered_labels.index(current_label),
-        help="Seleção na lista é obrigatória e suficiente para zoom/destaque.",
+    clear_col, _ = st.columns([1, 3])
+    with clear_col:
+        st.button(
+            "Limpar busca",
+            on_click=_clear_search,
+            use_container_width=True,
+            help="Remove o filtro e volta a listar os 399 municípios.",
+        )
+
+    query = str(st.session_state.explorer_query or "")
+    hits = search_municipalities(bundle, query, limit=None)
+    hit_count = len(hits)
+    st.markdown(
+        f"**{hit_count} de {EXPECTED_PR_MUNICIPALITY_COUNT}** municípios"
     )
-    st.session_state.explorer_code = label_to_code[selected_label]
+
+    query_active = bool(query.strip())
+    if query_active and hit_count == 0:
+        st.warning("Nenhum município encontrado")
+        st.caption(
+            "A seleção e o mapa atuais foram mantidos. "
+            "Ajuste a busca ou use Limpar busca."
+        )
+    else:
+        options = [NONE_SELECTION, *[municipality_label(r) for r in hits]]
+        # Um único resultado na busca → seleciona automaticamente (sync mapa).
+        if query_active and hit_count == 1:
+            only = municipality_label(hits[0])
+            st.session_state.explorer_select_label = only
+            st.session_state.explorer_code = hits[0].code
+            st.session_state.cmp_a = only
+        code = st.session_state.explorer_code
+        sticky = code_to_label.get(code) if code else None
+        if sticky and sticky not in options:
+            # Mantém a seleção atual visível mesmo fora do filtro parcial.
+            options = [NONE_SELECTION, sticky, *options[1:]]
+        if st.session_state.explorer_select_label not in options:
+            st.session_state.explorer_select_label = (
+                sticky if sticky in options else NONE_SELECTION
+            )
+
+        st.selectbox(
+            "Município selecionado",
+            options=options,
+            key="explorer_select_label",
+            on_change=_on_select_change,
+            help=(
+                "Lista filtrada pela busca. Campo limpo = todos os "
+                f"{EXPECTED_PR_MUNICIPALITY_COUNT}. "
+                "Escolha o mapa geral para ver o Paraná sem destaque."
+            ),
+        )
+        lab = st.session_state.explorer_select_label
+        if lab == NONE_SELECTION:
+            st.session_state.explorer_code = None
+        elif lab in label_to_code:
+            st.session_state.explorer_code = label_to_code[lab]
 
 with c_polo:
     st.markdown("#### Cidades-polo (atalhos)")
-    st.caption("Cobertura regional — **não** é ranking.")
-    polo_choice = st.selectbox(
+    st.caption(
+        f"20 atalhos regionais — **não** é ranking. "
+        f"O catálogo tem {EXPECTED_PR_MUNICIPALITY_COUNT} municípios."
+    )
+    st.selectbox(
         "Atalho rápido",
         options=["(nenhum)", *polo_labels.keys()],
+        key="polo_choice",
+        on_change=_on_polo_change,
+        help="Ao escolher um polo, a busca é limpa e o mapa destaca a cidade.",
     )
-    if polo_choice != "(nenhum)":
-        st.session_state.explorer_code = polo_labels[polo_choice]
-        st.success(f"Atalho aplicado: {polo_choice}")
 
 selected_code = st.session_state.explorer_code
 
-map_col, meta_col = st.columns([2, 1])
+st.markdown(
+    """
+    <style>
+    iframe[title="streamlit_html"] {
+      background: #e8eef5 !important;
+      border: 0 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+map_col, meta_col = st.columns([2.2, 1], gap="medium")
 with meta_col:
-    fill_opacity = st.slider("Opacidade", 0.05, 0.7, 0.25, 0.05)
-    line_weight = st.slider("Contorno", 0.5, 3.0, 1.0, 0.5)
-    map_height = st.select_slider(
-        "Altura (px)",
-        options=[420, 520, 620, 720],
-        value=620,
-    )
-    st.markdown("#### Metadados")
-    for line in explorer_attribution_lines(bundle):
-        st.markdown(f'<p class="napi-meta">{line}</p>', unsafe_allow_html=True)
-    rec = get_municipality(bundle, selected_code)
+    with st.expander("Personalizar mapa", expanded=False):
+        fill_opacity = st.slider(
+            "Opacidade do preenchimento", 0.05, 0.7, 0.28, 0.05
+        )
+        line_weight = st.slider("Espessura do contorno", 0.5, 3.0, 1.0, 0.5)
+        map_height = st.select_slider(
+            "Altura do mapa (px)",
+            options=[420, 520, 600, 680, 760],
+            value=600,
+            help="Ajuste para notebooks ou telas estreitas.",
+        )
+
+    st.markdown("#### Município em foco")
+    rec = get_municipality(bundle, selected_code) if selected_code else None
     if rec:
-        st.metric("Município", rec.name)
+        st.metric("Nome", rec.name)
         st.metric("Código IBGE", rec.code)
         st.metric("Área oficial (km²)", f"{rec.area_km2:.3f}")
+    else:
+        st.info(
+            f"Mapa geral: {EXPECTED_PR_MUNICIPALITY_COUNT} municípios. "
+            "Selecione um município na busca ou use um atalho."
+        )
+
+    with st.expander("Fonte e metodologia", expanded=False):
+        for line in explorer_attribution_lines(bundle):
+            st.markdown(
+                f'<p class="napi-meta">{line}</p>', unsafe_allow_html=True
+            )
+        st.caption("Basemap: © OpenStreetMap contributors.")
 
 with map_col:
     with st.spinner("Renderizando mapa municipal…"):
@@ -160,12 +277,43 @@ st.caption(
     "Somente atributos verificáveis da malha. Sem população, PIB, irradiação "
     "ou oportunidade inventados."
 )
+
+if selected_code and selected_code in code_to_label:
+    preferred_a = code_to_label[selected_code]
+else:
+    preferred_a = labels_all[0]
+if "cmp_a" not in st.session_state:
+    st.session_state.cmp_a = preferred_a
+if st.session_state.cmp_a not in labels_all:
+    st.session_state.cmp_a = preferred_a
+
+if "cmp_b" not in st.session_state:
+    # Prefer Londrina quando A é Maringá; senão o segundo da lista.
+    londrina = next((lab for lab in labels_all if "4113700" in lab), None)
+    if preferred_a != londrina and londrina:
+        st.session_state.cmp_b = londrina
+    else:
+        st.session_state.cmp_b = next(
+            (lab for lab in labels_all if lab != preferred_a),
+            labels_all[0],
+        )
+if st.session_state.cmp_b not in labels_all:
+    st.session_state.cmp_b = labels_all[min(1, len(labels_all) - 1)]
+
 left, right = st.columns(2)
 with left:
-    a_lab = st.selectbox("Município A", labels_all, index=0, key="cmp_a")
+    a_lab = st.selectbox(
+        "Município A",
+        labels_all,
+        key="cmp_a",
+        help="Usa a seleção do mapa como padrão, quando houver.",
+    )
 with right:
-    default_b = min(1, len(labels_all) - 1)
-    b_lab = st.selectbox("Município B", labels_all, index=default_b, key="cmp_b")
+    b_lab = st.selectbox(
+        "Município B",
+        labels_all,
+        key="cmp_b",
+    )
 
 cmp = compare_municipalities(
     bundle,

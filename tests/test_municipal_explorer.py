@@ -12,6 +12,7 @@ from geoai.portal.municipal_explorer import (
     get_municipality,
     list_municipalities,
     load_municipality_layer,
+    municipality_label,
     municipality_map_html,
     polo_city_records,
     search_municipalities,
@@ -88,3 +89,36 @@ def test_map_html_smoke(mun_bundle) -> None:
     html = municipality_map_html(mun_bundle, selected_code="4115200")
     assert "Maringá" in html or "4115200" in html
     assert "folium" in html.casefold() or "leaflet" in html.casefold()
+
+def test_search_empty_query_returns_all_without_hidden_cap(mun_bundle) -> None:
+    hits = search_municipalities(mun_bundle, "", limit=None)
+    assert len(hits) == EXPECTED_PR_MUNICIPALITY_COUNT
+
+
+def test_search_no_match_returns_empty_no_fallback(mun_bundle) -> None:
+    hits = search_municipalities(mun_bundle, "cidade-inexistente-xyz", limit=None)
+    assert hits == ()
+
+
+def test_search_accent_and_ibge_code(mun_bundle) -> None:
+    by_name = search_municipalities(mun_bundle, "abatia", limit=None)
+    assert any(r.code == "4100103" and r.name == "Abatiá" for r in by_name)
+    by_code = search_municipalities(mun_bundle, "4115200", limit=None)
+    assert len(by_code) == 1
+    assert by_code[0].name == "Maringá"
+    londrina = search_municipalities(mun_bundle, "londrina", limit=None)
+    assert any(r.code == "4113700" for r in londrina)
+
+
+def test_map_html_general_parana_without_selection(mun_bundle) -> None:
+    pytest.importorskip("folium")
+    html = municipality_map_html(mun_bundle, selected_code=None)
+    assert "OpenStreetMap" in html or "openstreetmap" in html.casefold()
+    assert "leaflet-container" in html
+
+
+def test_municipality_label_format(mun_bundle) -> None:
+    rec = get_municipality(mun_bundle, "4115200")
+    assert rec is not None
+    assert municipality_label(rec) == "Maringá (4115200)"
+

@@ -56,3 +56,7 @@ UI Streamlit: `app/pages/5_Explorador_Territorial.py` (thin).
 - Sem publicação Cloud automática e sem Supabase neste MVP.
 - QGIS/PyQGIS só no Desktop local (MCP ou `python-qgis-ltr.bat`); Streamlit Cloud não embute QGIS.
 - GeoPandas permanece o caminho de preparação/UI; PostGIS continua complementar local.
+
+## MVP 09.1
+
+Refinamento de UX da busca/seleção/mapa: ver docs/MVP09_1_UX.md e Issue #28.
