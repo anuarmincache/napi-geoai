@@ -37,13 +37,14 @@ _AVAILABILITY: dict[DomainId, DomainAvailability] = {
         domain_id=DomainId.ENERGY,
         status="partial",
         available_now_pt=(
+            "Painel SIGA/ANEEL: capacidade fiscalizada (MW) por município.",
+            "Join espacial QGIS + agregados dos 399 municípios IBGE.",
             "Mapa do contorno oficial do Paraná (base territorial).",
-            "Catálogo de fontes ANEEL/INPE/ONS (sem novos cálculos).",
-            "Contratos de qualidade e tipagem de grandezas energéticas.",
+            "Catálogo ANEEL/INPE/ONS (MMGD e aptidão solar ainda fora).",
         ),
         planned_pt=(
             "Aptidão solar com pesos e restrições explícitos.",
-            "Indicadores de capacidade/geração/irradiação calculados.",
+            "Geração efetiva (MWh) e MMGD em MVP separados.",
         ),
     ),
     DomainId.ENVIRONMENT: DomainAvailability(

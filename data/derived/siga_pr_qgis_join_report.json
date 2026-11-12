@@ -1,0 +1,48 @@
+{
+  "product": "siga_pr_qgis_spatial_join",
+  "generated_at": "2026-11-11T23:54:49.327269+00:00",
+  "engine": {
+    "qgis_version": "3.44.15-Solothurn",
+    "gdal_version": "3.13.3",
+    "proj_version": "9.8.1",
+    "execution": "qgis_mcp_execute_code",
+    "algorithms": [
+      "native:joinattributesbylocation"
+    ],
+    "predicate": "within"
+  },
+  "input": {
+    "siga_csv": "data/raw/aneel/siga-empreendimentos-geracao.csv",
+    "siga_sha256": "9f21aa730a5ccde82b62bad64b40ba1ceb245c84e15f05d12df718ac303e72ef",
+    "municipios_zip": "data/raw/ibge/PR_Municipios_2025.zip",
+    "municipios_sha256": "1a9b6ff7d1e2a42665dc3e9a9bde46a542d6609c7d775092c4e767d9899d3e6f",
+    "municipios_crs": "EPSG:4674",
+    "points_crs": "EPSG:4674"
+  },
+  "parameters": {
+    "uf": "PR",
+    "phase": "Operação",
+    "method": 1,
+    "discard_nonmatching": false,
+    "note": "Join sobre ZIP IBGE alta fidelidade; GeoJSON UI não usado."
+  },
+  "results": {
+    "rows_pr": 330,
+    "operacao": 310,
+    "points_created": 280,
+    "skipped_invalid_coords": 30,
+    "matched": 276,
+    "unmatched": 4,
+    "panel_totals_geopandas": {
+      "n_empreendimentos_municipios": 276,
+      "n_empreendimentos_nao_associados": 34,
+      "n_empreendimentos_fase": 310,
+      "potencia_fiscalizada_mw_municipios": 17640.451,
+      "potencia_fiscalizada_mw_nao_associados": 71.736,
+      "potencia_fiscalizada_mw_total_fase": 17712.187
+    }
+  },
+  "scope_note": "SHA vincula bytes; join QGIS tem proveniência própria.",
+  "not_mmgd": true,
+  "not_energy_mwh": true
+}

@@ -1,0 +1,40 @@
+{
+  "product": "siga_pr_quality",
+  "generated_at": "2026-11-11T23:53:39.630246+00:00",
+  "source_id": "aneel.siga.empreendimentos_geracao",
+  "uf": "PR",
+  "rows_pr_raw": 330,
+  "accepted": 330,
+  "rejected": 0,
+  "rejected_reasons": {},
+  "phases": {
+    "Operação": 310,
+    "Construção": 3,
+    "Construção não iniciada": 17
+  },
+  "tipos_geracao": {
+    "PCH": 60,
+    "CGH": 75,
+    "UHE": 16,
+    "UTE": 111,
+    "EOL": 1,
+    "UFV": 67
+  },
+  "coord_ok": 297,
+  "coord_missing": 33,
+  "join_geopandas": {
+    "engine": "geopandas.sjoin/within",
+    "plants_input": 330,
+    "with_coordinates": 297,
+    "without_coordinates": 33,
+    "matched": 293,
+    "unmatched_geometry": 4,
+    "ambiguous_codes": [],
+    "crs_points": "EPSG:4674",
+    "crs_municipalities": "EPSG:4674",
+    "note": "Implementação complementar GeoPandas. Relatório QGIS (native join) é a evidência oficial do MVP 10."
+  },
+  "dat_conjunto_sample": "2026-11-01",
+  "mmgd_included": false,
+  "not_energy_generated_mwh": true
+}

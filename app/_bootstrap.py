@@ -8,6 +8,7 @@ import streamlit as st
 from geoai.portal import (
     demo_connection_policy,
     list_domain_cards,
+    load_energy_panel_bundle,
     load_municipality_layer,
     load_parana_layer,
 )
@@ -200,6 +201,11 @@ def cached_parana_layer():
 @st.cache_resource(show_spinner="Carregando municípios do Paraná…")
 def cached_municipality_layer():
     return load_municipality_layer(REPO_ROOT)
+
+
+@st.cache_resource(show_spinner="Carregando painel energético SIGA…")
+def cached_energy_panel():
+    return load_energy_panel_bundle(REPO_ROOT)
 
 
 @st.cache_resource(show_spinner=False)

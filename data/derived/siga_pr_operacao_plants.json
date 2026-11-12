@@ -1,0 +1,2830 @@
+{
+  "phase": "Operação",
+  "count": 310,
+  "plants": [
+    {
+      "CodCEG": "PCH.PH.PR.037314-1.1",
+      "nome": "Cavernoso III",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 6.5,
+      "potencia_outorgada_mw": 6.5,
+      "CD_MUN": "4128658",
+      "NM_MUN": "Virmond"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073556-6.1",
+      "nome": "Amauri Antonio De Campos",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.037,
+      "potencia_outorgada_mw": 0.0375,
+      "CD_MUN": "4128005",
+      "NM_MUN": "Ubiratã"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.000273-9.1",
+      "nome": "Boa Vista II",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 24.0,
+      "potencia_outorgada_mw": 24.0,
+      "CD_MUN": "4127965",
+      "NM_MUN": "Turvo"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028010-0.2",
+      "nome": "Cachoeira",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 2.92,
+      "potencia_outorgada_mw": 2.92,
+      "CD_MUN": "4127965",
+      "NM_MUN": "Turvo"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037743-0.1",
+      "nome": "Paredinha",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 21.0,
+      "potencia_outorgada_mw": 21.0,
+      "CD_MUN": "4127965",
+      "NM_MUN": "Turvo"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028143-3.1",
+      "nome": "Santa Terezinha (Ivaté)",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 9.0,
+      "potencia_outorgada_mw": 9.0,
+      "CD_MUN": "4111555",
+      "NM_MUN": "Ivaté"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073609-0.1",
+      "nome": "Madeireira Maracanã",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.825,
+      "potencia_outorgada_mw": 0.825,
+      "CD_MUN": "4127882",
+      "NM_MUN": "Tunas do Paraná"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.031115-4.1",
+      "nome": "Supermercado Macliv",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.168,
+      "potencia_outorgada_mw": 0.168,
+      "CD_MUN": "4128203",
+      "NM_MUN": "União da Vitória"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071624-3.1",
+      "nome": "Pormade",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.78,
+      "potencia_outorgada_mw": 0.78,
+      "CD_MUN": "4128203",
+      "NM_MUN": "União da Vitória"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002587-9.1",
+      "nome": "Salto Caiacanga",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.22,
+      "potencia_outorgada_mw": 0.22,
+      "CD_MUN": "4120101",
+      "NM_MUN": "Porto Amazonas"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030412-3.1",
+      "nome": "Big Umuarama",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4128104",
+      "NM_MUN": "Umuarama"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.030627-4.1",
+      "nome": "Costa Bioenergia",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 15.0,
+      "potencia_outorgada_mw": 15.0,
+      "CD_MUN": "4128104",
+      "NM_MUN": "Umuarama"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062905-7.1",
+      "nome": "Tathiani H. Saggiorato",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.3,
+      "potencia_outorgada_mw": 0.3,
+      "CD_MUN": "4128104",
+      "NM_MUN": "Umuarama"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072390-8.1",
+      "nome": "Palladium Umuarama Administradora De Shopping Centers",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 1.14,
+      "potencia_outorgada_mw": 1.14,
+      "CD_MUN": "4128104",
+      "NM_MUN": "Umuarama"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033001-9.1",
+      "nome": "BRADO CAMBÉ I",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.8,
+      "potencia_outorgada_mw": 0.8,
+      "CD_MUN": "4103701",
+      "NM_MUN": "Cambé"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002085-0.1",
+      "nome": "Pitangui",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.865,
+      "potencia_outorgada_mw": 0.86555,
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.027153-5.2",
+      "nome": "Sao Jorge",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 2.3,
+      "potencia_outorgada_mw": 2.3,
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.031113-8.1",
+      "nome": "L´acqua",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.44,
+      "potencia_outorgada_mw": 0.44,
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033358-1.1",
+      "nome": "PONTA GROSSA - 1",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.144,
+      "potencia_outorgada_mw": 0.144,
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.072057-7.1",
+      "nome": "Cargill Pgo",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.752,
+      "potencia_outorgada_mw": 2.7528,
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028153-0.1",
+      "nome": "Jacarezinho",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 20.0,
+      "potencia_outorgada_mw": 20.0,
+      "CD_MUN": "4111803",
+      "NM_MUN": "Jacarezinho"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028155-7.1",
+      "nome": "Dacalda",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 6.0,
+      "potencia_outorgada_mw": 6.0,
+      "CD_MUN": "4111803",
+      "NM_MUN": "Jacarezinho"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.026885-2.1",
+      "nome": "Salto São Pedro",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.188,
+      "potencia_outorgada_mw": 1.188,
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.028360-6.1",
+      "nome": "Fundão",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 120.168,
+      "potencia_outorgada_mw": 120.168,
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028846-2.1",
+      "nome": "Fundão I",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 2.475,
+      "potencia_outorgada_mw": 2.475,
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030069-1.1",
+      "nome": "Reinhofer",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.396,
+      "potencia_outorgada_mw": 0.396,
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.045487-7.1",
+      "nome": "Rio Capivara",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.369,
+      "potencia_outorgada_mw": 1.3698,
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.000984-9.1",
+      "nome": "Governador Bento Munhoz da Rocha Netto (Foz do Areia)",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 1676.0,
+      "potencia_outorgada_mw": 1676.0,
+      "CD_MUN": "4102901",
+      "NM_MUN": "Bituruna"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.032923-1.1",
+      "nome": "Tibagi Montante",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 36.018,
+      "potencia_outorgada_mw": 36.018,
+      "CD_MUN": "4127502",
+      "NM_MUN": "Tibagi"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029780-1.1",
+      "nome": "Usaçúcar - Terra Rica",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 16.5,
+      "potencia_outorgada_mw": 16.5,
+      "CD_MUN": "4127304",
+      "NM_MUN": "Terra Rica"
+    },
+    {
+      "CodCEG": "UTE.RA.PR.029967-7.1",
+      "nome": "Unidade Industrial de Vegetais",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.04,
+      "potencia_outorgada_mw": 0.04,
+      "CD_MUN": "4110953",
+      "NM_MUN": "Itaipulândia"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035763-4.1",
+      "nome": "SANTA RITA DE CASSIA",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.846,
+      "potencia_outorgada_mw": 0.8464,
+      "CD_MUN": "4119202",
+      "NM_MUN": "Pinhalão"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028747-4.1",
+      "nome": "São Francisco",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 14.0,
+      "potencia_outorgada_mw": 14.0,
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.028774-1.1",
+      "nome": "Dois Vizinhos",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 3.0,
+      "potencia_outorgada_mw": 3.0,
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.031704-7.1",
+      "nome": "Toledo Energia Renovavel",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 2.7,
+      "potencia_outorgada_mw": 2.7,
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062904-9.1",
+      "nome": "Agropecuária / Frigorifico Bolson",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.005,
+      "potencia_outorgada_mw": 0.00565,
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062909-0.1",
+      "nome": "Desidrata Foods",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.3,
+      "potencia_outorgada_mw": 0.3,
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028921-3.1",
+      "nome": "Itaguaçu",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 14.0,
+      "potencia_outorgada_mw": 14.0,
+      "CD_MUN": "4119608",
+      "NM_MUN": "Pitanga"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030588-0.1",
+      "nome": "Evo",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4119608",
+      "NM_MUN": "Pitanga"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030606-1.1",
+      "nome": "Benedito",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4119608",
+      "NM_MUN": "Pitanga"
+    },
+    {
+      "CodCEG": "UTE.GN.PR.037896-8.1",
+      "nome": "Barra Bonita I",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 10.319,
+      "potencia_outorgada_mw": 10.319,
+      "CD_MUN": "4119608",
+      "NM_MUN": "Pitanga"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.031470-6.1",
+      "nome": "São Pedro",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.174,
+      "potencia_outorgada_mw": 0.1748,
+      "CD_MUN": "4103222",
+      "NM_MUN": "Bom Sucesso do Sul"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037822-4.1",
+      "nome": "Vila Galupo",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 5.67,
+      "potencia_outorgada_mw": 5.67,
+      "CD_MUN": "4103222",
+      "NM_MUN": "Bom Sucesso do Sul"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.000753-6.1",
+      "nome": "Chaminé",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 18.0,
+      "potencia_outorgada_mw": 18.0,
+      "CD_MUN": "4127601",
+      "NM_MUN": "Tijucas do Sul"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.029282-6.1",
+      "nome": "Piraí",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 9.0,
+      "potencia_outorgada_mw": 9.0,
+      "CD_MUN": "4119400",
+      "NM_MUN": "Piraí do Sul"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.002028-1.1",
+      "nome": "Pedrinho I",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 16.2,
+      "potencia_outorgada_mw": 16.2,
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028251-0.1",
+      "nome": "Cris",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.08,
+      "potencia_outorgada_mw": 0.08,
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029412-8.1",
+      "nome": "Rio Bonito I",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.4,
+      "potencia_outorgada_mw": 0.4,
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029413-6.1",
+      "nome": "Rio Bonito I I",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.91,
+      "potencia_outorgada_mw": 0.91,
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035484-8.1",
+      "nome": "CABEÇA DE PATO",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.6,
+      "potencia_outorgada_mw": 1.6,
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.038205-1.1",
+      "nome": "Rio Bonito I I I",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.000771-4.2",
+      "nome": "Chopim I",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.98,
+      "potencia_outorgada_mw": 1.98,
+      "CD_MUN": "4111209",
+      "NM_MUN": "Itapejara d'Oeste"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.027549-2.1",
+      "nome": "Vitorino",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 5.28,
+      "potencia_outorgada_mw": 5.28,
+      "CD_MUN": "4111209",
+      "NM_MUN": "Itapejara d'Oeste"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033218-6.1",
+      "nome": "ZENAPLAST",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.8,
+      "potencia_outorgada_mw": 0.8,
+      "CD_MUN": "4102406",
+      "NM_MUN": "Bandeirantes"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028149-2.1",
+      "nome": "Santa Terezinha",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 50.5,
+      "potencia_outorgada_mw": 50.5,
+      "CD_MUN": "4126801",
+      "NM_MUN": "Tapejara"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.002654-9.1",
+      "nome": "Salto Mauá",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 16.319,
+      "potencia_outorgada_mw": 16.319,
+      "CD_MUN": "4127106",
+      "NM_MUN": "Telêmaco Borba"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.027769-0.1",
+      "nome": "Klabin",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 113.25,
+      "potencia_outorgada_mw": 113.25,
+      "CD_MUN": "4127106",
+      "NM_MUN": "Telêmaco Borba"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.029598-1.1",
+      "nome": "Governador Jayme Canet Junior (Antiga MAUÁ)",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 363.138,
+      "potencia_outorgada_mw": 361.0,
+      "CD_MUN": "4127106",
+      "NM_MUN": "Telêmaco Borba"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028144-1.1",
+      "nome": "Perobálcool",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.4,
+      "potencia_outorgada_mw": 2.4,
+      "CD_MUN": "4118857",
+      "NM_MUN": "Perobal"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035340-0.1",
+      "nome": "Zeca Golin (Antiga Fazenda do Salto)",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 9.85,
+      "potencia_outorgada_mw": 9.85,
+      "CD_MUN": "4110052",
+      "NM_MUN": "Iguatu"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.037131-9.1",
+      "nome": "Maxim Engenharia Elétrica",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.002,
+      "potencia_outorgada_mw": 0.002,
+      "CD_MUN": "4126504",
+      "NM_MUN": "Sertanópolis"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001231-9.2",
+      "nome": "Jaguaricatu II",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 2.64,
+      "potencia_outorgada_mw": 2.64,
+      "CD_MUN": "4126306",
+      "NM_MUN": "Sengés"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028017-8.2",
+      "nome": "Jaguaricatu I",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 2.0,
+      "potencia_outorgada_mw": 2.0,
+      "CD_MUN": "4126306",
+      "NM_MUN": "Sengés"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035006-0.1",
+      "nome": "Macacos",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 9.9,
+      "potencia_outorgada_mw": 9.9,
+      "CD_MUN": "4126306",
+      "NM_MUN": "Sengés"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.044809-5.1",
+      "nome": "Caldeira 6 Kairós",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 3.2,
+      "potencia_outorgada_mw": 3.2,
+      "CD_MUN": "4126306",
+      "NM_MUN": "Sengés"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028139-5.1",
+      "nome": "Santa Terezinha Paranacity",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 36.0,
+      "potencia_outorgada_mw": 36.0,
+      "CD_MUN": "4118105",
+      "NM_MUN": "Paranacity"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029927-8.1",
+      "nome": "Heringer",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 6.0,
+      "potencia_outorgada_mw": 6.0,
+      "CD_MUN": "4118204",
+      "NM_MUN": "Paranaguá"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030216-3.1",
+      "nome": "Romani",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.48,
+      "potencia_outorgada_mw": 0.48,
+      "CD_MUN": "4118204",
+      "NM_MUN": "Paranaguá"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030521-9.1",
+      "nome": "Cofama Ind. e Com. de Máquinas e Equipamentos",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.8,
+      "potencia_outorgada_mw": 0.8,
+      "CD_MUN": "4101705",
+      "NM_MUN": "Araruna"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.031076-0.1",
+      "nome": "AJ Rorato",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.19,
+      "potencia_outorgada_mw": 2.19,
+      "CD_MUN": "4101705",
+      "NM_MUN": "Araruna"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.072383-5.1",
+      "nome": "Gg - Vendramini - Araruna",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.189,
+      "potencia_outorgada_mw": 0.1896,
+      "CD_MUN": "4101705",
+      "NM_MUN": "Araruna"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.002195-4.1",
+      "nome": "Refinaria Presidente Getúlio Vargas (REPAR)",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 52.0,
+      "potencia_outorgada_mw": 52.0,
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária"
+    },
+    {
+      "CodCEG": "UTE.GN.PR.027733-9.1",
+      "nome": "Araucária",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 484.15,
+      "potencia_outorgada_mw": 484.15,
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária"
+    },
+    {
+      "CodCEG": "UTE.GN.PR.029242-7.1",
+      "nome": "Imcopa",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 7.0,
+      "potencia_outorgada_mw": 7.0,
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.029993-6.1",
+      "nome": "Berneck",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 13.6,
+      "potencia_outorgada_mw": 13.6,
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária"
+    },
+    {
+      "CodCEG": "UTE.GN.PR.032625-9.1",
+      "nome": "Sistema backup de geração da Estação de Compressão de Araucária/PR",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.52,
+      "potencia_outorgada_mw": 0.52,
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.030724-6.1",
+      "nome": "Geo Elétrica Tamboara",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 10.026,
+      "potencia_outorgada_mw": 10.026,
+      "CD_MUN": "4126702",
+      "NM_MUN": "Tamboara"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002576-3.1",
+      "nome": "Salto da Alemoa",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.828,
+      "potencia_outorgada_mw": 0.828,
+      "CD_MUN": "4118501",
+      "NM_MUN": "Pato Branco"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033941-5.1",
+      "nome": "INPLASUL",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 3.624,
+      "potencia_outorgada_mw": 3.624,
+      "CD_MUN": "4118501",
+      "NM_MUN": "Pato Branco"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.000122-8.1",
+      "nome": "Apucaraninha",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 10.0,
+      "potencia_outorgada_mw": 10.0,
+      "CD_MUN": "4126678",
+      "NM_MUN": "Tamarana"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029965-0.1",
+      "nome": "Tamarana",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.456,
+      "potencia_outorgada_mw": 0.456,
+      "CD_MUN": "4126678",
+      "NM_MUN": "Tamarana"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.032036-6.1",
+      "nome": "do garcia",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.736,
+      "potencia_outorgada_mw": 0.736,
+      "CD_MUN": "4102000",
+      "NM_MUN": "Assis Chateaubriand"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029793-3.1",
+      "nome": "Difrane Artefatos de Papel",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.48,
+      "potencia_outorgada_mw": 0.48,
+      "CD_MUN": "4101408",
+      "NM_MUN": "Apucarana"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033052-3.1",
+      "nome": "Paranatex",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 1.211,
+      "potencia_outorgada_mw": 1.2112,
+      "CD_MUN": "4101408",
+      "NM_MUN": "Apucarana"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033315-8.1",
+      "nome": "APUCARANA - 1",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.064,
+      "potencia_outorgada_mw": 0.0648,
+      "CD_MUN": "4101408",
+      "NM_MUN": "Apucarana"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028146-8.1",
+      "nome": "Vale do Ivaí",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 18.4,
+      "potencia_outorgada_mw": 18.4,
+      "CD_MUN": "4125803",
+      "NM_MUN": "São Pedro do Ivaí"
+    },
+    {
+      "CodCEG": "EOL.CV.PR.027908-0.1",
+      "nome": "Palmas (Antiga Eólio - Elétrica de Palmas)",
+      "tipo": "EOL",
+      "potencia_fiscalizada_mw": 2.5,
+      "potencia_outorgada_mw": 2.5,
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028732-6.1",
+      "nome": "Joaquim Fernandes Luiz",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.951,
+      "potencia_outorgada_mw": 0.951,
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028902-7.1",
+      "nome": "Lontras",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.612,
+      "potencia_outorgada_mw": 0.612,
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029431-4.1",
+      "nome": "Salto Estrela",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 2.23,
+      "potencia_outorgada_mw": 2.23,
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030604-5.1",
+      "nome": "Posto Horizonte",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.63,
+      "potencia_outorgada_mw": 0.63,
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.032876-6.1",
+      "nome": "Salto Santo Antônio",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.846,
+      "potencia_outorgada_mw": 0.8464,
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.028246-4.1",
+      "nome": "Ecoluz",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 12.33,
+      "potencia_outorgada_mw": 12.33,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.028994-9.1",
+      "nome": "Salto Curucaca (Antiga Salto Curucaca II)",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 37.042,
+      "potencia_outorgada_mw": 37.042,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.029768-2.1",
+      "nome": "Santa Maria",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 6.4,
+      "potencia_outorgada_mw": 6.4,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030241-4.1",
+      "nome": "Rio das Mortes",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.627,
+      "potencia_outorgada_mw": 0.627,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030486-7.1",
+      "nome": "Supermercados",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.41,
+      "potencia_outorgada_mw": 0.41,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035416-3.1",
+      "nome": "Três Capões Novo",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 10.0,
+      "potencia_outorgada_mw": 10.0,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035731-6.1",
+      "nome": "Enxadrista",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035802-9.1",
+      "nome": "Pinho Past",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.927,
+      "potencia_outorgada_mw": 0.927,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.036914-4.1",
+      "nome": "Taguá",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 6.6,
+      "potencia_outorgada_mw": 6.6,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.038250-7.1",
+      "nome": "Parque I",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 4.72,
+      "potencia_outorgada_mw": 4.72,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.046701-4.3",
+      "nome": "Carlota",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.225,
+      "potencia_outorgada_mw": 0.225,
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028882-9.1",
+      "nome": "Cotia",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4101200",
+      "NM_MUN": "Antonina"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.002672-7.1",
+      "nome": "Salto Santiago",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 1420.0,
+      "potencia_outorgada_mw": 1420.0,
+      "CD_MUN": "4126272",
+      "NM_MUN": "Saudade do Iguaçu"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035334-5.1",
+      "nome": "Tigrinho",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072969-8.1",
+      "nome": "Maria Cecilia Pereira",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.002,
+      "potencia_outorgada_mw": 0.0026,
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072971-0.1",
+      "nome": "P F L G Recapadora",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.06,
+      "potencia_outorgada_mw": 0.06,
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073625-2.1",
+      "nome": "Nilton Dos Santos",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.005,
+      "potencia_outorgada_mw": 0.005,
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073627-9.1",
+      "nome": "Roberto Martins",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.004,
+      "potencia_outorgada_mw": 0.0045,
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.031141-3.1",
+      "nome": "Meridional Meat",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.365,
+      "potencia_outorgada_mw": 0.365,
+      "CD_MUN": "4101507",
+      "NM_MUN": "Arapongas"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.054547-3.1",
+      "nome": "Aesa",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.1,
+      "potencia_outorgada_mw": 0.1,
+      "CD_MUN": "4101507",
+      "NM_MUN": "Arapongas"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.000610-6.1",
+      "nome": "Camifra I",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.074,
+      "potencia_outorgada_mw": 0.07482,
+      "CD_MUN": "4109658",
+      "NM_MUN": "Honório Serpa"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029891-3.1",
+      "nome": "Pinho Fleck",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.279,
+      "potencia_outorgada_mw": 1.279,
+      "CD_MUN": "4109658",
+      "NM_MUN": "Honório Serpa"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029202-8.1",
+      "nome": "São Tomé",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 5.775,
+      "potencia_outorgada_mw": 5.775,
+      "CD_MUN": "4126108",
+      "NM_MUN": "São Tomé"
+    },
+    {
+      "CodCEG": "UTE.RA.PR.049660-0.1",
+      "nome": "C.VALE Upl - Biogás 300 Kw",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.78,
+      "potencia_outorgada_mw": 0.78,
+      "CD_MUN": "4117909",
+      "NM_MUN": "Palotina"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028154-9.1",
+      "nome": "Destilaria de Álcool Ibaiti",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 3.6,
+      "potencia_outorgada_mw": 3.6,
+      "CD_MUN": "4109708",
+      "NM_MUN": "Ibaiti"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.030836-6.1",
+      "nome": "Moinho",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 3.7,
+      "potencia_outorgada_mw": 3.7,
+      "CD_MUN": "4117222",
+      "NM_MUN": "Nova Santa Rosa"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.001075-8.1",
+      "nome": "Guaricana",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 36.0,
+      "potencia_outorgada_mw": 36.0,
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029378-4.1",
+      "nome": "Aeroporto Internacional Afonso Pena",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.984,
+      "potencia_outorgada_mw": 0.984,
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030555-3.1",
+      "nome": "MVC Componentes Plásticos",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.032,
+      "potencia_outorgada_mw": 2.032,
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.031622-9.1",
+      "nome": "Cobertura Estacionamento P1 - Renault",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.019,
+      "potencia_outorgada_mw": 0.0196,
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais"
+    },
+    {
+      "CodCEG": "UTE.GN.PR.033370-0.1",
+      "nome": "O Boticário - Fábrica São José dos Pinhais",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 3.9,
+      "potencia_outorgada_mw": 3.9,
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062077-7.1",
+      "nome": "Comunhao Crista Abba",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.095,
+      "potencia_outorgada_mw": 0.095,
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.031098-0.1",
+      "nome": "Klabin Celulose",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 330.0,
+      "potencia_outorgada_mw": 330.0,
+      "CD_MUN": "4117305",
+      "NM_MUN": "Ortigueira"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.045824-4.1",
+      "nome": "Puma II",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 134.8,
+      "potencia_outorgada_mw": 134.8,
+      "CD_MUN": "4117305",
+      "NM_MUN": "Ortigueira"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.050872-1.1",
+      "nome": "Destilaria Melhoramentos - Nova Londrina",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 10.4,
+      "potencia_outorgada_mw": 10.4,
+      "CD_MUN": "4117107",
+      "NM_MUN": "Nova Londrina"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.031187-1.1",
+      "nome": "Padovani",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.459,
+      "potencia_outorgada_mw": 0.459,
+      "CD_MUN": "4125753",
+      "NM_MUN": "São Pedro do Iguaçu"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029742-9.1",
+      "nome": "Vier Indústria e Comércio do Mate",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.168,
+      "potencia_outorgada_mw": 0.168,
+      "CD_MUN": "4125605",
+      "NM_MUN": "São Mateus do Sul"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001452-4.1",
+      "nome": "Melissa",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.998,
+      "potencia_outorgada_mw": 0.998,
+      "CD_MUN": "4116703",
+      "NM_MUN": "Nova Aurora"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.028227-8.1",
+      "nome": "Pizzatto",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.0,
+      "potencia_outorgada_mw": 2.0,
+      "CD_MUN": "4108502",
+      "NM_MUN": "General Carneiro"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029934-0.1",
+      "nome": "Copacol",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.24,
+      "potencia_outorgada_mw": 0.24,
+      "CD_MUN": "4108601",
+      "NM_MUN": "Goioerê"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.061649-4.1",
+      "nome": "Gilberto Fortis",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.15,
+      "potencia_outorgada_mw": 0.15,
+      "CD_MUN": "4108601",
+      "NM_MUN": "Goioerê"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.071935-8.1",
+      "nome": "Amitec",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.748,
+      "potencia_outorgada_mw": 0.7488,
+      "CD_MUN": "4108601",
+      "NM_MUN": "Goioerê"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074356-9.1",
+      "nome": "Incubatório Goioere",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.075,
+      "potencia_outorgada_mw": 0.075,
+      "CD_MUN": "4108601",
+      "NM_MUN": "Goioerê"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071670-7.1",
+      "nome": "Kapazi",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 1.3,
+      "potencia_outorgada_mw": 1.3,
+      "CD_MUN": "4100400",
+      "NM_MUN": "Almirante Tamandaré"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.034094-4.1",
+      "nome": "Jacaré",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 5.6,
+      "potencia_outorgada_mw": 5.6,
+      "CD_MUN": "4108403",
+      "NM_MUN": "Francisco Beltrão"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.037203-0.1",
+      "nome": "Dario",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.45,
+      "potencia_outorgada_mw": 0.45,
+      "CD_MUN": "4108403",
+      "NM_MUN": "Francisco Beltrão"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.061652-4.1",
+      "nome": "Condusul",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.18,
+      "potencia_outorgada_mw": 0.18,
+      "CD_MUN": "4117008",
+      "NM_MUN": "Nova Fátima"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.030364-0.1",
+      "nome": "Vale do Ivaí - Cambuí",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 3.6,
+      "potencia_outorgada_mw": 3.6,
+      "CD_MUN": "4125001",
+      "NM_MUN": "São João do Ivaí"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030577-4.1",
+      "nome": "Dalba",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4108650",
+      "NM_MUN": "Goioxim"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001501-6.2",
+      "nome": "Marumbi",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 4.8,
+      "potencia_outorgada_mw": 4.8,
+      "CD_MUN": "4116208",
+      "NM_MUN": "Morretes"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028159-0.1",
+      "nome": "Cofercatu",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 4.0,
+      "potencia_outorgada_mw": 4.0,
+      "CD_MUN": "4108007",
+      "NM_MUN": "Florestópolis"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.031034-4.1",
+      "nome": "UFL",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 42.0,
+      "potencia_outorgada_mw": 46.0,
+      "CD_MUN": "4108007",
+      "NM_MUN": "Florestópolis"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028150-6.1",
+      "nome": "Goioerê",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 15.0,
+      "potencia_outorgada_mw": 15.0,
+      "CD_MUN": "4116109",
+      "NM_MUN": "Moreira Sales"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.001161-4.1",
+      "nome": "Itaipu (Parte Brasileira)",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 7000.0,
+      "potencia_outorgada_mw": 7000.0,
+      "CD_MUN": "4108304",
+      "NM_MUN": "Foz do Iguaçu"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029349-0.1",
+      "nome": "Aeroporto Internacional de Foz do Iguaçu - Cataratas",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.4,
+      "potencia_outorgada_mw": 0.4,
+      "CD_MUN": "4108304",
+      "NM_MUN": "Foz do Iguaçu"
+    },
+    {
+      "CodCEG": "UTE.RA.PR.029968-5.1",
+      "nome": "ETE Ouro Verde",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.02,
+      "potencia_outorgada_mw": 0.02,
+      "CD_MUN": "4108304",
+      "NM_MUN": "Foz do Iguaçu"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029575-2.1",
+      "nome": "USI (Antiga Unidade Santo Inácio - USI)",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 35.0,
+      "potencia_outorgada_mw": 35.0,
+      "CD_MUN": "4124509",
+      "NM_MUN": "Santo Inácio"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.031968-6.1",
+      "nome": "USI BIO",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 43.0,
+      "potencia_outorgada_mw": 43.0,
+      "CD_MUN": "4124509",
+      "NM_MUN": "Santo Inácio"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028148-4.1",
+      "nome": "Bio Coopcana",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 50.0,
+      "potencia_outorgada_mw": 50.0,
+      "CD_MUN": "4124608",
+      "NM_MUN": "São Carlos do Ivaí"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028884-5.1",
+      "nome": "Termocana",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 9.5,
+      "potencia_outorgada_mw": 9.5,
+      "CD_MUN": "4124608",
+      "NM_MUN": "São Carlos do Ivaí"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.066950-4.1",
+      "nome": "Supermercado Picoli",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.12,
+      "potencia_outorgada_mw": 0.12,
+      "CD_MUN": "4115705",
+      "NM_MUN": "Matinhos"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028151-4.1",
+      "nome": "Sabarálcool",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 4.365,
+      "potencia_outorgada_mw": 4.365,
+      "CD_MUN": "4107504",
+      "NM_MUN": "Engenheiro Beltrão"
+    },
+    {
+      "CodCEG": "UTE.RA.PR.029966-9.1",
+      "nome": "Unidade Industrial de Aves",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.16,
+      "potencia_outorgada_mw": 0.16,
+      "CD_MUN": "4115606",
+      "NM_MUN": "Matelândia"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030974-5.1",
+      "nome": "Cooperativa Agroindustrial LAR",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 10.8,
+      "potencia_outorgada_mw": 10.8,
+      "CD_MUN": "4115606",
+      "NM_MUN": "Matelândia"
+    },
+    {
+      "CodCEG": "UTE.RU.PR.035069-9.4",
+      "nome": "Curitiba Energia",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 9.982,
+      "potencia_outorgada_mw": 9.982,
+      "CD_MUN": "4107652",
+      "NM_MUN": "Fazenda Rio Grande"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028152-2.1",
+      "nome": "Iguatemi (Antiga Santa Terezinha - Iguatemi)",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 3.4,
+      "potencia_outorgada_mw": 3.4,
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029201-0.1",
+      "nome": "Cocamar Maringá",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 13.0,
+      "potencia_outorgada_mw": 13.0,
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032751-4.1",
+      "nome": "CATUAÍ MARINGÁ",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.8,
+      "potencia_outorgada_mw": 2.8,
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033363-8.1",
+      "nome": "MARINGA - 1",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.064,
+      "potencia_outorgada_mw": 0.0648,
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033398-0.1",
+      "nome": "Atacadão Maringá",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.144,
+      "potencia_outorgada_mw": 0.144,
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062908-1.1",
+      "nome": "Veneza Administradora De Bens E Participacoes - Kofemar",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.12,
+      "potencia_outorgada_mw": 0.12,
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.071335-0.1",
+      "nome": "Hospital Unimed Maringa Backup",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.364,
+      "potencia_outorgada_mw": 0.3648,
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071630-8.1",
+      "nome": "Jardins De Monet - Loteamentos Urbanos - Termas",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.175,
+      "potencia_outorgada_mw": 0.175,
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074893-5.1",
+      "nome": "Aquario Kidasen",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.5,
+      "potencia_outorgada_mw": 0.5,
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029686-4.1",
+      "nome": "Salto Bandeirantes",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 4.2,
+      "potencia_outorgada_mw": 4.2,
+      "CD_MUN": "4123402",
+      "NM_MUN": "Santa Fé"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030592-8.1",
+      "nome": "Peróxidos do Brasil",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 3.0,
+      "potencia_outorgada_mw": 3.0,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.031167-7.1",
+      "nome": "Volpato",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.0,
+      "potencia_outorgada_mw": 0.00046,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032656-9.1",
+      "nome": "GPA - Loja1318",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.72,
+      "potencia_outorgada_mw": 0.72,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032675-5.1",
+      "nome": "GPA - Loja1303",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.496,
+      "potencia_outorgada_mw": 0.496,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032735-2.1",
+      "nome": "CRYSTAL PLAZA SHOPPING",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.405,
+      "potencia_outorgada_mw": 0.405,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032767-0.1",
+      "nome": "BIGFER PARANA",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 1.24,
+      "potencia_outorgada_mw": 1.24,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032841-3.1",
+      "nome": "SHOPPING ESTAÇÃO",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 1.773,
+      "potencia_outorgada_mw": 1.7736,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032855-3.1",
+      "nome": "SHOPPING ESTAÇÃO OFFICE",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.592,
+      "potencia_outorgada_mw": 2.592,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033195-3.1",
+      "nome": "PLÁSTICOS PARANÁ",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 1.76,
+      "potencia_outorgada_mw": 1.76,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033489-8.1",
+      "nome": "CTA-MR",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.016,
+      "potencia_outorgada_mw": 2.016,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.054838-3.1",
+      "nome": "Condor Wb",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.456,
+      "potencia_outorgada_mw": 0.456,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.056510-5.1",
+      "nome": "Condor Santa Quiteria",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.42,
+      "potencia_outorgada_mw": 0.42,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.056607-1.1",
+      "nome": "Condor João Bettega",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.42,
+      "potencia_outorgada_mw": 0.42,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062082-3.1",
+      "nome": "Condor Derosso",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.456,
+      "potencia_outorgada_mw": 0.456,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062907-3.1",
+      "nome": "Wozniak & Alves",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.095,
+      "potencia_outorgada_mw": 0.095,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.064443-9.1",
+      "nome": "Cracco Park Hotel",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.144,
+      "potencia_outorgada_mw": 0.144,
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.036938-1.1",
+      "nome": "Cobre Km 19",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 14.2,
+      "potencia_outorgada_mw": 14.2,
+      "CD_MUN": "4115457",
+      "NM_MUN": "Marquinho"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071750-9.1",
+      "nome": "Ape Gazin Móveis (matriz)",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4107256",
+      "NM_MUN": "Douradina"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071753-3.1",
+      "nome": "Ape Gazin Molas",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4107256",
+      "NM_MUN": "Douradina"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.037232-3.1",
+      "nome": "de Cima",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.24,
+      "potencia_outorgada_mw": 0.24,
+      "CD_MUN": "4115408",
+      "NM_MUN": "Marmeleiro"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.037347-8.1",
+      "nome": "do Park",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.4,
+      "potencia_outorgada_mw": 0.4,
+      "CD_MUN": "4115408",
+      "NM_MUN": "Marmeleiro"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028998-1.1",
+      "nome": "Foz do Estrela",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 29.5,
+      "potencia_outorgada_mw": 29.5,
+      "CD_MUN": "4106456",
+      "NM_MUN": "Coronel Domingos Soares"
+    },
+    {
+      "CodCEG": "UTE.RA.PR.030635-5.1",
+      "nome": "Ajuricaba",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.08,
+      "potencia_outorgada_mw": 0.08,
+      "CD_MUN": "4114609",
+      "NM_MUN": "Marechal Cândido Rondon"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032489-2.1",
+      "nome": "COOPERATIVA AGROINDUSTRIAL COPAGRIL",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 5.44,
+      "potencia_outorgada_mw": 5.44,
+      "CD_MUN": "4114609",
+      "NM_MUN": "Marechal Cândido Rondon"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029893-0.1",
+      "nome": "Rio das Antas",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.97,
+      "potencia_outorgada_mw": 0.97,
+      "CD_MUN": "4114906",
+      "NM_MUN": "Marilândia do Sul"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002642-5.1",
+      "nome": "Salto do Vau",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.94,
+      "potencia_outorgada_mw": 0.94,
+      "CD_MUN": "4106803",
+      "NM_MUN": "Cruz Machado"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028066-6.1",
+      "nome": "Palmital do Meio",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.085,
+      "potencia_outorgada_mw": 0.085,
+      "CD_MUN": "4106803",
+      "NM_MUN": "Cruz Machado"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.001278-5.1",
+      "nome": "Arturo Andreoli (Antiga Júlio de Mesquita Filho)",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 29.072,
+      "potencia_outorgada_mw": 29.072,
+      "CD_MUN": "4106571",
+      "NM_MUN": "Cruzeiro do Iguaçu"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037573-0.2",
+      "nome": "Generoso",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 8.0,
+      "potencia_outorgada_mw": 8.0,
+      "CD_MUN": "4106571",
+      "NM_MUN": "Cruzeiro do Iguaçu"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.043224-5.1",
+      "nome": "Dallon Solar",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.15,
+      "potencia_outorgada_mw": 0.15,
+      "CD_MUN": "4122404",
+      "NM_MUN": "Rolândia"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.027557-3.2",
+      "nome": "Santa Cruz",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.5,
+      "potencia_outorgada_mw": 1.5,
+      "CD_MUN": "4122206",
+      "NM_MUN": "Rio Branco do Sul"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.028499-8.1",
+      "nome": "Processamento de Fumo",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.9,
+      "potencia_outorgada_mw": 0.9,
+      "CD_MUN": "4122305",
+      "NM_MUN": "Rio Negro"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030097-7.1",
+      "nome": "Eternit",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.96,
+      "potencia_outorgada_mw": 2.96,
+      "CD_MUN": "4105805",
+      "NM_MUN": "Colombo"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032985-1.1",
+      "nome": "BRADO COLOMBO",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.36,
+      "potencia_outorgada_mw": 0.36,
+      "CD_MUN": "4105805",
+      "NM_MUN": "Colombo"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029505-1.1",
+      "nome": "Córrego Fundo",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 10.0,
+      "potencia_outorgada_mw": 10.0,
+      "CD_MUN": "4105904",
+      "NM_MUN": "Colorado"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.051729-1.1",
+      "nome": "UJU Bio",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 85.0,
+      "potencia_outorgada_mw": 85.0,
+      "CD_MUN": "4105904",
+      "NM_MUN": "Colorado"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028041-0.1",
+      "nome": "Coocarol",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 10.0,
+      "potencia_outorgada_mw": 10.0,
+      "CD_MUN": "4122602",
+      "NM_MUN": "Rondon"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.002715-4.1",
+      "nome": "Governador Ney Aminthas de Barros Braga (Segredo)",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 1260.0,
+      "potencia_outorgada_mw": 1260.0,
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029222-2.1",
+      "nome": "Tigre",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 9.0,
+      "potencia_outorgada_mw": 9.0,
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029411-0.2",
+      "nome": "Covó",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 5.0,
+      "potencia_outorgada_mw": 5.0,
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.032511-2.1",
+      "nome": "Canhadão",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 10.0,
+      "potencia_outorgada_mw": 10.0,
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035800-2.1",
+      "nome": "Invernadinha",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 18.0,
+      "potencia_outorgada_mw": 18.0,
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035801-0.1",
+      "nome": "Forquilha",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 5.5,
+      "potencia_outorgada_mw": 5.5,
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028783-0.1",
+      "nome": "Cristalino",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 4.0,
+      "potencia_outorgada_mw": 4.0,
+      "CD_MUN": "4114500",
+      "NM_MUN": "Manoel Ribas"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.040813-1.1",
+      "nome": "Bandiera Ronfim",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 2.16,
+      "potencia_outorgada_mw": 2.16,
+      "CD_MUN": "4106308",
+      "NM_MUN": "Corbélia"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029350-4.1",
+      "nome": "Aeroporto de Londrina",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.876,
+      "potencia_outorgada_mw": 0.876,
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032670-4.1",
+      "nome": "LONDRINA NORTE SHOPPING",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.5,
+      "potencia_outorgada_mw": 2.5,
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033316-6.1",
+      "nome": "LONDRINA - 1",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.2,
+      "potencia_outorgada_mw": 0.2,
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033463-4.1",
+      "nome": "Catuai Shopping Center Londrina",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 2.899,
+      "potencia_outorgada_mw": 2.8992,
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.064850-7.1",
+      "nome": "Sonhart 208",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.208,
+      "potencia_outorgada_mw": 0.208,
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029936-7.1",
+      "nome": "Lavinorte",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.728,
+      "potencia_outorgada_mw": 0.728,
+      "CD_MUN": "4105508",
+      "NM_MUN": "Cianorte"
+    },
+    {
+      "CodCEG": "UTE.RA.PR.029985-5.1",
+      "nome": "Star Milk",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.11,
+      "potencia_outorgada_mw": 0.11,
+      "CD_MUN": "4105300",
+      "NM_MUN": "Céu Azul"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002675-1.1",
+      "nome": "Salto São Luiz",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.323,
+      "potencia_outorgada_mw": 0.323,
+      "CD_MUN": "4105409",
+      "NM_MUN": "Chopinzinho"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.002398-1.1",
+      "nome": "Derivação do Rio Jordão",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 6.5,
+      "potencia_outorgada_mw": 6.5,
+      "CD_MUN": "4121752",
+      "NM_MUN": "Reserva do Iguaçu"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.027174-8.1",
+      "nome": "Barra",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 4.32,
+      "potencia_outorgada_mw": 4.32,
+      "CD_MUN": "4121752",
+      "NM_MUN": "Reserva do Iguaçu"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002592-5.2",
+      "nome": "Salto Claudelino",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 2.8,
+      "potencia_outorgada_mw": 2.8,
+      "CD_MUN": "4105706",
+      "NM_MUN": "Clevelândia"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037258-7.1",
+      "nome": "Tito",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 30.0,
+      "potencia_outorgada_mw": 30.0,
+      "CD_MUN": "4105706",
+      "NM_MUN": "Clevelândia"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.038337-6.1",
+      "nome": "ARFIMAC",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.469,
+      "potencia_outorgada_mw": 0.4696,
+      "CD_MUN": "4105706",
+      "NM_MUN": "Clevelândia"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029144-7.1",
+      "nome": "Usaciga",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 40.0,
+      "potencia_outorgada_mw": 40.0,
+      "CD_MUN": "4105607",
+      "NM_MUN": "Cidade Gaúcha"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001937-2.2",
+      "nome": "Paina II",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.2,
+      "potencia_outorgada_mw": 1.2,
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002758-8.1",
+      "nome": "Paina (Socavão)",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.736,
+      "potencia_outorgada_mw": 0.736,
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.032513-9.1",
+      "nome": "Castro",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 4.0,
+      "potencia_outorgada_mw": 4.0,
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033394-8.1",
+      "nome": "Cogeracao Diesel - Cargilll de Castro Pr",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 1.801,
+      "potencia_outorgada_mw": 1.80115,
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.034438-9.1",
+      "nome": "Pulo",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 8.4,
+      "potencia_outorgada_mw": 8.4,
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.064444-7.1",
+      "nome": "Garajeira 1m",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0,
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028419-0.1",
+      "nome": "Lucia Cherobim",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 28.0,
+      "potencia_outorgada_mw": 28.0,
+      "CD_MUN": "4113205",
+      "NM_MUN": "Lapa"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028074-7.1",
+      "nome": "Destilaria Melhoramentos",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 40.0,
+      "potencia_outorgada_mw": 40.0,
+      "CD_MUN": "4113007",
+      "NM_MUN": "Jussara"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029797-6.1",
+      "nome": "Supermercado Menegatti",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.062,
+      "potencia_outorgada_mw": 0.062,
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029930-8.1",
+      "nome": "Gurgacz",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.728,
+      "potencia_outorgada_mw": 0.728,
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029938-3.1",
+      "nome": "U.E.Cascavel",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.648,
+      "potencia_outorgada_mw": 0.648,
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel"
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033375-1.1",
+      "nome": "CASCAVEL - 1",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 0.129,
+      "potencia_outorgada_mw": 0.1296,
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.063850-1.1",
+      "nome": "Sabrina Tussi",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.1,
+      "potencia_outorgada_mw": 0.1,
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.063851-0.1",
+      "nome": "Delir Rosset",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.1,
+      "potencia_outorgada_mw": 0.1,
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073208-7.1",
+      "nome": "Univel",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.7,
+      "potencia_outorgada_mw": 0.7,
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037757-0.1",
+      "nome": "Bedim",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 6.0,
+      "potencia_outorgada_mw": 6.0,
+      "CD_MUN": "4121604",
+      "NM_MUN": "Renascença"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029180-3.1",
+      "nome": "Cantú 2",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 19.807,
+      "potencia_outorgada_mw": 19.85659,
+      "CD_MUN": "4113254",
+      "NM_MUN": "Laranjal"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.032690-9.1",
+      "nome": "Tapera 2a",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 4.5,
+      "potencia_outorgada_mw": 4.5,
+      "CD_MUN": "4113304",
+      "NM_MUN": "Laranjeiras do Sul"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028632-0.1",
+      "nome": "Bainha",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.32,
+      "potencia_outorgada_mw": 0.32,
+      "CD_MUN": "4104451",
+      "NM_MUN": "Cantagalo"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.034241-6.1",
+      "nome": "Cavernoso IV",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 6.0,
+      "potencia_outorgada_mw": 6.0,
+      "CD_MUN": "4104451",
+      "NM_MUN": "Cantagalo"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.000640-8.1",
+      "nome": "Candói",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.824,
+      "potencia_outorgada_mw": 0.824,
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.000729-3.1",
+      "nome": "Cavernoso",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 1.3,
+      "potencia_outorgada_mw": 1.3,
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.028361-4.1",
+      "nome": "Santa Clara",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 120.168,
+      "potencia_outorgada_mw": 120.168,
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028850-0.1",
+      "nome": "Santa Clara I",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 3.6,
+      "potencia_outorgada_mw": 3.6,
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.030458-1.1",
+      "nome": "Cavernoso II",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 19.008,
+      "potencia_outorgada_mw": 19.008,
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.001509-1.2",
+      "nome": "Mourão I",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 8.2,
+      "potencia_outorgada_mw": 8.2,
+      "CD_MUN": "4104303",
+      "NM_MUN": "Campo Mourão"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.027879-3.1",
+      "nome": "Salto Natal",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 15.12,
+      "potencia_outorgada_mw": 15.12,
+      "CD_MUN": "4104303",
+      "NM_MUN": "Campo Mourão"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030613-4.1",
+      "nome": "Casali II",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.105,
+      "potencia_outorgada_mw": 0.10562,
+      "CD_MUN": "4104303",
+      "NM_MUN": "Campo Mourão"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.034015-4.2",
+      "nome": "Ouro Branco",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 4.0,
+      "potencia_outorgada_mw": 4.0,
+      "CD_MUN": "4104303",
+      "NM_MUN": "Campo Mourão"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.029738-0.1",
+      "nome": "Energy Green",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 5.0,
+      "potencia_outorgada_mw": 5.0,
+      "CD_MUN": "4104659",
+      "NM_MUN": "Carambeí"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071623-5.1",
+      "nome": "Frisia",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.26,
+      "potencia_outorgada_mw": 0.26,
+      "CD_MUN": "4104659",
+      "NM_MUN": "Carambeí"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.002659-0.1",
+      "nome": "Salto Osório",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 1103.67,
+      "potencia_outorgada_mw": 1103.67,
+      "CD_MUN": "4120903",
+      "NM_MUN": "Quedas do Iguaçu"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.002591-7.1",
+      "nome": "Governador José Richa (Salto Caxias)",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 1240.0,
+      "potencia_outorgada_mw": 1240.0,
+      "CD_MUN": "4104600",
+      "NM_MUN": "Capitão Leônidas Marques"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.030923-0.1",
+      "nome": "Baixo Iguaçu",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 350.2,
+      "potencia_outorgada_mw": 350.2,
+      "CD_MUN": "4104600",
+      "NM_MUN": "Capitão Leônidas Marques"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002628-0.1",
+      "nome": "Salto do Jardim",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.19,
+      "potencia_outorgada_mw": 1.19,
+      "CD_MUN": "4120309",
+      "NM_MUN": "Porto Vitória"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028162-0.1",
+      "nome": "Cooperval",
+      "tipo": "UTE",
+      "potencia_fiscalizada_mw": 4.0,
+      "potencia_outorgada_mw": 4.0,
+      "CD_MUN": "4112108",
+      "NM_MUN": "Jandaia do Sul"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.066945-8.1",
+      "nome": "Fazenda Panorama",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 0.96,
+      "potencia_outorgada_mw": 0.96,
+      "CD_MUN": "4112108",
+      "NM_MUN": "Jandaia do Sul"
+    },
+    {
+      "CodCEG": "UHE.PH.PR.001042-1.1",
+      "nome": "Governador Pedro Viriato Parigot de Souza (Capivari/Cachoeira)",
+      "tipo": "UHE",
+      "potencia_fiscalizada_mw": 260.0,
+      "potencia_outorgada_mw": 260.0,
+      "CD_MUN": "4104006",
+      "NM_MUN": "Campina Grande do Sul"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028782-2.1",
+      "nome": "Novo Horizonte",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 23.0,
+      "potencia_outorgada_mw": 23.0,
+      "CD_MUN": "4104006",
+      "NM_MUN": "Campina Grande do Sul"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028250-2.1",
+      "nome": "Nerinha",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 0.04,
+      "potencia_outorgada_mw": 0.04,
+      "CD_MUN": "4103958",
+      "NM_MUN": "Campina do Simão"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001549-0.2",
+      "nome": "Nova Jaguariaíva",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.218,
+      "potencia_outorgada_mw": 1.21875,
+      "CD_MUN": "4112009",
+      "NM_MUN": "Jaguariaíva"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.002046-0.1",
+      "nome": "Pesqueiro",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 12.44,
+      "potencia_outorgada_mw": 10.96,
+      "CD_MUN": "4112009",
+      "NM_MUN": "Jaguariaíva"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.033372-7.1",
+      "nome": "Velha",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.00001,
+      "CD_MUN": "4112009",
+      "NM_MUN": "Jaguariaíva"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002670-0.2",
+      "nome": "Salto Rio Branco",
+      "tipo": "CGH",
+      "potencia_fiscalizada_mw": 4.191,
+      "potencia_outorgada_mw": 4.19152,
+      "CD_MUN": "4120606",
+      "NM_MUN": "Prudentópolis"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029068-8.1",
+      "nome": "Confluência",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 27.435,
+      "potencia_outorgada_mw": 27.435,
+      "CD_MUN": "4120606",
+      "NM_MUN": "Prudentópolis"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.033975-0.1",
+      "nome": "Dois Saltos",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 30.0,
+      "potencia_outorgada_mw": 30.0,
+      "CD_MUN": "4120606",
+      "NM_MUN": "Prudentópolis"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035146-6.1",
+      "nome": "São João II",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 7.0,
+      "potencia_outorgada_mw": 7.0,
+      "CD_MUN": "4120606",
+      "NM_MUN": "Prudentópolis"
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029576-0.1",
+      "nome": "Bela Vista",
+      "tipo": "PCH",
+      "potencia_fiscalizada_mw": 29.81,
+      "potencia_outorgada_mw": 29.81,
+      "CD_MUN": "4128609",
+      "NM_MUN": "Verê"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072973-6.1",
+      "nome": "Procópio Indústria E Comércio",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 1.3,
+      "potencia_outorgada_mw": 1.3,
+      "CD_MUN": "4104204",
+      "NM_MUN": "Campo Largo"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072978-7.1",
+      "nome": "Sig",
+      "tipo": "UFV",
+      "potencia_fiscalizada_mw": 2.33,
+      "potencia_outorgada_mw": 2.33,
+      "CD_MUN": "4104204",
+      "NM_MUN": "Campo Largo"
+    },
+    {
+      "CodCEG": "UTE.FL.PR.028137-9.1",
+      "nome": "Miguel Forte",
+      "fase": "Operação",
+      "tipo": "UTE",
+      "match_status": "unmatched_geometry",
+      "municipios_declarados": "União da Vitória - PR",
+      "potencia_fiscalizada_mw": 16.0,
+      "potencia_outorgada_mw": 16.0
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028331-2.1",
+      "nome": "Salto Lili",
+      "fase": "Operação",
+      "tipo": "CGH",
+      "match_status": "unmatched_geometry",
+      "municipios_declarados": "General Carneiro - PR, Matos Costa - SC",
+      "potencia_fiscalizada_mw": 0.16,
+      "potencia_outorgada_mw": 0.16
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029498-5.1",
+      "nome": "Jangada I",
+      "fase": "Operação",
+      "tipo": "CGH",
+      "match_status": "unmatched_geometry",
+      "municipios_declarados": "General Carneiro - PR",
+      "potencia_fiscalizada_mw": 0.563,
+      "potencia_outorgada_mw": 0.56376
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029504-3.1",
+      "nome": "Jangada II",
+      "fase": "Operação",
+      "tipo": "CGH",
+      "match_status": "unmatched_geometry",
+      "municipios_declarados": "General Carneiro - PR",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028157-3.1",
+      "nome": "Usiban (Antiga Açúcar e Álcool Bandeirantes)",
+      "fase": "Operação",
+      "tipo": "UTE",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Bandeirantes - PR",
+      "potencia_fiscalizada_mw": 8.2,
+      "potencia_outorgada_mw": 8.2
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074628-2.1",
+      "nome": "USINA HENRIQUE I",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Ipiranga - PR",
+      "potencia_fiscalizada_mw": 0.6,
+      "potencia_outorgada_mw": 0.6
+    },
+    {
+      "CodCEG": "UTE.AI.PR.074637-1.1",
+      "nome": "JACAREZINHO 2",
+      "fase": "Operação",
+      "tipo": "UTE",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Jacarezinho - PR",
+      "potencia_fiscalizada_mw": 25.0,
+      "potencia_outorgada_mw": 25.0
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074678-9.1",
+      "nome": "APE DIMATEX",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Maringá - PR",
+      "potencia_fiscalizada_mw": 1.75,
+      "potencia_outorgada_mw": 1.75
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074691-6.1",
+      "nome": "BDOIS GERAÇÃO",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Rolândia - PR",
+      "potencia_fiscalizada_mw": 0.3,
+      "potencia_outorgada_mw": 0.3
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074704-1.1",
+      "nome": "ERASTO GAERTNER",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Curitiba - PR",
+      "potencia_fiscalizada_mw": 0.75,
+      "potencia_outorgada_mw": 0.75
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074978-8.1",
+      "nome": "GRID ZERO",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Cambé - PR",
+      "potencia_fiscalizada_mw": 0.16,
+      "potencia_outorgada_mw": 0.16
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075210-0.1",
+      "nome": "CEREAIS MELISSA CNPJ: 76.093.731/0063-93  UC: 104484942",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Cascavel - PR",
+      "potencia_fiscalizada_mw": 0.075,
+      "potencia_outorgada_mw": 0.075
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075215-0.1",
+      "nome": "ALIMENTOS SUMARE",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Paranavaí - PR",
+      "potencia_fiscalizada_mw": 0.4,
+      "potencia_outorgada_mw": 0.4
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075235-5.1",
+      "nome": "APE SUPERMERCADO PLANALTO",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Umuarama - PR",
+      "potencia_fiscalizada_mw": 0.975,
+      "potencia_outorgada_mw": 0.975
+    },
+    {
+      "CodCEG": "CGH.PH.PR.075317-3.1",
+      "nome": "PAMPEANA",
+      "fase": "Operação",
+      "tipo": "CGH",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Clevelândia - PR",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075389-0.1",
+      "nome": "BIOPLAS I",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Cianorte - PR",
+      "potencia_fiscalizada_mw": 0.375,
+      "potencia_outorgada_mw": 0.375
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075494-3.1",
+      "nome": "JC OLIVEIRA I",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Cianorte - PR",
+      "potencia_fiscalizada_mw": 0.3,
+      "potencia_outorgada_mw": 0.3
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075560-5.1",
+      "nome": "STAMPA FOOD",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "São José dos Pinhais - PR",
+      "potencia_fiscalizada_mw": 0.3,
+      "potencia_outorgada_mw": 0.3
+    },
+    {
+      "CodCEG": "CGH.PH.PR.075562-1.1",
+      "nome": "PERBONE",
+      "fase": "Operação",
+      "tipo": "CGH",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Nova Aurora - PR",
+      "potencia_fiscalizada_mw": 2.0,
+      "potencia_outorgada_mw": 2.0
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075583-4.1",
+      "nome": "BIOMA AUTOPRODUTOR",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Fazenda Rio Grande - PR",
+      "potencia_fiscalizada_mw": 0.6,
+      "potencia_outorgada_mw": 0.6
+    },
+    {
+      "CodCEG": "CGH.PH.PR.075591-5.1",
+      "nome": "PINDORAMA",
+      "fase": "Operação",
+      "tipo": "CGH",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Corbélia - PR",
+      "potencia_fiscalizada_mw": 2.0,
+      "potencia_outorgada_mw": 2.0
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076039-0.1",
+      "nome": "CLUBE OLIMPICO DE MARINGA",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Maringá - PR",
+      "potencia_fiscalizada_mw": 0.3,
+      "potencia_outorgada_mw": 0.3
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076072-2.1",
+      "nome": "PRODUCERTA APE",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Pitanga - PR",
+      "potencia_fiscalizada_mw": 0.6,
+      "potencia_outorgada_mw": 0.6
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076423-0.1",
+      "nome": "BONI",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Curitiba - PR",
+      "potencia_fiscalizada_mw": 0.225,
+      "potencia_outorgada_mw": 0.225
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076435-3.1",
+      "nome": "UIO",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Itaipulândia - PR",
+      "potencia_fiscalizada_mw": 1.1,
+      "potencia_outorgada_mw": 1.1
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076436-1.1",
+      "nome": "UIA4",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Marechal Cândido Rondon - PR",
+      "potencia_fiscalizada_mw": 1.1,
+      "potencia_outorgada_mw": 1.1
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076437-0.1",
+      "nome": "URA",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Santa Helena - PR",
+      "potencia_fiscalizada_mw": 1.1,
+      "potencia_outorgada_mw": 1.1
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076438-8.1",
+      "nome": "UPP",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Santa Helena - PR",
+      "potencia_fiscalizada_mw": 1.1,
+      "potencia_outorgada_mw": 1.1
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076439-6.1",
+      "nome": "UPD",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Santa Helena - PR",
+      "potencia_fiscalizada_mw": 1.1,
+      "potencia_outorgada_mw": 1.1
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076440-0.1",
+      "nome": "BOM JESUS",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Medianeira - PR",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076441-8.1",
+      "nome": "SEDE",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Medianeira - PR",
+      "potencia_fiscalizada_mw": 1.0,
+      "potencia_outorgada_mw": 1.0
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076511-2.1",
+      "nome": "BALDUAN SILVEIRA - PERFIL DE ALUMINIO",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Cambé - PR",
+      "potencia_fiscalizada_mw": 0.297,
+      "potencia_outorgada_mw": 0.297
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076762-0.1",
+      "nome": "SERDIA - ZEROGRID",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Curitiba - PR",
+      "potencia_fiscalizada_mw": 0.225,
+      "potencia_outorgada_mw": 0.225
+    },
+    {
+      "CodCEG": "UFV.RS.PR.083014-3.1",
+      "nome": "FRIGOLAN",
+      "fase": "Operação",
+      "tipo": "UFV",
+      "match_status": "missing_coordinates",
+      "municipios_declarados": "Colombo - PR",
+      "potencia_fiscalizada_mw": 0.081,
+      "potencia_outorgada_mw": 0.081
+    }
+  ]
+}
