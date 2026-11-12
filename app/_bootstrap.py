@@ -11,6 +11,7 @@ from geoai.portal import (
     load_energy_panel_bundle,
     load_municipality_layer,
     load_parana_layer,
+    load_population_panel_bundle,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -206,6 +207,11 @@ def cached_municipality_layer():
 @st.cache_resource(show_spinner="Carregando painel energético SIGA…")
 def cached_energy_panel():
     return load_energy_panel_bundle(REPO_ROOT)
+
+
+@st.cache_resource(show_spinner="Carregando população IBGE 2026…")
+def cached_population_panel():
+    return load_population_panel_bundle(REPO_ROOT)
 
 
 @st.cache_resource(show_spinner=False)

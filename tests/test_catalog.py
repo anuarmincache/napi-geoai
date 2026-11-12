@@ -10,6 +10,7 @@ from geoai.connectors.contracts import AccessMode, SourceStatus
 def test_catalog_contains_priority_sources() -> None:
     ids = {s.source_id for s in SOURCE_CATALOG}
     assert "ibge.malhas_municipais.pr_uf_2025" in ids
+    assert "ibge.estimativas_populacao.municipios_2026" in ids
     assert "aneel.siga.empreendimentos_geracao" in ids
     assert "inpe.labren.atlas_solar_2017" in ids
     assert "mapbiomas.brazil.lulc" in ids

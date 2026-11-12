@@ -20,6 +20,7 @@ PAGES = (
     REPO / "app" / "pages" / "4_Sobre_e_deploy.py",
     REPO / "app" / "pages" / "5_Explorador_Territorial.py",
     REPO / "app" / "pages" / "6_Energia_SIGA.py",
+    REPO / "app" / "pages" / "7_Ficha_Municipal.py",
 )
 
 
@@ -89,6 +90,43 @@ def test_explorer_starts_without_forced_city(_streamlit_paths: None) -> None:
     assert not at.exception, at.exception
     info_blobs = "\n".join(str(x.value) for x in at.info)
     assert "Mapa geral" in info_blobs or "399" in info_blobs
+
+
+def test_ficha_municipal_shows_population_semantics(_streamlit_paths: None) -> None:
+    """Ficha exibe estimativa 2026 e deixa claro que não é Censo/MMGD/MWh."""
+
+    from geoai.population.panel import load_population_panel_bundle
+
+    if not load_population_panel_bundle(REPO).available:
+        pytest.skip("painel populacional ausente")
+
+    page = REPO / "app" / "pages" / "7_Ficha_Municipal.py"
+    at = AppTest.from_file(str(page), default_timeout=120)
+    at.run()
+    assert not at.exception, at.exception
+    blobs = "\n".join(
+        [
+            *(str(x.value) for x in at.markdown),
+            *(str(x.value) for x in at.caption),
+            *(str(x.value) for x in at.info),
+            *(str(x.value) for x in at.warning),
+            *(str(m.label) for m in at.metric),
+        ]
+    )
+    assert "2026" in blobs
+    assert "Censo" in blobs or "censo" in blobs.lower()
+    assert any("População estimada" in str(m.label) for m in at.metric)
+    assert "399" in blobs
+    # Semântica energética: status explícito; zero vinculado ≠ absoluto
+    assert any("Status energia SIGA" in str(m.label) for m in at.metric)
+    joined_warn = "\n".join(str(w.value) for w in at.warning).lower()
+    joined_cap = "\n".join(str(c.value) for c in at.caption).lower()
+    assert (
+        "não associados" in joined_warn
+        or "associ" in joined_cap
+        or "vinculado" in joined_cap
+        or "vinculado" in joined_warn
+    )
 
 
 def test_energy_kpis_follow_technology_filter(_streamlit_paths: None) -> None:

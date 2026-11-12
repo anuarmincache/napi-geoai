@@ -5,7 +5,7 @@ from __future__ import annotations
 from geoai.connectors.contracts import AccessMode, SourceSpec, SourceStatus
 
 # Data da consulta documental/HTTP aos portais oficiais (não = data do dado).
-CATALOGUED_AT = "2026-11-07"
+CATALOGUED_AT = "2026-11-11"
 
 SOURCE_CATALOG: tuple[SourceSpec, ...] = (
     SourceSpec(
@@ -69,6 +69,38 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
             "simplificado em data/derived."
         ),
         connector_module="geoai.connectors.ibge",
+    ),
+    SourceSpec(
+        source_id="ibge.estimativas_populacao.municipios_2026",
+        organization="IBGE",
+        product="Estimativas da população residente — municípios 2026",
+        access_mode=AccessMode.HTTP_FILE,
+        entry_url=(
+            "https://www.ibge.gov.br/estatisticas/sociais/populacao/"
+            "9103-estimativas-de-populacao.html"
+        ),
+        download_url=(
+            "https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2026/"
+            "POP2026_20261029.xlsx"
+        ),
+        formats=("xlsx", "ods", "pdf"),
+        license_note=(
+            "IBGE — Estimativas da população residente; citar fonte e edição. "
+            "Não confundir com Censo Demográfico."
+        ),
+        official_update_cadence="anual (referência 1º de julho)",
+        verification_policy="SHA-256 + join estrito 399 CD_MUN × malha 2025",
+        catalogued_at=CATALOGUED_AT,
+        spatial_coverage="Brasil (municípios); painel NAPI = Paraná 399",
+        crs_or_coords="tabular (CD_MUN); malha associada EPSG:4674",
+        granularity="município",
+        auth_required=False,
+        status=SourceStatus.PROTOTYPE,
+        notes=(
+            "MVP 11: edição POP2026_20261029; referência 01/07/2026; "
+            "conector geoai.connectors.ibge_population."
+        ),
+        connector_module="geoai.connectors.ibge_population",
     ),
     SourceSpec(
         source_id="aneel.siga.empreendimentos_geracao",

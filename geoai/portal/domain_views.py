@@ -38,6 +38,7 @@ _AVAILABILITY: dict[DomainId, DomainAvailability] = {
         status="partial",
         available_now_pt=(
             "Painel SIGA/ANEEL: capacidade fiscalizada (MW) por município.",
+            "População IBGE 2026 + densidade e kW/hab (ficha municipal).",
             "Join espacial QGIS + agregados dos 399 municípios IBGE.",
             "Mapa do contorno oficial do Paraná (base territorial).",
             "Catálogo ANEEL/INPE/ONS (MMGD e aptidão solar ainda fora).",
