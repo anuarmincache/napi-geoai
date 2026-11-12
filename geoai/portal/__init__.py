@@ -14,6 +14,15 @@ from geoai.portal.domain_views import (
     list_domain_cards,
     status_label_pt,
 )
+from geoai.portal.energy_panel import (
+    compare_municipal_energy,
+    energy_attribution_lines,
+    energy_map_html,
+    energy_scope_totals,
+    load_energy_panel_bundle,
+    municipalities_ranked,
+    project_municipality_metrics,
+)
 from geoai.portal.municipal_explorer import (
     POLO_CITIES,
     MunicipalityLayerBundle,
@@ -50,6 +59,13 @@ __all__ = [
     "attribution_lines",
     "build_domain_card",
     "compare_municipalities",
+    "compare_municipal_energy",
+    "energy_attribution_lines",
+    "energy_map_html",
+    "energy_scope_totals",
+    "load_energy_panel_bundle",
+    "municipalities_ranked",
+    "project_municipality_metrics",
     "demo_connection_policy",
     "didactic_copy_text",
     "explorer_attribution_lines",

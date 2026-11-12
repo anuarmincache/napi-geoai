@@ -1,0 +1,1911 @@
+{
+  "product": "siga_pr_qgis_spatial_join",
+  "generated_at": "2026-11-12T00:10:24.613210+00:00",
+  "engine": {
+    "qgis_version": "3.44.15-Solothurn",
+    "gdal_version": "3.13.3",
+    "proj_version": "9.8.1",
+    "execution": "qgis_worker",
+    "algorithms": [
+      "native:joinattributesbylocation"
+    ],
+    "predicate": "within(5)"
+  },
+  "input": {
+    "siga_csv": "data/raw/aneel/siga-empreendimentos-geracao.csv",
+    "siga_sha256": "9f21aa730a5ccde82b62bad64b40ba1ceb245c84e15f05d12df718ac303e72ef",
+    "municipios_zip": "data/raw/ibge/PR_Municipios_2025.zip",
+    "municipios_sha256": "1a9b6ff7d1e2a42665dc3e9a9bde46a542d6609c7d775092c4e767d9899d3e6f",
+    "municipios_crs": "EPSG:4674",
+    "points_crs": "EPSG:4674"
+  },
+  "parameters": {
+    "uf": "PR",
+    "phase": "Operação",
+    "discard_nonmatching": false,
+    "note": "Referência espacial oficial do MVP 10. GeoPandas é cruzamento complementar com fail-closed."
+  },
+  "results": {
+    "rows_pr": 330,
+    "operacao": 310,
+    "points_created": 280,
+    "skipped_invalid_coords": 30,
+    "matched": 276,
+    "unmatched": 4,
+    "assignments_n": 310,
+    "panel_totals_official": {
+      "n_empreendimentos_municipios": 276,
+      "n_empreendimentos_nao_associados": 34,
+      "n_empreendimentos_fase": 310,
+      "potencia_fiscalizada_mw_municipios": 17640.451,
+      "potencia_fiscalizada_mw_nao_associados": 71.736,
+      "potencia_fiscalizada_mw_conhecida_fase": 17712.187,
+      "potencia_fiscalizada_mw_total_fase": 17712.187,
+      "n_potencia_fiscalizada_ausente_fase": 0,
+      "soma_cobertura": "completa",
+      "soma_rotulo": "capacidade_fiscalizada_conhecida_mw"
+    }
+  },
+  "assignments": [
+    {
+      "CodCEG": "PCH.PH.PR.000122-8.1",
+      "CD_MUN": "4126678",
+      "NM_MUN": "Tamarana",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.000273-9.1",
+      "CD_MUN": "4127965",
+      "NM_MUN": "Turvo",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.000610-6.1",
+      "CD_MUN": "4109658",
+      "NM_MUN": "Honório Serpa",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.000640-8.1",
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.000729-3.1",
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.000753-6.1",
+      "CD_MUN": "4127601",
+      "NM_MUN": "Tijucas do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.000771-4.2",
+      "CD_MUN": "4111209",
+      "NM_MUN": "Itapejara d'Oeste",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.000984-9.1",
+      "CD_MUN": "4102901",
+      "NM_MUN": "Bituruna",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.001042-1.1",
+      "CD_MUN": "4104006",
+      "NM_MUN": "Campina Grande do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.001075-8.1",
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.001161-4.1",
+      "CD_MUN": "4108304",
+      "NM_MUN": "Foz do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001231-9.2",
+      "CD_MUN": "4126306",
+      "NM_MUN": "Sengés",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.001278-5.1",
+      "CD_MUN": "4106571",
+      "NM_MUN": "Cruzeiro do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001452-4.1",
+      "CD_MUN": "4116703",
+      "NM_MUN": "Nova Aurora",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001501-6.2",
+      "CD_MUN": "4116208",
+      "NM_MUN": "Morretes",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.001509-1.2",
+      "CD_MUN": "4104303",
+      "NM_MUN": "Campo Mourão",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001549-0.2",
+      "CD_MUN": "4112009",
+      "NM_MUN": "Jaguariaíva",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.001937-2.2",
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.002028-1.1",
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.002046-0.1",
+      "CD_MUN": "4112009",
+      "NM_MUN": "Jaguariaíva",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002085-0.1",
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.002195-4.1",
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.002398-1.1",
+      "CD_MUN": "4121752",
+      "NM_MUN": "Reserva do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002576-3.1",
+      "CD_MUN": "4118501",
+      "NM_MUN": "Pato Branco",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002587-9.1",
+      "CD_MUN": "4120101",
+      "NM_MUN": "Porto Amazonas",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.002591-7.1",
+      "CD_MUN": "4104600",
+      "NM_MUN": "Capitão Leônidas Marques",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002592-5.2",
+      "CD_MUN": "4105706",
+      "NM_MUN": "Clevelândia",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002628-0.1",
+      "CD_MUN": "4120309",
+      "NM_MUN": "Porto Vitória",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002642-5.1",
+      "CD_MUN": "4106803",
+      "NM_MUN": "Cruz Machado",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.002654-9.1",
+      "CD_MUN": "4127106",
+      "NM_MUN": "Telêmaco Borba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.002659-0.1",
+      "CD_MUN": "4120903",
+      "NM_MUN": "Quedas do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002670-0.2",
+      "CD_MUN": "4120606",
+      "NM_MUN": "Prudentópolis",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.002672-7.1",
+      "CD_MUN": "4126272",
+      "NM_MUN": "Saudade do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002675-1.1",
+      "CD_MUN": "4105409",
+      "NM_MUN": "Chopinzinho",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.002715-4.1",
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.002758-8.1",
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.026885-2.1",
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.027153-5.2",
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.027174-8.1",
+      "CD_MUN": "4121752",
+      "NM_MUN": "Reserva do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.027549-2.1",
+      "CD_MUN": "4111209",
+      "NM_MUN": "Itapejara d'Oeste",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.027557-3.2",
+      "CD_MUN": "4122206",
+      "NM_MUN": "Rio Branco do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.GN.PR.027733-9.1",
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.027769-0.1",
+      "CD_MUN": "4127106",
+      "NM_MUN": "Telêmaco Borba",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.027879-3.1",
+      "CD_MUN": "4104303",
+      "NM_MUN": "Campo Mourão",
+      "matched": true
+    },
+    {
+      "CodCEG": "EOL.CV.PR.027908-0.1",
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028010-0.2",
+      "CD_MUN": "4127965",
+      "NM_MUN": "Turvo",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028017-8.2",
+      "CD_MUN": "4126306",
+      "NM_MUN": "Sengés",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028041-0.1",
+      "CD_MUN": "4122602",
+      "NM_MUN": "Rondon",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028066-6.1",
+      "CD_MUN": "4106803",
+      "NM_MUN": "Cruz Machado",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028074-7.1",
+      "CD_MUN": "4113007",
+      "NM_MUN": "Jussara",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.028137-9.1",
+      "CD_MUN": null,
+      "matched": false
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028139-5.1",
+      "CD_MUN": "4118105",
+      "NM_MUN": "Paranacity",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028143-3.1",
+      "CD_MUN": "4111555",
+      "NM_MUN": "Ivaté",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028144-1.1",
+      "CD_MUN": "4118857",
+      "NM_MUN": "Perobal",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028146-8.1",
+      "CD_MUN": "4125803",
+      "NM_MUN": "São Pedro do Ivaí",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028148-4.1",
+      "CD_MUN": "4124608",
+      "NM_MUN": "São Carlos do Ivaí",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028149-2.1",
+      "CD_MUN": "4126801",
+      "NM_MUN": "Tapejara",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028150-6.1",
+      "CD_MUN": "4116109",
+      "NM_MUN": "Moreira Sales",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028151-4.1",
+      "CD_MUN": "4107504",
+      "NM_MUN": "Engenheiro Beltrão",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028152-2.1",
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028153-0.1",
+      "CD_MUN": "4111803",
+      "NM_MUN": "Jacarezinho",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028154-9.1",
+      "CD_MUN": "4109708",
+      "NM_MUN": "Ibaiti",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028155-7.1",
+      "CD_MUN": "4111803",
+      "NM_MUN": "Jacarezinho",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028159-0.1",
+      "CD_MUN": "4108007",
+      "NM_MUN": "Florestópolis",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028162-0.1",
+      "CD_MUN": "4112108",
+      "NM_MUN": "Jandaia do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.028227-8.1",
+      "CD_MUN": "4108502",
+      "NM_MUN": "General Carneiro",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.028246-4.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028250-2.1",
+      "CD_MUN": "4103958",
+      "NM_MUN": "Campina do Simão",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028251-0.1",
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028331-2.1",
+      "CD_MUN": null,
+      "matched": false
+    },
+    {
+      "CodCEG": "UHE.PH.PR.028360-6.1",
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.028361-4.1",
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028419-0.1",
+      "CD_MUN": "4113205",
+      "NM_MUN": "Lapa",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.028499-8.1",
+      "CD_MUN": "4122305",
+      "NM_MUN": "Rio Negro",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028632-0.1",
+      "CD_MUN": "4104451",
+      "NM_MUN": "Cantagalo",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028732-6.1",
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028747-4.1",
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.028774-1.1",
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028782-2.1",
+      "CD_MUN": "4104006",
+      "NM_MUN": "Campina Grande do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028783-0.1",
+      "CD_MUN": "4114500",
+      "NM_MUN": "Manoel Ribas",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028846-2.1",
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028850-0.1",
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028882-9.1",
+      "CD_MUN": "4101200",
+      "NM_MUN": "Antonina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028884-5.1",
+      "CD_MUN": "4124608",
+      "NM_MUN": "São Carlos do Ivaí",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.028902-7.1",
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028921-3.1",
+      "CD_MUN": "4119608",
+      "NM_MUN": "Pitanga",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.028994-9.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.028998-1.1",
+      "CD_MUN": "4106456",
+      "NM_MUN": "Coronel Domingos Soares",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029068-8.1",
+      "CD_MUN": "4120606",
+      "NM_MUN": "Prudentópolis",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029144-7.1",
+      "CD_MUN": "4105607",
+      "NM_MUN": "Cidade Gaúcha",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029180-3.1",
+      "CD_MUN": "4113254",
+      "NM_MUN": "Laranjal",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029201-0.1",
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029202-8.1",
+      "CD_MUN": "4126108",
+      "NM_MUN": "São Tomé",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029222-2.1",
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.GN.PR.029242-7.1",
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.029282-6.1",
+      "CD_MUN": "4119400",
+      "NM_MUN": "Piraí do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029349-0.1",
+      "CD_MUN": "4108304",
+      "NM_MUN": "Foz do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029350-4.1",
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029378-4.1",
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029411-0.2",
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029412-8.1",
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029413-6.1",
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029431-4.1",
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029498-5.1",
+      "CD_MUN": null,
+      "matched": false
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029504-3.1",
+      "CD_MUN": null,
+      "matched": false
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029505-1.1",
+      "CD_MUN": "4105904",
+      "NM_MUN": "Colorado",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029575-2.1",
+      "CD_MUN": "4124509",
+      "NM_MUN": "Santo Inácio",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029576-0.1",
+      "CD_MUN": "4128609",
+      "NM_MUN": "Verê",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.029598-1.1",
+      "CD_MUN": "4127106",
+      "NM_MUN": "Telêmaco Borba",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.029686-4.1",
+      "CD_MUN": "4123402",
+      "NM_MUN": "Santa Fé",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.029738-0.1",
+      "CD_MUN": "4104659",
+      "NM_MUN": "Carambeí",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029742-9.1",
+      "CD_MUN": "4125605",
+      "NM_MUN": "São Mateus do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.029768-2.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.029780-1.1",
+      "CD_MUN": "4127304",
+      "NM_MUN": "Terra Rica",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029793-3.1",
+      "CD_MUN": "4101408",
+      "NM_MUN": "Apucarana",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029797-6.1",
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029891-3.1",
+      "CD_MUN": "4109658",
+      "NM_MUN": "Honório Serpa",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.029893-0.1",
+      "CD_MUN": "4114906",
+      "NM_MUN": "Marilândia do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029927-8.1",
+      "CD_MUN": "4118204",
+      "NM_MUN": "Paranaguá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029930-8.1",
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029934-0.1",
+      "CD_MUN": "4108601",
+      "NM_MUN": "Goioerê",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029936-7.1",
+      "CD_MUN": "4105508",
+      "NM_MUN": "Cianorte",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029938-3.1",
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.029965-0.1",
+      "CD_MUN": "4126678",
+      "NM_MUN": "Tamarana",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.RA.PR.029966-9.1",
+      "CD_MUN": "4115606",
+      "NM_MUN": "Matelândia",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.RA.PR.029967-7.1",
+      "CD_MUN": "4110953",
+      "NM_MUN": "Itaipulândia",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.RA.PR.029968-5.1",
+      "CD_MUN": "4108304",
+      "NM_MUN": "Foz do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.RA.PR.029985-5.1",
+      "CD_MUN": "4105300",
+      "NM_MUN": "Céu Azul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.029993-6.1",
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030069-1.1",
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030097-7.1",
+      "CD_MUN": "4105805",
+      "NM_MUN": "Colombo",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030216-3.1",
+      "CD_MUN": "4118204",
+      "NM_MUN": "Paranaguá",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030241-4.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.030364-0.1",
+      "CD_MUN": "4125001",
+      "NM_MUN": "São João do Ivaí",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030412-3.1",
+      "CD_MUN": "4128104",
+      "NM_MUN": "Umuarama",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.030458-1.1",
+      "CD_MUN": "4104428",
+      "NM_MUN": "Candói",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030486-7.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030521-9.1",
+      "CD_MUN": "4101705",
+      "NM_MUN": "Araruna",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030555-3.1",
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030577-4.1",
+      "CD_MUN": "4108650",
+      "NM_MUN": "Goioxim",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030588-0.1",
+      "CD_MUN": "4119608",
+      "NM_MUN": "Pitanga",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030592-8.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030604-5.1",
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030606-1.1",
+      "CD_MUN": "4119608",
+      "NM_MUN": "Pitanga",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.030613-4.1",
+      "CD_MUN": "4104303",
+      "NM_MUN": "Campo Mourão",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.030627-4.1",
+      "CD_MUN": "4128104",
+      "NM_MUN": "Umuarama",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.RA.PR.030635-5.1",
+      "CD_MUN": "4114609",
+      "NM_MUN": "Marechal Cândido Rondon",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.030724-6.1",
+      "CD_MUN": "4126702",
+      "NM_MUN": "Tamboara",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.030836-6.1",
+      "CD_MUN": "4117222",
+      "NM_MUN": "Nova Santa Rosa",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.030923-0.1",
+      "CD_MUN": "4104600",
+      "NM_MUN": "Capitão Leônidas Marques",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.030974-5.1",
+      "CD_MUN": "4115606",
+      "NM_MUN": "Matelândia",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.031034-4.1",
+      "CD_MUN": "4108007",
+      "NM_MUN": "Florestópolis",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.031076-0.1",
+      "CD_MUN": "4101705",
+      "NM_MUN": "Araruna",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.031098-0.1",
+      "CD_MUN": "4117305",
+      "NM_MUN": "Ortigueira",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.031113-8.1",
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.031115-4.1",
+      "CD_MUN": "4128203",
+      "NM_MUN": "União da Vitória",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.031141-3.1",
+      "CD_MUN": "4101507",
+      "NM_MUN": "Arapongas",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.031167-7.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.031187-1.1",
+      "CD_MUN": "4125753",
+      "NM_MUN": "São Pedro do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.031470-6.1",
+      "CD_MUN": "4103222",
+      "NM_MUN": "Bom Sucesso do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.031622-9.1",
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.031704-7.1",
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.031968-6.1",
+      "CD_MUN": "4124509",
+      "NM_MUN": "Santo Inácio",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.032036-6.1",
+      "CD_MUN": "4102000",
+      "NM_MUN": "Assis Chateaubriand",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032489-2.1",
+      "CD_MUN": "4114609",
+      "NM_MUN": "Marechal Cândido Rondon",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.032511-2.1",
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.032513-9.1",
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.GN.PR.032625-9.1",
+      "CD_MUN": "4101804",
+      "NM_MUN": "Araucária",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032656-9.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032670-4.1",
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032675-5.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.032690-9.1",
+      "CD_MUN": "4113304",
+      "NM_MUN": "Laranjeiras do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032735-2.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032751-4.1",
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032767-0.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032841-3.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032855-3.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.032876-6.1",
+      "CD_MUN": "4117602",
+      "NM_MUN": "Palmas",
+      "matched": true
+    },
+    {
+      "CodCEG": "UHE.PH.PR.032923-1.1",
+      "CD_MUN": "4127502",
+      "NM_MUN": "Tibagi",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.032985-1.1",
+      "CD_MUN": "4105805",
+      "NM_MUN": "Colombo",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033001-9.1",
+      "CD_MUN": "4103701",
+      "NM_MUN": "Cambé",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033052-3.1",
+      "CD_MUN": "4101408",
+      "NM_MUN": "Apucarana",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033195-3.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033218-6.1",
+      "CD_MUN": "4102406",
+      "NM_MUN": "Bandeirantes",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033315-8.1",
+      "CD_MUN": "4101408",
+      "NM_MUN": "Apucarana",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033316-6.1",
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033358-1.1",
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033363-8.1",
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.GN.PR.033370-0.1",
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.033372-7.1",
+      "CD_MUN": "4112009",
+      "NM_MUN": "Jaguariaíva",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033375-1.1",
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033394-8.1",
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033398-0.1",
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033463-4.1",
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033489-8.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.033941-5.1",
+      "CD_MUN": "4118501",
+      "NM_MUN": "Pato Branco",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.033975-0.1",
+      "CD_MUN": "4120606",
+      "NM_MUN": "Prudentópolis",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.034015-4.2",
+      "CD_MUN": "4104303",
+      "NM_MUN": "Campo Mourão",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.034094-4.1",
+      "CD_MUN": "4108403",
+      "NM_MUN": "Francisco Beltrão",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.034241-6.1",
+      "CD_MUN": "4104451",
+      "NM_MUN": "Cantagalo",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.034438-9.1",
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035006-0.1",
+      "CD_MUN": "4126306",
+      "NM_MUN": "Sengés",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.RU.PR.035069-9.4",
+      "CD_MUN": "4107652",
+      "NM_MUN": "Fazenda Rio Grande",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035146-6.1",
+      "CD_MUN": "4120606",
+      "NM_MUN": "Prudentópolis",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035334-5.1",
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035340-0.1",
+      "CD_MUN": "4110052",
+      "NM_MUN": "Iguatu",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035416-3.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035484-8.1",
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035731-6.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035763-4.1",
+      "CD_MUN": "4119202",
+      "NM_MUN": "Pinhalão",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035800-2.1",
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.035801-0.1",
+      "CD_MUN": "4114401",
+      "NM_MUN": "Mangueirinha",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.035802-9.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.036914-4.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.036938-1.1",
+      "CD_MUN": "4115457",
+      "NM_MUN": "Marquinho",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.037131-9.1",
+      "CD_MUN": "4126504",
+      "NM_MUN": "Sertanópolis",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.037203-0.1",
+      "CD_MUN": "4108403",
+      "NM_MUN": "Francisco Beltrão",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.037232-3.1",
+      "CD_MUN": "4115408",
+      "NM_MUN": "Marmeleiro",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037258-7.1",
+      "CD_MUN": "4105706",
+      "NM_MUN": "Clevelândia",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037314-1.1",
+      "CD_MUN": "4128658",
+      "NM_MUN": "Virmond",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.037347-8.1",
+      "CD_MUN": "4115408",
+      "NM_MUN": "Marmeleiro",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037573-0.2",
+      "CD_MUN": "4106571",
+      "NM_MUN": "Cruzeiro do Iguaçu",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037743-0.1",
+      "CD_MUN": "4127965",
+      "NM_MUN": "Turvo",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037757-0.1",
+      "CD_MUN": "4121604",
+      "NM_MUN": "Renascença",
+      "matched": true
+    },
+    {
+      "CodCEG": "PCH.PH.PR.037822-4.1",
+      "CD_MUN": "4103222",
+      "NM_MUN": "Bom Sucesso do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.GN.PR.037896-8.1",
+      "CD_MUN": "4119608",
+      "NM_MUN": "Pitanga",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.038205-1.1",
+      "CD_MUN": "4103040",
+      "NM_MUN": "Boa Ventura de São Roque",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.038250-7.1",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.038337-6.1",
+      "CD_MUN": "4105706",
+      "NM_MUN": "Clevelândia",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.040813-1.1",
+      "CD_MUN": "4106308",
+      "NM_MUN": "Corbélia",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.043224-5.1",
+      "CD_MUN": "4122404",
+      "NM_MUN": "Rolândia",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.044809-5.1",
+      "CD_MUN": "4126306",
+      "NM_MUN": "Sengés",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.045487-7.1",
+      "CD_MUN": "4119301",
+      "NM_MUN": "Pinhão",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.045824-4.1",
+      "CD_MUN": "4117305",
+      "NM_MUN": "Ortigueira",
+      "matched": true
+    },
+    {
+      "CodCEG": "CGH.PH.PR.046701-4.3",
+      "CD_MUN": "4109401",
+      "NM_MUN": "Guarapuava",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.RA.PR.049660-0.1",
+      "CD_MUN": "4117909",
+      "NM_MUN": "Palotina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.050872-1.1",
+      "CD_MUN": "4117107",
+      "NM_MUN": "Nova Londrina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.051729-1.1",
+      "CD_MUN": "4105904",
+      "NM_MUN": "Colorado",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.054547-3.1",
+      "CD_MUN": "4101507",
+      "NM_MUN": "Arapongas",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.054838-3.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.056510-5.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.056607-1.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.061649-4.1",
+      "CD_MUN": "4108601",
+      "NM_MUN": "Goioerê",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.061652-4.1",
+      "CD_MUN": "4117008",
+      "NM_MUN": "Nova Fátima",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062077-7.1",
+      "CD_MUN": "4125506",
+      "NM_MUN": "São José dos Pinhais",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062082-3.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062904-9.1",
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062905-7.1",
+      "CD_MUN": "4128104",
+      "NM_MUN": "Umuarama",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062907-3.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062908-1.1",
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.062909-0.1",
+      "CD_MUN": "4127700",
+      "NM_MUN": "Toledo",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.063850-1.1",
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.063851-0.1",
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.064443-9.1",
+      "CD_MUN": "4106902",
+      "NM_MUN": "Curitiba",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.064444-7.1",
+      "CD_MUN": "4104907",
+      "NM_MUN": "Castro",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.064850-7.1",
+      "CD_MUN": "4113700",
+      "NM_MUN": "Londrina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.066945-8.1",
+      "CD_MUN": "4112108",
+      "NM_MUN": "Jandaia do Sul",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.066950-4.1",
+      "CD_MUN": "4115705",
+      "NM_MUN": "Matinhos",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.071335-0.1",
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071623-5.1",
+      "CD_MUN": "4104659",
+      "NM_MUN": "Carambeí",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071624-3.1",
+      "CD_MUN": "4128203",
+      "NM_MUN": "União da Vitória",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071630-8.1",
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071670-7.1",
+      "CD_MUN": "4100400",
+      "NM_MUN": "Almirante Tamandaré",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071750-9.1",
+      "CD_MUN": "4107256",
+      "NM_MUN": "Douradina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.071753-3.1",
+      "CD_MUN": "4107256",
+      "NM_MUN": "Douradina",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.071935-8.1",
+      "CD_MUN": "4108601",
+      "NM_MUN": "Goioerê",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.FL.PR.072057-7.1",
+      "CD_MUN": "4119905",
+      "NM_MUN": "Ponta Grossa",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.PE.PR.072383-5.1",
+      "CD_MUN": "4101705",
+      "NM_MUN": "Araruna",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072390-8.1",
+      "CD_MUN": "4128104",
+      "NM_MUN": "Umuarama",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072969-8.1",
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072971-0.1",
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072973-6.1",
+      "CD_MUN": "4104204",
+      "NM_MUN": "Campo Largo",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.072978-7.1",
+      "CD_MUN": "4104204",
+      "NM_MUN": "Campo Largo",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073208-7.1",
+      "CD_MUN": "4104808",
+      "NM_MUN": "Cascavel",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073556-6.1",
+      "CD_MUN": "4128005",
+      "NM_MUN": "Ubiratã",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073609-0.1",
+      "CD_MUN": "4127882",
+      "NM_MUN": "Tunas do Paraná",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073625-2.1",
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.073627-9.1",
+      "CD_MUN": "4101606",
+      "NM_MUN": "Arapoti",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074356-9.1",
+      "CD_MUN": "4108601",
+      "NM_MUN": "Goioerê",
+      "matched": true
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074893-5.1",
+      "CD_MUN": "4115200",
+      "NM_MUN": "Maringá",
+      "matched": true
+    },
+    {
+      "CodCEG": "UTE.AI.PR.028157-3.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074628-2.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UTE.AI.PR.074637-1.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074678-9.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074691-6.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074704-1.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.074978-8.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075210-0.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075215-0.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075235-5.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.075317-3.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075389-0.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075494-3.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075560-5.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.075562-1.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.075583-4.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "CGH.PH.PR.075591-5.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076039-0.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076072-2.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076423-0.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076435-3.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076436-1.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076437-0.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076438-8.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076439-6.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076440-0.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076441-8.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076511-2.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.076762-0.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    },
+    {
+      "CodCEG": "UFV.RS.PR.083014-3.1",
+      "CD_MUN": null,
+      "matched": false,
+      "reason": "missing_or_invalid_coordinates"
+    }
+  ],
+  "scope_note": "SHA do CSV/ZIP vincula bytes. assignments CodCEG→CD_MUN são a referência espacial; GeoPandas deve reconciliar por CodCEG.",
+  "not_mmgd": true,
+  "not_energy_mwh": true,
+  "spatial_reconciliation_ok": true
+}

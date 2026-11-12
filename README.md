@@ -100,6 +100,8 @@ Preparação Community Cloud (MVP 08): [docs/MVP08_DEPLOY.md](docs/MVP08_DEPLOY.
 
 Explorador territorial (MVP 09): [docs/MVP09_EXPLORADOR.md](docs/MVP09_EXPLORADOR.md) — 399 municípios IBGE, busca, cidades-polo e comparação sem indicadores inventados.
 
+Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERGIA.md) — capacidade fiscalizada (MW) por município, fase Operação, join QGIS, MMGD fora do escopo.
+
 ```powershell
 py -3 -m pip install -e ".[dev,ui]"
 py -3 -m streamlit run app/Home.py

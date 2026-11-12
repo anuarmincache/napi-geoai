@@ -1,0 +1,20 @@
+{
+  "source_id": "aneel.siga.empreendimentos_geracao",
+  "url": "https://dadosabertos.aneel.gov.br/dataset/6d90b77c-c5f5-4d81-bdec-7bc619494bb9/resource/11ec447d-698d-4ab8-977f-b424d5deee6a/download/siga-empreendimentos-geracao.csv",
+  "license_note": "ODbL — Open Data Commons Open Database License (ANEEL Dados Abertos). Redistribuição/derivação sujeitas aos termos ODbL (manter atribuição e share-alike quando aplicável).",
+  "retrieved_at": "2026-11-11T23:49:27.362577+00:00",
+  "content_sha256": "9f21aa730a5ccde82b62bad64b40ba1ceb245c84e15f05d12df718ac303e72ef",
+  "content_length": 7883527,
+  "local_csv": "data/raw/aneel/siga-empreendimentos-geracao.csv",
+  "http_etag": "\"1793509672.3443902-7883527-2068648745\"",
+  "http_last_modified": "Sun, 01 Nov 2026 05:07:52 GMT",
+  "municipios_zip": "data/raw/ibge/PR_Municipios_2025.zip",
+  "municipios_zip_sha256": "1a9b6ff7d1e2a42665dc3e9a9bde46a542d6609c7d775092c4e767d9899d3e6f",
+  "phase_default": "Operação",
+  "metric": "MdaPotenciaFiscalizadaKw (MW = kW/1000; ausente ≠ 0)",
+  "metric_secondary": "MdaPotenciaOutorgadaKw",
+  "crs_join": "EPSG:4674 (pontos ANEEL lat/lon → SIRGAS 2000)",
+  "spatial_reference": "qgis_native_joinattributesbylocation",
+  "prepared_at": "2026-11-12T00:10:31.044008+00:00",
+  "attribution_pt": "ANEEL — Sistema de Informações de Geração (SIGA), Dados Abertos (ODbL). Malha municipal IBGE municipio_2025."
+}

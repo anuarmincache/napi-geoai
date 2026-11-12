@@ -43,3 +43,19 @@ def municipalities_validation_path(repo_root: Path | None = None) -> Path:
 def municipalities_qgis_report_path(repo_root: Path | None = None) -> Path:
     return derived_dir(repo_root) / "parana_municipios_2025_qgis_report.json"
 
+
+def energy_panel_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "siga_pr_energy_panel.json"
+
+
+def energy_provenance_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "siga_pr_energy.provenance.json"
+
+
+def energy_quality_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "siga_pr_energy.quality.json"
+
+
+def energy_qgis_report_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "siga_pr_qgis_join_report.json"
+
