@@ -1,4 +1,6 @@
-"""Worker PyQGIS: join espacial SIGA → municípios IBGE (alta fidelidade).
+"""Worker PyQGIS: join espacial SIGA → municípios IBGE (referência espacial).
+
+Exporta assignments CodCEG→CD_MUN para reconciliação fail-closed.
 
 Preferir QGIS MCP execute_code neste host, ou:
   python-qgis-ltr.bat scripts/_qgis_siga_join_worker.py
@@ -19,7 +21,6 @@ REPO = Path(__file__).resolve().parents[1]
 CSV = REPO / "data" / "raw" / "aneel" / "siga-empreendimentos-geracao.csv"
 ZIP = REPO / "data" / "raw" / "ibge" / "PR_Municipios_2025.zip"
 OUT = REPO / "data" / "derived" / "siga_pr_qgis_join_report.json"
-PANEL = REPO / "data" / "derived" / "siga_pr_energy_panel.json"
 
 
 def _sha(path: Path) -> str:
@@ -41,8 +42,46 @@ def _parse_num(text: str) -> float | None:
     return value if math.isfinite(value) else None
 
 
-def main() -> int:
+def _ensure_qgis_processing():
+    """Inicializa QgsApplication + Processing se não estivermos no Desktop/MCP."""
+
+    try:
+        import processing  # type: ignore[import-not-found]
+
+        return processing, None
+    except ImportError:
+        pass
+
+    import os
+
+    from qgis.core import QgsApplication  # type: ignore[import-not-found]
+
+    prefix = os.environ.get("QGIS_PREFIX_PATH")
+    if not prefix:
+        # python-qgis-ltr.bat normalmente define; fallback Desktop LTR.
+        candidate = Path(r"C:\Program Files\QGIS 3.44.15")
+        prefix = str(candidate) if candidate.is_dir() else ""
+    if prefix:
+        QgsApplication.setPrefixPath(prefix, True)
+    qgs = QgsApplication([], False)
+    qgs.initQgis()
+    plugin_paths = [
+        Path(QgsApplication.pkgDataPath()) / "python" / "plugins",
+        Path(QgsApplication.qgisSettingsDirPath()) / "python" / "plugins",
+    ]
+    for plugin_path in plugin_paths:
+        text = str(plugin_path)
+        if text and text not in sys.path:
+            sys.path.append(text)
     import processing  # type: ignore[import-not-found]
+    from processing.core.Processing import Processing  # type: ignore[import-not-found]
+
+    Processing.initialize()
+    return processing, qgs
+
+
+def main() -> int:
+    processing, qgs_app = _ensure_qgis_processing()
     from osgeo import gdal, osr
     from qgis.core import (  # type: ignore[import-not-found]
         Qgis,
@@ -69,7 +108,6 @@ def main() -> int:
     if not mun.isValid():
         raise SystemExit(mun.error().summary())
 
-    # Camada de pontos em memória (CRS da malha).
     pts = QgsVectorLayer(f"Point?crs={mun.crs().authid()}", "siga_pts", "memory")
     prov = pts.dataProvider()
     prov.addAttributes(
@@ -86,6 +124,7 @@ def main() -> int:
     rows_pr = 0
     operacao = 0
     skipped_coord = 0
+    operacao_no_point: list[str] = []
     with CSV.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle, delimiter=";")
         for row in reader:
@@ -95,17 +134,22 @@ def main() -> int:
             if (row.get("DscFaseUsina") or "").strip() != "Operação":
                 continue
             operacao += 1
+            ceg = (row.get("CodCEG") or "").strip()
             lat = _parse_num(row.get("NumCoordNEmpreendimento") or "")
             lon = _parse_num(row.get("NumCoordEEmpreendimento") or "")
             if lat is None or lon is None:
                 skipped_coord += 1
+                if ceg:
+                    operacao_no_point.append(ceg)
                 continue
             if not (-35.0 <= lat <= 6.0 and -75.0 <= lon <= -28.0):
                 skipped_coord += 1
+                if ceg:
+                    operacao_no_point.append(ceg)
                 continue
             feat = QgsFeature(pts.fields())
             feat.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(lon, lat)))
-            feat.setAttribute("CodCEG", (row.get("CodCEG") or "").strip())
+            feat.setAttribute("CodCEG", ceg)
             feat.setAttribute("fase", (row.get("DscFaseUsina") or "").strip())
             feat.setAttribute("tipo", (row.get("SigTipoGeracao") or "").strip())
             fis = _parse_num(row.get("MdaPotenciaFiscalizadaKw") or "")
@@ -116,53 +160,51 @@ def main() -> int:
     QgsProject.instance().addMapLayer(pts, False)
     QgsProject.instance().addMapLayer(mun, False)
 
-    joined = processing.run(
+    joined_within = processing.run(
         "native:joinattributesbylocation",
         {
             "INPUT": pts,
-            "PREDICATE": [0],  # intersects; within=5 in some builds — use within
+            "PREDICATE": [5],  # within
             "JOIN": mun,
             "JOIN_FIELDS": ["CD_MUN", "NM_MUN"],
-            "METHOD": 0,
+            "METHOD": 1,
             "DISCARD_NONMATCHING": False,
             "PREFIX": "",
             "OUTPUT": "memory:",
         },
     )
-    # Prefer within if available via separate call
-    try:
-        joined_within = processing.run(
-            "native:joinattributesbylocation",
-            {
-                "INPUT": pts,
-                "PREDICATE": [5],  # within
-                "JOIN": mun,
-                "JOIN_FIELDS": ["CD_MUN", "NM_MUN"],
-                "METHOD": 1,  # take first
-                "DISCARD_NONMATCHING": False,
-                "PREFIX": "",
-                "OUTPUT": "memory:",
-            },
-        )
-        out_layer = joined_within["OUTPUT"]
-        predicate_used = "within(5)"
-    except Exception:
-        out_layer = joined["OUTPUT"]
-        predicate_used = "intersects(0)-fallback"
+    out_layer = joined_within["OUTPUT"]
+    predicate_used = "within(5)"
 
+    assignments: list[dict[str, str | None]] = []
     matched = 0
     unmatched = 0
     for feat in out_layer.getFeatures():
+        ceg = str(feat["CodCEG"] or "").strip()
         code = feat["CD_MUN"]
         if code is None or str(code).strip() == "" or str(code) == "NULL":
             unmatched += 1
+            assignments.append({"CodCEG": ceg, "CD_MUN": None, "matched": False})
         else:
             matched += 1
-
-    panel_totals = {}
-    if PANEL.is_file():
-        panel = json.loads(PANEL.read_text(encoding="utf-8"))
-        panel_totals = panel.get("totals") or {}
+            assignments.append(
+                {
+                    "CodCEG": ceg,
+                    "CD_MUN": str(code).strip(),
+                    "NM_MUN": str(feat["NM_MUN"] or "").strip(),
+                    "matched": True,
+                }
+            )
+    # Usinas Operação sem ponto válido: assignment explícito None
+    for ceg in operacao_no_point:
+        assignments.append(
+            {
+                "CodCEG": ceg,
+                "CD_MUN": None,
+                "matched": False,
+                "reason": "missing_or_invalid_coordinates",
+            }
+        )
 
     proj = (
         osr.GetPROJVersionMajor(),
@@ -193,8 +235,8 @@ def main() -> int:
             "phase": "Operação",
             "discard_nonmatching": False,
             "note": (
-                "Point-in-polygon sobre malha IBGE de alta fidelidade (ZIP). "
-                "GeoJSON de apresentação Streamlit não é usado."
+                "Referência espacial oficial do MVP 10. "
+                "GeoPandas é cruzamento complementar com fail-closed."
             ),
         },
         "results": {
@@ -204,11 +246,12 @@ def main() -> int:
             "skipped_invalid_coords": skipped_coord,
             "matched": matched,
             "unmatched": unmatched,
-            "panel_totals_geopandas": panel_totals,
+            "assignments_n": len(assignments),
         },
+        "assignments": assignments,
         "scope_note": (
-            "SHA do CSV/ZIP vincula bytes. Join QGIS tem proveniência própria "
-            "e complementa o join GeoPandas do prepare."
+            "SHA do CSV/ZIP vincula bytes. assignments CodCEG→CD_MUN são a "
+            "referência espacial; GeoPandas deve reconciliar por CodCEG."
         ),
         "not_mmgd": True,
         "not_energy_mwh": True,
@@ -217,7 +260,12 @@ def main() -> int:
     payload = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
     OUT.write_text(payload, encoding="utf-8")
     print(f"wrote={OUT}")
-    print(f"matched={matched} unmatched={unmatched} points={len(features)}")
+    print(
+        f"matched={matched} unmatched={unmatched} "
+        f"points={len(features)} assignments={len(assignments)}"
+    )
+    if qgs_app is not None:
+        qgs_app.exitQgis()
     return 0
 
 

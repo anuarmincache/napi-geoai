@@ -119,6 +119,10 @@ def normalize_siga_rows(
             reason = "CodCEG duplicado na carga"
         elif uf_row != uf_norm:
             reason = f"UF {uf_row!r} != {uf_norm}"
+        elif out_kw is not None and out_kw < 0:
+            reason = "potência outorgada negativa"
+        elif fis_kw is not None and fis_kw < 0:
+            reason = "potência fiscalizada negativa"
         elif out_kw is None and fis_kw is None:
             reason = "potências outorgada e fiscalizada ausentes/inválidas"
 

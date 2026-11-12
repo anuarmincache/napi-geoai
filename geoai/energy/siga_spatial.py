@@ -83,8 +83,9 @@ def join_plants_to_municipalities(
         "crs_points": EXPECTED_SOURCE_CRS,
         "crs_municipalities": str(mun.crs) if mun.crs else None,
         "note": (
-            "Implementação complementar GeoPandas. "
-            "Relatório QGIS (native join) é a evidência oficial do MVP 10."
+            "Cruzamento complementar GeoPandas. "
+            "Referência espacial oficial = QGIS assignments CodCEG→CD_MUN, "
+            "com reconciliação fail-closed."
         ),
     }
     matched["match_status"] = "matched"

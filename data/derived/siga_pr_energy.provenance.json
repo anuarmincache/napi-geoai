@@ -11,9 +11,10 @@
   "municipios_zip": "data/raw/ibge/PR_Municipios_2025.zip",
   "municipios_zip_sha256": "1a9b6ff7d1e2a42665dc3e9a9bde46a542d6609c7d775092c4e767d9899d3e6f",
   "phase_default": "Operação",
-  "metric": "MdaPotenciaFiscalizadaKw (MW = kW/1000)",
+  "metric": "MdaPotenciaFiscalizadaKw (MW = kW/1000; ausente ≠ 0)",
   "metric_secondary": "MdaPotenciaOutorgadaKw",
   "crs_join": "EPSG:4674 (pontos ANEEL lat/lon → SIRGAS 2000)",
-  "prepared_at": "2026-11-11T23:53:39.642854+00:00",
+  "spatial_reference": "qgis_native_joinattributesbylocation",
+  "prepared_at": "2026-11-12T00:10:31.044008+00:00",
   "attribution_pt": "ANEEL — Sistema de Informações de Geração (SIGA), Dados Abertos (ODbL). Malha municipal IBGE municipio_2025."
 }

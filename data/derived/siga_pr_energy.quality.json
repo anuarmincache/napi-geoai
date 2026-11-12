@@ -1,6 +1,6 @@
 {
   "product": "siga_pr_quality",
-  "generated_at": "2026-11-11T23:53:39.630246+00:00",
+  "generated_at": "2026-11-12T00:10:31.202920+00:00",
   "source_id": "aneel.siga.empreendimentos_geracao",
   "uf": "PR",
   "rows_pr_raw": 330,
@@ -34,7 +34,36 @@
     "crs_municipalities": "EPSG:4674",
     "note": "Implementação complementar GeoPandas. Relatório QGIS (native join) é a evidência oficial do MVP 10."
   },
+  "spatial_reconciliation": {
+    "ok": true,
+    "phase": "Operação",
+    "spatial_reference": "qgis",
+    "complementary_engine": "geopandas.sjoin/within",
+    "qgis_n": 310,
+    "geopandas_n_in_qgis_universe": 310,
+    "agreement": {
+      "same_cd_mun_matched": 276,
+      "both_unmatched": 34,
+      "cd_mun_divergences": 0
+    },
+    "counts": {
+      "qgis_matched": 276,
+      "qgis_unmatched": 34,
+      "geopandas_matched_in_universe": 276,
+      "geopandas_unmatched_in_universe": 34
+    },
+    "hashes": {
+      "siga_sha256_match": true,
+      "municipios_sha256_match": true
+    },
+    "explained_out_of_universe": [],
+    "explained_out_of_universe_n": 0,
+    "divergences_sample": [],
+    "problems": [],
+    "note": "Agregação municipal usa CD_MUN do QGIS como referência. GeoPandas é cruzamento; divergência não explicada → fail-closed."
+  },
   "dat_conjunto_sample": "2026-11-01",
   "mmgd_included": false,
-  "not_energy_generated_mwh": true
+  "not_energy_generated_mwh": true,
+  "capacity_unknown_ne_zero": true
 }

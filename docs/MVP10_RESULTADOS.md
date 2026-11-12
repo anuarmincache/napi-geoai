@@ -26,6 +26,12 @@ py -3 -m pytest -q tests/test_energy_siga.py
 py -3 -m pytest -q
 ```
 
-## Semântica de zero
+## Semântica de zero / ausência
 
-Município com `status_dados=sem_empreendimento` e `n_empreendimentos=0` significa **nenhuma usina da fase associada ao polígono**, não falha de ingestão. Ingestão incompleta ou join falho aparece em proveniência/qualidade/`nao_associados`.
+Município com `status_dados=sem_empreendimento` significa **nenhuma usina SIGA da fase com ponto válido vinculado ao polígono**, não ausência absoluta de empreendimentos nem falha de ingestão. Com 34 usinas não associadas, a UI destaca essa limitação. Potência fiscalizada desconhecida ≠ 0 MW (`n_potencia_fiscalizada_ausente_*`, `soma_cobertura`).
+
+## Reconciliação espacial (revisão PR #31)
+
+- Assignments QGIS: 310 (276 matched + 34 unmatched)
+- Acordo CodCEG→CD_MUN com GeoPandas: 0 divergências; hashes CSV/ZIP OK
+- Filtro de tecnologia: MW/contagens/ranking/mapa no escopo do tipo

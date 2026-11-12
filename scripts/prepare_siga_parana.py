@@ -1,7 +1,10 @@
-"""Prepara painel energético SIGA/PR: download, qualidade, join, agregados.
+"""Prepara painel energético SIGA/PR: download, QGIS ref, reconciliação, agregados.
 
 CSV bruto permanece em data/raw/aneel/ (gitignored).
 Artefatos leves vão para data/derived/.
+
+Requer relatório QGIS com assignments (rode o worker/MCP antes ou após;
+este script fail-closed se assignments/reconciliação falharem).
 
 Uso:
   py -3 scripts/prepare_siga_parana.py
@@ -32,9 +35,17 @@ from geoai.energy.siga_aggregate import (  # noqa: E402
     aggregate_plants_by_municipality,
     energy_panel_path,
     energy_provenance_path,
+    energy_qgis_report_path,
     energy_quality_path,
 )
 from geoai.energy.siga_normalize import normalize_siga_rows  # noqa: E402
+from geoai.energy.siga_reconcile import (  # noqa: E402
+    SpatialReconciliationError,
+    apply_qgis_assignments_to_frame,
+    assignments_from_geopandas,
+    assignments_from_qgis_report,
+    reconcile_spatial_assignments,
+)
 from geoai.energy.siga_spatial import join_plants_to_municipalities  # noqa: E402
 from geoai.portal.municipal_explorer import load_municipality_layer  # noqa: E402
 from geoai.portal.paths import derived_dir  # noqa: E402
@@ -48,6 +59,14 @@ def main() -> int:
     if not mun_zip.is_file():
         raise SystemExit(f"ZIP municipal ausente: {mun_zip}")
 
+    qgis_path = energy_qgis_report_path(REPO)
+    if not qgis_path.is_file():
+        raise SystemExit(
+            f"Relatório QGIS ausente: {qgis_path}. "
+            "Execute o worker PyQGIS / MCP antes do prepare."
+        )
+    qgis_report = json.loads(qgis_path.read_text(encoding="utf-8"))
+
     print("download SIGA…")
     ingest = download_siga_csv(csv_path, timeout_s=300.0)
     rows_pr = parse_siga_file(csv_path, uf="PR")
@@ -57,8 +76,59 @@ def main() -> int:
         f"rejeitados={len(rejected)}"
     )
 
-    joined, join_stats = join_plants_to_municipalities(accepted, municipios_zip=mun_zip)
-    print("join", join_stats)
+    joined_gpd, join_stats = join_plants_to_municipalities(
+        accepted, municipios_zip=mun_zip
+    )
+    print("join_geopandas", join_stats)
+
+    provenance = {
+        "source_id": ANEEL_SIGA_SOURCE_ID,
+        "url": ANEEL_SIGA_CSV_URL,
+        "license_note": ANEEL_LICENSE_NOTE,
+        "retrieved_at": ingest.provenance.retrieved_at,
+        "content_sha256": ingest.provenance.content_sha256,
+        "content_length": ingest.provenance.content_length,
+        "local_csv": "data/raw/aneel/siga-empreendimentos-geracao.csv",
+        "http_etag": ingest.provenance.http_etag,
+        "http_last_modified": ingest.provenance.http_last_modified,
+        "municipios_zip": "data/raw/ibge/PR_Municipios_2025.zip",
+        "municipios_zip_sha256": sha256_file(mun_zip),
+        "phase_default": PHASE_OPERACAO,
+        "metric": "MdaPotenciaFiscalizadaKw (MW = kW/1000; ausente ≠ 0)",
+        "metric_secondary": "MdaPotenciaOutorgadaKw",
+        "crs_join": "EPSG:4674 (pontos ANEEL lat/lon → SIRGAS 2000)",
+        "spatial_reference": "qgis_native_joinattributesbylocation",
+        "prepared_at": datetime.now(UTC).isoformat(),
+        "attribution_pt": (
+            "ANEEL — Sistema de Informações de Geração (SIGA), Dados Abertos "
+            "(ODbL). Malha municipal IBGE municipio_2025."
+        ),
+    }
+
+    try:
+        qgis_assign = assignments_from_qgis_report(qgis_report)
+        gpd_assign = assignments_from_geopandas(
+            joined_gpd, phase=PHASE_OPERACAO
+        )
+        recon = reconcile_spatial_assignments(
+            qgis_assignments=qgis_assign,
+            geopandas_assignments=gpd_assign,
+            qgis_input=qgis_report.get("input") or {},
+            provenance=provenance,
+            phase=PHASE_OPERACAO,
+        )
+    except SpatialReconciliationError as exc:
+        raise SystemExit(f"FAIL-CLOSED reconciliação espacial: {exc}") from exc
+
+    print(
+        "reconciliação OK",
+        recon["agreement"],
+        recon["hashes"],
+    )
+
+    joined = apply_qgis_assignments_to_frame(
+        joined_gpd, qgis_assign, phase=PHASE_OPERACAO
+    )
 
     bundle = load_municipality_layer(REPO)
     if not bundle.available:
@@ -73,14 +143,13 @@ def main() -> int:
     panel = aggregate_plants_by_municipality(
         joined, catalog, phase=PHASE_OPERACAO
     )
-    # Strip heavy plant lists from panel file for size — keep top summary only
     slim_munis = []
     for m in panel["municipalities"]:
         slim = {k: v for k, v in m.items() if k != "empreendimentos"}
         slim_munis.append(slim)
     panel_out = dict(panel)
     panel_out["municipalities"] = slim_munis
-    # plants detail file (operação matched)
+
     plants_detail = []
     for m in panel["municipalities"]:
         for plant in m.get("empreendimentos") or []:
@@ -109,35 +178,21 @@ def main() -> int:
         "coord_ok": sum(1 for p in accepted if p.coord_ok),
         "coord_missing": sum(1 for p in accepted if not p.coord_ok),
         "join_geopandas": join_stats,
+        "spatial_reconciliation": recon,
         "dat_conjunto_sample": next(
             (p.dat_conjunto for p in accepted if p.dat_conjunto), None
         ),
         "mmgd_included": False,
         "not_energy_generated_mwh": True,
+        "capacity_unknown_ne_zero": True,
     }
 
-    provenance = {
-        "source_id": ANEEL_SIGA_SOURCE_ID,
-        "url": ANEEL_SIGA_CSV_URL,
-        "license_note": ANEEL_LICENSE_NOTE,
-        "retrieved_at": ingest.provenance.retrieved_at,
-        "content_sha256": ingest.provenance.content_sha256,
-        "content_length": ingest.provenance.content_length,
-        "local_csv": "data/raw/aneel/siga-empreendimentos-geracao.csv",
-        "http_etag": ingest.provenance.http_etag,
-        "http_last_modified": ingest.provenance.http_last_modified,
-        "municipios_zip": "data/raw/ibge/PR_Municipios_2025.zip",
-        "municipios_zip_sha256": sha256_file(mun_zip),
-        "phase_default": PHASE_OPERACAO,
-        "metric": "MdaPotenciaFiscalizadaKw (MW = kW/1000)",
-        "metric_secondary": "MdaPotenciaOutorgadaKw",
-        "crs_join": "EPSG:4674 (pontos ANEEL lat/lon → SIRGAS 2000)",
-        "prepared_at": datetime.now(UTC).isoformat(),
-        "attribution_pt": (
-            "ANEEL — Sistema de Informações de Geração (SIGA), Dados Abertos (ODbL). "
-            "Malha municipal IBGE municipio_2025."
-        ),
-    }
+    # Anexa totais do painel no relatório QGIS (sem substituir assignments)
+    qgis_report = dict(qgis_report)
+    results = dict(qgis_report.get("results") or {})
+    results["panel_totals_official"] = panel_out["totals"]
+    qgis_report["results"] = results
+    qgis_report["spatial_reconciliation_ok"] = True
 
     out_dir = derived_dir(REPO)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -151,6 +206,10 @@ def main() -> int:
     )
     energy_quality_path(REPO).write_text(
         json.dumps(quality, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    qgis_path.write_text(
+        json.dumps(qgis_report, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     (out_dir / "siga_pr_operacao_plants.json").write_text(
@@ -168,6 +227,8 @@ def main() -> int:
     )
     print("wrote", energy_panel_path(REPO))
     print("totals", panel_out["totals"])
+    if panel_out.get("totals_caveat_pt"):
+        print("caveat", panel_out["totals_caveat_pt"])
     print(
         "municipios com empreendimentos",
         sum(1 for m in slim_munis if m["status_dados"] == "agregado"),

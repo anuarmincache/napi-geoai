@@ -27,10 +27,17 @@ Licença dos dados abertos ANEEL: **ODbL**. Proveniência e data do conjunto em 
 ## Associação municipal
 
 1. Pontos SIGA (UF=PR) → CRS alinhado à malha IBGE
-2. **QGIS** `native:joinattributesbylocation` (`within`) sobre ZIP municipal de alta fidelidade
-3. GeoPandas `sjoin` no pipeline `prepare_siga_parana.py` (CI/reprodutibilidade)
-4. Plantas sem match → `nao_associados` (não inventam município)
-5. Municípios sem usina na fase → `status_dados=sem_empreendimento` (zero ≠ ausência de ingestão)
+2. **QGIS** `native:joinattributesbylocation` (`within`) exporta **assignments CodCEG→CD_MUN** (referência espacial)
+3. GeoPandas `sjoin` cruza o mesmo universo; `siga_reconcile` compara mapas e hashes CSV/ZIP
+4. Divergência de CD_MUN ou hash não explicada → **fail-closed**
+5. Agregação municipal usa CD_MUN do QGIS
+6. Plantas sem match → `nao_associados` (não inventam município)
+7. `sem_empreendimento` = nenhuma usina georreferenciada/associada — **não** zero absoluto
+
+## Capacidade e filtro
+
+- Potência fiscalizada ausente/inválida/negativa **≠** 0 MW; `n_potencia_fiscalizada_ausente_*` e `soma_cobertura`
+- Filtro de tecnologia altera MW, contagens, ranking, comparação e mapa (`metric_scope=tipo:X`)
 
 ## Artefatos
 
@@ -53,8 +60,9 @@ CSV bruto: `data/raw/aneel/` (gitignored).
 ## Como regenerar
 
 ```powershell
+# 1) Referência espacial QGIS (obrigatória antes do prepare)
+& "C:\Program Files\QGIS 3.44.15\bin\python-qgis-ltr.bat" scripts\_qgis_siga_join_worker.py
+# 2) Download + reconciliação fail-closed + agregados
 py -3 scripts/prepare_siga_parana.py
-# Join QGIS (opcional / evidência oficial): via MCP ou
-# py -3 scripts/_qgis_siga_join_worker.py   # requer PyQGIS
 py -3 scripts/capture_energy_evidence.py
 ```

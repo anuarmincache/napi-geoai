@@ -16,9 +16,10 @@
 1. **Fonte:** CSV SIGA principal (recurso `11ec447d-…`), não MMGD.
 2. **Métrica principal:** capacidade **fiscalizada** (`MdaPotenciaFiscalizadaKw` → MW); outorgada exibida à parte.
 3. **Fase padrão UI:** `Operação`; demais fases filtráveis, nunca somadas no default.
-4. **Associação municipal:** point-in-polygon QGIS sobre ZIP IBGE; `DscMuninicpios` só checagem auxiliar.
-5. **399 municípios:** sempre no catálogo; `status_dados = sem_empreendimento | agregado | nao_associavel`.
-6. **Artefatos versionados:** JSON agregado leve + relatórios; CSV bruto **não** commitado.
+4. **Associação municipal:** QGIS é referência (assignments CodCEG→CD_MUN); GeoPandas reconcilia fail-closed; `DscMuninicpios` só auxiliar.
+5. **399 municípios:** sempre no catálogo; `sem_empreendimento` ≠ zero absoluto (há não associados).
+6. **Capacidade:** fiscalizada conhecida ≠ ausente; filtro de tecnologia altera MW/contagens/mapa.
+7. **Artefatos versionados:** JSON agregado leve + relatórios; CSV bruto **não** commitado.
 
 ## Incrementos
 
