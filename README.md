@@ -102,6 +102,8 @@ Explorador territorial (MVP 09): [docs/MVP09_EXPLORADOR.md](docs/MVP09_EXPLORADO
 
 Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERGIA.md) — capacidade fiscalizada (MW) por município, fase Operação, join QGIS, MMGD fora do escopo.
 
+População IBGE 2026 e ficha municipal (MVP 11): [docs/MVP11_POPULACAO.md](docs/MVP11_POPULACAO.md) — estimativa 01/07/2026, densidade, kW/hab SIGA, 399 municípios.
+
 ```powershell
 py -3 -m pip install -e ".[dev,ui]"
 py -3 -m streamlit run app/Home.py

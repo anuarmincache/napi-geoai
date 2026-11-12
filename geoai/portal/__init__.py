@@ -37,6 +37,13 @@ from geoai.portal.municipal_explorer import (
     polo_city_records,
     search_municipalities,
 )
+from geoai.portal.municipal_profile import (
+    compare_municipal_profiles,
+    load_population_panel_bundle,
+    population_attribution_lines,
+    population_map_html,
+    profile_for_code,
+)
 from geoai.portal.parana_layer import (
     ParanaLayerBundle,
     attribution_lines,
@@ -60,11 +67,16 @@ __all__ = [
     "build_domain_card",
     "compare_municipalities",
     "compare_municipal_energy",
+    "compare_municipal_profiles",
     "energy_attribution_lines",
     "energy_map_html",
     "energy_scope_totals",
     "load_energy_panel_bundle",
+    "load_population_panel_bundle",
     "municipalities_ranked",
+    "population_attribution_lines",
+    "population_map_html",
+    "profile_for_code",
     "project_municipality_metrics",
     "demo_connection_policy",
     "didactic_copy_text",

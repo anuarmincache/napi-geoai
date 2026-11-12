@@ -1,0 +1,27 @@
+{
+  "product": "ibge_pr_population_2026_quality",
+  "generated_at": "2026-11-12T00:47:15.146320+00:00",
+  "source_id": "ibge.estimativas_populacao.municipios_2026",
+  "edition_id": "POP2026_20261029",
+  "reference_date": "2026-07-01",
+  "codes_match_mesh": true,
+  "municipality_count": 399,
+  "parse": {
+    "edition_id": "POP2026_20261029",
+    "reference_date": "2026-07-01",
+    "uf": "PR",
+    "municipality_count": 399,
+    "population_sum_municipalities": 11952456,
+    "population_uf_sheet": 11952456,
+    "population_uf_expected": 11952456,
+    "uf_total_matches_municipal_sum": true,
+    "uf_total_matches_expected": true
+  },
+  "energy_panel_available": true,
+  "nao_associados_siga_n": 34,
+  "not_census": true,
+  "not_mmgd": true,
+  "not_energy_mwh": true,
+  "xlsx_sha256": "6a5b50c76a5747102a6b40c0aa62498baf7ecc1f128e051e1400dfb57b88117a",
+  "mesh_presentation_sha256": "5d80bddac46ac9cb7a7666a26f921043c4fac8455a41123a38b2369f6d25969f"
+}

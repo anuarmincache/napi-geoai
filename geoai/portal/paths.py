@@ -59,3 +59,15 @@ def energy_quality_path(repo_root: Path | None = None) -> Path:
 def energy_qgis_report_path(repo_root: Path | None = None) -> Path:
     return derived_dir(repo_root) / "siga_pr_qgis_join_report.json"
 
+
+def population_panel_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "ibge_pr_population_2026_panel.json"
+
+
+def population_provenance_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "ibge_pr_population_2026.provenance.json"
+
+
+def population_quality_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "ibge_pr_population_2026.quality.json"
+

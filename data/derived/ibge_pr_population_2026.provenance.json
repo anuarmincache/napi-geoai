@@ -1,0 +1,16 @@
+{
+  "source_id": "ibge.estimativas_populacao.municipios_2026",
+  "url": "https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2026/POP2026_20261029.xlsx",
+  "entry_url": "https://www.ibge.gov.br/estatisticas/sociais/populacao/9103-estimativas-de-populacao.html",
+  "license_note": "IBGE — Estimativas da população residente; citar fonte e edição. Não confundir com população do Censo Demográfico.",
+  "edition_id": "POP2026_20261029",
+  "reference_date": "2026-07-01",
+  "retrieved_at": "2026-11-12T00:47:14.056772+00:00",
+  "content_sha256": "6a5b50c76a5747102a6b40c0aa62498baf7ecc1f128e051e1400dfb57b88117a",
+  "content_length": 291627,
+  "local_xlsx": "data/raw/ibge/POP2026_20261029.xlsx",
+  "municipios_malha": "data/raw/ibge/PR_Municipios_2025.zip",
+  "prepared_at": "2026-11-12T00:47:15.146342+00:00",
+  "attribution_pt": "IBGE — Estimativas da população residente em 1º de julho de 2026 (edição POP2026_20261029). Malha municipal IBGE 2025. Capacidade: ANEEL SIGA (quando disponível).",
+  "xlsx_bytes_sha256_verify": "6a5b50c76a5747102a6b40c0aa62498baf7ecc1f128e051e1400dfb57b88117a"
+}
