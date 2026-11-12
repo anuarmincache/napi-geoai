@@ -28,7 +28,10 @@ Não é Censo Demográfico. Total UF Paraná na planilha: **11 952 456** hab
 | `potencia_fiscalizada_conhecida_mw_por_km2` | MW_conhecida ÷ área; não é aptidão |
 | `usinas_por_100mil_hab` | n_usinas×100000 ÷ pop |
 
-SIGA: geração **centralizada**, fase Operação; **não** MMGD; **não** MWh. Município sem usina associada ≠ ausência absoluta (há não associados no painel SIGA).
+SIGA: geração **centralizada**, fase Operação; **não** MMGD; **não** MWh.
+
+- Painel SIGA **disponível**: exige 399 CD_MUN iguais à malha (fail-closed); `sem_empreendimento` = **zero vinculado** (não absoluto), com ressalva dos não associados.
+- Painel SIGA **indisponível**: população/densidade permanecem; MW/kW/hab/`n` = **n/d** (`energia_indisponivel`) — **não** inventa zero.
 
 ## QGIS
 

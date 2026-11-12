@@ -1,4 +1,4 @@
-"""Testes MVP 11 — população IBGE 2026 e indicadores."""
+"""Testes MVP 11 — população IBGE 2026 e indicadores (positivos/negativos)."""
 
 from __future__ import annotations
 
@@ -9,12 +9,19 @@ from geoai.connectors.errors import ValidationConnectorError
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
 from geoai.connectors.ibge_population import EXPECTED_PR_POPULATION_UF_TOTAL
 from geoai.population.indicators import (
+    STATUS_ENERGIA_INDISPONIVEL,
+    STATUS_SEM_EMPREENDIMENTO,
+    build_municipality_indicators,
     density_hab_km2,
     kw_per_inhabitant,
     plants_per_100k_hab,
     safe_div,
 )
-from geoai.population.panel import load_population_panel_bundle
+from geoai.population.panel import (
+    EnergyCoverageError,
+    build_population_energy_panel,
+    load_population_panel_bundle,
+)
 from geoai.population.parse import parse_population_int
 from geoai.portal.municipal_profile import (
     compare_municipal_profiles,
@@ -52,6 +59,125 @@ def test_parse_population_int() -> None:
     assert parse_population_int("abc") is None
 
 
+def test_indicators_energia_indisponivel_no_invented_zero() -> None:
+    row = build_municipality_indicators(
+        cd_mun="4115200",
+        nm_mun="Maringá",
+        area_km2=100.0,
+        population=1000,
+        energy=None,
+        energy_source_available=False,
+        nao_associados_n=0,
+    )
+    assert row["status_energia_siga"] == STATUS_ENERGIA_INDISPONIVEL
+    assert row["potencia_fiscalizada_conhecida_mw"] is None
+    assert row["potencia_fiscalizada_conhecida_kw_por_habitante"] is None
+    assert row["n_empreendimentos_siga_operacao"] is None
+    assert row["usinas_por_100mil_hab"] is None
+    assert row["densidade_demografica_estimada_2026_hab_km2"] == pytest.approx(10.0)
+    assert row["zero_vinculado"] is False
+
+
+def test_indicators_sem_empreendimento_is_zero_vinculado() -> None:
+    row = build_municipality_indicators(
+        cd_mun="4100103",
+        nm_mun="Abatiá",
+        area_km2=50.0,
+        population=5000,
+        energy={
+            "n_empreendimentos": 0,
+            "potencia_fiscalizada_mw": 0.0,
+            "potencia_fiscalizada_completa": True,
+            "status_dados": STATUS_SEM_EMPREENDIMENTO,
+        },
+        energy_source_available=True,
+        nao_associados_n=34,
+    )
+    assert row["status_energia_siga"] == STATUS_SEM_EMPREENDIMENTO
+    assert row["potencia_fiscalizada_conhecida_mw"] == pytest.approx(0.0)
+    assert row["potencia_fiscalizada_conhecida_kw_por_habitante"] == pytest.approx(
+        0.0
+    )
+    assert row["zero_vinculado"] is True
+    assert "zero absoluto" in (row["kw_por_habitante_note_pt"] or "").lower() or (
+        "Zero vinculado" in (row["kw_por_habitante_note_pt"] or "")
+    )
+    assert "34" in (row["unassociated_plants_limitation_pt"] or "")
+
+
+def _mini_mesh_pop_energy(
+    n: int = EXPECTED_PR_MUNICIPALITY_COUNT,
+) -> tuple[list[dict], dict[str, dict], dict[str, dict]]:
+    """Gera malha/pop/energia sintéticas com n códigos (só para testes de erro)."""
+
+    mesh = []
+    pop_by = {}
+    energy_by = {}
+    for i in range(n):
+        code = f"41{i:05d}"
+        mesh.append({"CD_MUN": code, "NM_MUN": f"M{i}", "AREA_KM2": 10.0})
+        pop_by[code] = {"populacao_estimada_2026_hab": 1000 + i}
+        energy_by[code] = {
+            "n_empreendimentos": 0,
+            "potencia_fiscalizada_mw": 0.0,
+            "potencia_fiscalizada_completa": True,
+            "status_dados": STATUS_SEM_EMPREENDIMENTO,
+        }
+    return mesh, pop_by, energy_by
+
+
+def test_build_panel_siga_unavailable_keeps_pop_energy_nd() -> None:
+    # Usa 399 códigos sintéticos válidos no contrato de contagem.
+    mesh, pop_by, _ = _mini_mesh_pop_energy()
+    panel = build_population_energy_panel(
+        mesh_rows=mesh,
+        population_by_code=pop_by,
+        energy_by_code={},
+        nao_associados_n=0,
+        energy_source_available=False,
+    )
+    assert panel["energy_source_available"] is False
+    assert all(
+        m["status_energia_siga"] == STATUS_ENERGIA_INDISPONIVEL
+        for m in panel["municipalities"]
+    )
+    assert all(
+        m["potencia_fiscalizada_conhecida_mw"] is None
+        for m in panel["municipalities"]
+    )
+    assert all(
+        m["potencia_fiscalizada_conhecida_kw_por_habitante"] is None
+        for m in panel["municipalities"]
+    )
+    assert panel["municipality_count"] == EXPECTED_PR_MUNICIPALITY_COUNT
+
+
+def test_build_panel_siga_available_missing_code_fail_closed() -> None:
+    mesh, pop_by, energy_by = _mini_mesh_pop_energy()
+    missing = mesh[0]["CD_MUN"]
+    del energy_by[missing]
+    with pytest.raises(EnergyCoverageError):
+        build_population_energy_panel(
+            mesh_rows=mesh,
+            population_by_code=pop_by,
+            energy_by_code=energy_by,
+            nao_associados_n=34,
+            energy_source_available=True,
+        )
+
+
+def test_build_panel_rejects_fallback_dict_when_siga_off() -> None:
+    mesh, pop_by, energy_by = _mini_mesh_pop_energy()
+    with pytest.raises(EnergyCoverageError):
+        build_population_energy_panel(
+            mesh_rows=mesh,
+            population_by_code=pop_by,
+            energy_by_code=energy_by,
+            nao_associados_n=0,
+            energy_source_available=False,
+        )
+
+
 def test_population_panel_399_and_totals() -> None:
     bundle = load_population_panel_bundle(REPO)
     if not bundle.available:
@@ -60,6 +186,9 @@ def test_population_panel_399_and_totals() -> None:
     assert bundle.panel["population_sum_hab"] == EXPECTED_PR_POPULATION_UF_TOTAL
     assert bundle.quality.get("codes_match_mesh") is True
     assert bundle.panel.get("population_reference_date") == "2026-07-01"
+    # Artefato versionado com SIGA disponível
+    assert bundle.panel.get("energy_source_available") is True
+    assert bundle.panel.get("nao_associados_siga_n") == 34
     mga = profile_for_code(bundle, "4115200")
     assert mga is not None
     assert mga["populacao_estimada_2026_hab"] > 0
@@ -71,6 +200,21 @@ def test_population_panel_399_and_totals() -> None:
     )
     assert dens == pytest.approx(
         mga["densidade_demografica_estimada_2026_hab_km2"]
+    )
+    sem = [
+        m
+        for m in bundle.panel["municipalities"]
+        if m["status_energia_siga"] == STATUS_SEM_EMPREENDIMENTO
+    ]
+    assert sem
+    assert all(m.get("zero_vinculado") is True for m in sem)
+    assert all(
+        m["potencia_fiscalizada_conhecida_mw"] == 0.0 for m in sem
+    )
+    assert all(
+        "vinculado" in (m.get("kw_por_habitante_note_pt") or "").lower()
+        or "associad" in (m.get("kw_por_habitante_note_pt") or "").lower()
+        for m in sem
     )
 
 

@@ -75,7 +75,8 @@ def main() -> int:
     energy = load_energy_panel_bundle(REPO)
     energy_by: dict[str, dict] = {}
     nao_n = 0
-    if energy.available:
+    energy_ok = bool(energy.available)
+    if energy_ok:
         nao_n = len(energy.panel.get("nao_associados") or [])
         for m in energy.panel.get("municipalities") or []:
             energy_by[str(m["CD_MUN"])] = {
@@ -87,13 +88,17 @@ def main() -> int:
                 "status_dados": m.get("status_dados"),
             }
     else:
-        print("AVISO: painel SIGA ausente — indicadores kW/hab sem energia")
+        print(
+            "AVISO: painel SIGA ausente — população/densidade ok; "
+            "métricas energéticas = n/d (energia_indisponivel)"
+        )
 
     panel = build_population_energy_panel(
         mesh_rows=mesh_rows,
         population_by_code=pop_by,
         energy_by_code=energy_by,
         nao_associados_n=nao_n,
+        energy_source_available=energy_ok,
     )
 
     quality = {
@@ -105,8 +110,9 @@ def main() -> int:
         "codes_match_mesh": True,
         "municipality_count": EXPECTED_PR_MUNICIPALITY_COUNT,
         "parse": parse_quality,
-        "energy_panel_available": energy.available,
-        "nao_associados_siga_n": nao_n,
+        "energy_panel_available": energy_ok,
+        "energy_codes_match_mesh": energy_ok,
+        "nao_associados_siga_n": nao_n if energy_ok else None,
         "not_census": True,
         "not_mmgd": True,
         "not_energy_mwh": True,

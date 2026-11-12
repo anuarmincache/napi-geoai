@@ -149,24 +149,28 @@ with right:
             "Área malha 2025 (km²)",
             f"{float(profile['area_km2_ibge_2025']):,.3f}",
         )
+        st.metric("Status energia SIGA", str(profile.get("status_energia_siga")))
+        mw = profile.get("potencia_fiscalizada_conhecida_mw")
         st.metric(
             "MW fiscalizada conhecida (SIGA)",
-            (
-                f"{float(profile['potencia_fiscalizada_conhecida_mw']):,.3f}"
-                if profile.get("potencia_fiscalizada_conhecida_mw") is not None
-                else "n/d"
-            ),
+            f"{float(mw):,.3f}" if mw is not None else "n/d",
         )
         kw = profile.get("potencia_fiscalizada_conhecida_kw_por_habitante")
         st.metric(
             "kW/hab (SIGA conhecida)",
-            f"{kw:,.4f}" if kw is not None else "n/d",
+            f"{float(kw):,.4f}" if kw is not None else "n/d",
         )
         st.caption(profile.get("kw_por_habitante_note_pt") or "")
+        n_pl = profile.get("n_empreendimentos_siga_operacao")
         st.metric(
             "Usinas SIGA associadas",
-            int(profile.get("n_empreendimentos_siga_operacao") or 0),
+            f"{int(n_pl)}" if n_pl is not None else "n/d",
         )
+        if profile.get("zero_vinculado"):
+            st.info(
+                "Zero vinculado (usinas georreferenciadas associadas) — "
+                "não interpretar como ausência absoluta de empreendimentos."
+            )
         st.caption(profile.get("energy_scope_pt") or "")
         st.caption(profile.get("unassociated_plants_limitation_pt") or "")
     with st.expander("Fonte e metodologia", expanded=False):

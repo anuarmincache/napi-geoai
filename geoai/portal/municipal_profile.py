@@ -101,8 +101,9 @@ def compare_municipal_profiles(
         },
         "disclaimer_pt": (
             "Comparação de estimativa populacional IBGE 2026, área malha 2025 e "
-            "capacidade SIGA conhecida. n/d ≠ zero. Não é Censo, MWh, MMGD "
-            "nem aptidão solar."
+            "capacidade SIGA conhecida. n/d ≠ zero inventado; zero vinculado "
+            "(sem usina georreferenciada associada) ≠ ausência absoluta. "
+            "Não é Censo, MWh, MMGD nem aptidão solar."
         ),
     }
 

@@ -12,6 +12,10 @@ from geoai.connectors.ibge_population import IBGE_POP_REFERENCE_DATE
 from geoai.population.indicators import build_municipality_indicators
 
 
+class EnergyCoverageError(ValueError):
+    """Painel SIGA disponível mas cobertura municipal incompleta/divergente."""
+
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
@@ -41,20 +45,60 @@ class PopulationPanelBundle:
     missing_reason_pt: str | None = None
 
 
+def _assert_energy_covers_mesh(
+    mesh_codes: set[str],
+    energy_by_code: dict[str, dict[str, Any]],
+) -> None:
+    energy_codes = {str(c).strip() for c in energy_by_code}
+    if len(energy_codes) != EXPECTED_PR_MUNICIPALITY_COUNT:
+        raise EnergyCoverageError(
+            f"Painel SIGA com {len(energy_codes)} códigos únicos; "
+            f"esperado {EXPECTED_PR_MUNICIPALITY_COUNT}."
+        )
+    if len(energy_by_code) != len(energy_codes):
+        raise EnergyCoverageError(
+            "Painel SIGA com CD_MUN duplicados — fail-closed."
+        )
+    if energy_codes != mesh_codes:
+        only_e = sorted(energy_codes - mesh_codes)[:5]
+        only_m = sorted(mesh_codes - energy_codes)[:5]
+        raise EnergyCoverageError(
+            "CD_MUN SIGA ≠ malha: "
+            f"só_siga={only_e} só_malha={only_m}"
+        )
+
+
 def build_population_energy_panel(
     *,
     mesh_rows: list[dict[str, Any]],
     population_by_code: dict[str, dict[str, Any]],
     energy_by_code: dict[str, dict[str, Any]],
     nao_associados_n: int,
+    energy_source_available: bool,
 ) -> dict[str, Any]:
-    """Une malha + população + energia em ficha por CD_MUN (399)."""
+    """Une malha + população + energia em ficha por CD_MUN (399).
+
+    - SIGA indisponível: população/densidade ok; energia = n/d
+      (``energia_indisponivel``), sem inventar 0 MW/kW/hab.
+    - SIGA disponível: exige 399 códigos únicos iguais à malha; sem fallback.
+    """
 
     if len(mesh_rows) != EXPECTED_PR_MUNICIPALITY_COUNT:
         raise ValueError(
             f"malha com {len(mesh_rows)} municípios; "
             f"esperado {EXPECTED_PR_MUNICIPALITY_COUNT}"
         )
+    mesh_codes = {str(r["CD_MUN"]).strip() for r in mesh_rows}
+    if len(mesh_codes) != EXPECTED_PR_MUNICIPALITY_COUNT:
+        raise ValueError("malha com CD_MUN duplicados — fail-closed")
+
+    if energy_source_available:
+        _assert_energy_covers_mesh(mesh_codes, energy_by_code)
+    elif energy_by_code:
+        raise EnergyCoverageError(
+            "energy_by_code não-vazio com energy_source_available=False"
+        )
+
     municipalities: list[dict[str, Any]] = []
     for row in mesh_rows:
         code = str(row["CD_MUN"]).strip()
@@ -67,12 +111,10 @@ def build_population_energy_panel(
         if pop_rec is None:
             raise ValueError(f"população ausente para {code}")
         pop = int(pop_rec["populacao_estimada_2026_hab"])
-        energy = energy_by_code.get(code) or {
-            "n_empreendimentos": 0,
-            "potencia_fiscalizada_mw": 0.0,
-            "potencia_fiscalizada_completa": True,
-            "status_dados": "sem_empreendimento",
-        }
+        if energy_source_available:
+            energy = energy_by_code[code]
+        else:
+            energy = None
         municipalities.append(
             build_municipality_indicators(
                 cd_mun=code,
@@ -80,6 +122,8 @@ def build_population_energy_panel(
                 area_km2=area_f,
                 population=pop,
                 energy=energy,
+                energy_source_available=energy_source_available,
+                nao_associados_n=nao_associados_n,
             )
         )
 
@@ -91,14 +135,25 @@ def build_population_energy_panel(
         "population_reference_date": IBGE_POP_REFERENCE_DATE,
         "population_sum_hab": pop_sum,
         "area_reference": "AREA_KM2 malha municipal IBGE municipio_2025",
+        "energy_source_available": energy_source_available,
         "energy_reference": (
             "SIGA/ANEEL potência fiscalizada conhecida, fase Operação, "
             "geração centralizada (não MMGD, não MWh)"
+            if energy_source_available
+            else "SIGA indisponível — métricas energéticas n/d (não inventadas)"
         ),
-        "nao_associados_siga_n": nao_associados_n,
+        "nao_associados_siga_n": nao_associados_n if energy_source_available else None,
         "nao_associados_limitation_pt": (
-            f"{nao_associados_n} empreendimentos SIGA sem associação municipal; "
-            "sem_empreendimento ≠ ausência absoluta de usinas."
+            (
+                f"{nao_associados_n} empreendimentos SIGA sem associação "
+                "municipal; sem_empreendimento = zero vinculado "
+                "(georreferenciado/associado), não ausência absoluta."
+            )
+            if energy_source_available
+            else (
+                "Painel SIGA indisponível: não há contagem de não associados "
+                "nem zero energético inventado."
+            )
         ),
         "municipalities": municipalities,
     }

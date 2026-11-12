@@ -117,6 +117,16 @@ def test_ficha_municipal_shows_population_semantics(_streamlit_paths: None) -> N
     assert "Censo" in blobs or "censo" in blobs.lower()
     assert any("População estimada" in str(m.label) for m in at.metric)
     assert "399" in blobs
+    # Semântica energética: status explícito; zero vinculado ≠ absoluto
+    assert any("Status energia SIGA" in str(m.label) for m in at.metric)
+    joined_warn = "\n".join(str(w.value) for w in at.warning).lower()
+    joined_cap = "\n".join(str(c.value) for c in at.caption).lower()
+    assert (
+        "não associados" in joined_warn
+        or "associ" in joined_cap
+        or "vinculado" in joined_cap
+        or "vinculado" in joined_warn
+    )
 
 
 def test_energy_kpis_follow_technology_filter(_streamlit_paths: None) -> None:
