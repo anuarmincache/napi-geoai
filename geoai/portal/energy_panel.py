@@ -21,6 +21,7 @@ __all__ = [
     "compare_municipal_energy",
     "energy_attribution_lines",
     "energy_map_html",
+    "energy_scope_totals",
     "load_energy_panel_bundle",
     "municipalities_ranked",
     "plants_table_path",
@@ -124,6 +125,86 @@ def project_municipality_metrics(
     else:
         out["status_dados"] = "agregado"
     return out
+
+
+def energy_scope_totals(
+    bundle: EnergyPanelBundle,
+    *,
+    tipo: str | None = None,
+) -> dict[str, Any]:
+    """KPIs do cabeçalho no escopo (todas as tecnologias ou um SigTipoGeracao).
+
+    Preserva catálogo 399. Recalcula usinas, MW conhecida, municípios com
+    usinas associadas e não associados no mesmo escopo.
+    """
+
+    panel = bundle.panel
+    projected = [
+        project_municipality_metrics(r, tipo=tipo)
+        for r in (panel.get("municipalities") or [])
+    ]
+    n_mun_catalog = int(panel.get("municipality_count") or len(projected))
+    n_mun_with = sum(1 for r in projected if int(r.get("display_n") or 0) > 0)
+    n_mun_assoc = sum(int(r.get("display_n") or 0) for r in projected)
+    mw_mun = sum(float(r.get("display_mw") or 0.0) for r in projected)
+    aus_mun = sum(int(r.get("display_ausente") or 0) for r in projected)
+
+    nao = list(panel.get("nao_associados") or [])
+    if tipo:
+        nao = [p for p in nao if str(p.get("tipo") or "") == tipo]
+    n_un = len(nao)
+    mw_un = sum(
+        float(p.get("potencia_fiscalizada_mw") or 0.0)
+        for p in nao
+        if p.get("potencia_fiscalizada_conhecida")
+    )
+    aus_un = sum(
+        1 for p in nao if not p.get("potencia_fiscalizada_conhecida")
+    )
+    aus_fase = aus_mun + aus_un
+    n_fase = n_mun_assoc + n_un
+    mw_fase = round(mw_mun + mw_un, 6)
+    completa = aus_fase == 0
+    scope = f"tipo:{tipo}" if tipo else "todas_tecnologias"
+    return {
+        "metric_scope": scope,
+        "municipality_count": n_mun_catalog,
+        "municipality_count_expected": EXPECTED_PR_MUNICIPALITY_COUNT,
+        "n_empreendimentos_municipios": n_mun_assoc,
+        "n_empreendimentos_nao_associados": n_un,
+        "n_empreendimentos_fase": n_fase,
+        "n_municipios_com_usinas": n_mun_with,
+        "potencia_fiscalizada_mw_municipios": round(mw_mun, 6),
+        "potencia_fiscalizada_mw_nao_associados": round(mw_un, 6),
+        "potencia_fiscalizada_mw_conhecida_fase": mw_fase,
+        "n_potencia_fiscalizada_ausente_fase": aus_fase,
+        "soma_cobertura": "completa" if completa else "parcial",
+        "soma_rotulo": (
+            "capacidade_fiscalizada_conhecida_mw"
+            if completa
+            else "capacidade_fiscalizada_conhecida_mw_parcial"
+        ),
+        "nao_associados_limitation_pt": (
+            f"{n_un} empreendimento(s) do escopo «{scope}» sem associação "
+            "municipal (coords ausentes/inválidas, fora da malha ou ausentes "
+            "no join QGIS). Municípios sem usina no escopo referem-se apenas "
+            "a usinas georreferenciadas e vinculadas — não são zero absoluto."
+        ),
+        "totals_caveat_pt": (
+            None
+            if completa
+            else (
+                f"Soma parcial no escopo «{scope}»: {aus_fase} registro(s) "
+                "sem potência fiscalizada válida."
+            )
+        ),
+        "kpi_caption_pt": (
+            f"KPIs no escopo «{scope}» · cobertura "
+            f"{'completa' if completa else 'parcial'} · "
+            f"catálogo municipal fixo {n_mun_catalog}/"
+            f"{EXPECTED_PR_MUNICIPALITY_COUNT}"
+        ),
+    }
 
 
 def municipalities_ranked(

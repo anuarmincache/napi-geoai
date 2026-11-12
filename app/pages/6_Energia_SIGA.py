@@ -16,7 +16,10 @@ from geoai.portal import (
     municipalities_ranked,
     municipality_label,
 )
-from geoai.portal.energy_panel import project_municipality_metrics
+from geoai.portal.energy_panel import (
+    energy_scope_totals,
+    project_municipality_metrics,
+)
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
@@ -62,66 +65,6 @@ level = st.radio(
     }.__getitem__,
     horizontal=True,
 )
-n_un = len(energy.panel.get("nao_associados") or [])
-if level is AudienceLevel.BASIC:
-    st.info(
-        "O mapa mostra capacidade fiscalizada **conhecida** (MW) por município "
-        "nas usinas SIGA em operação, no filtro de tecnologia escolhido. "
-        "Cinza claro = nenhuma usina **georreferenciada e associada** ao "
-        f"polígono nesse escopo — não é prova de ausência absoluta "
-        f"({n_un} usinas da fase sem associação municipal)."
-    )
-elif level is AudienceLevel.INTERMEDIATE:
-    st.info(
-        "Potência fiscalizada ≠ outorgada ≠ energia gerada. "
-        f"Fase padrão: {PHASE_OPERACAO}. Join espacial de referência: QGIS; "
-        "GeoPandas reconcilia CodCEG→CD_MUN (fail-closed). "
-        "O filtro de tecnologia altera MW, contagens, ranking e mapa."
-    )
-else:
-    st.info(
-        "Artefatos: `siga_pr_energy_panel.json`, proveniência/qualidade, "
-        "`siga_pr_qgis_join_report.json` (assignments). "
-        "MMGD catalogado, fora deste MVP."
-    )
-
-st.warning(energy.panel.get("nao_associados_limitation_pt") or (
-    f"{n_un} empreendimentos sem associação municipal — "
-    "não interpretar 'sem_empreendimento' como zero absoluto."
-))
-
-totals = energy.panel.get("totals") or {}
-soma_label = totals.get("soma_rotulo") or "capacidade_fiscalizada_conhecida_mw"
-c1, c2, c3, c4 = st.columns(4)
-c1.metric(
-    "Empreendimentos (operação)",
-    f"{totals.get('n_empreendimentos_fase', 0)}",
-)
-_mw_fase = float(
-    totals.get("potencia_fiscalizada_mw_conhecida_fase")
-    or totals.get("potencia_fiscalizada_mw_total_fase")
-    or 0
-)
-c2.metric("MW fiscalizada conhecida (fase)", f"{_mw_fase:,.1f}")
-_n_agregado = sum(
-    1
-    for m in energy.panel.get("municipalities") or []
-    if m.get("status_dados") == "agregado"
-)
-c3.metric("Municípios com usinas associadas", f"{_n_agregado}")
-c4.metric(
-    "Municípios no catálogo",
-    f"{energy.panel.get('municipality_count')}/{EXPECTED_PR_MUNICIPALITY_COUNT}",
-)
-st.caption(
-    f"Rótulo da soma: `{soma_label}` · cobertura: "
-    f"**{totals.get('soma_cobertura', 'n/d')}** · "
-    f"ausências de potência fiscalizada: "
-    f"{totals.get('n_potencia_fiscalizada_ausente_fase', 0)}"
-)
-if energy.panel.get("totals_caveat_pt"):
-    st.warning(energy.panel["totals_caveat_pt"])
-
 tipos = sorted(
     {
         t
@@ -132,11 +75,11 @@ tipos = sorted(
 f1, f2 = st.columns([2, 1])
 with f1:
     tipo = st.selectbox(
-        "Tecnologia (SigTipoGeracao) — filtro real de MW/contagens/mapa",
+        "Tecnologia (SigTipoGeracao) — redefine KPIs, ranking e mapa",
         options=["(todas)", *tipos],
         help=(
-            "Altera ranking, KPIs municipais, comparação e coroplético para "
-            "a potência/contagem **dessa** tecnologia."
+            "Os cards superiores e o mapa usam MW/contagens **desta** "
+            "tecnologia. Catálogo municipal permanece 399."
         ),
     )
 with f2:
@@ -148,13 +91,75 @@ with f2:
     )
 
 tipo_filter = None if tipo == "(todas)" else tipo
-if tipo_filter:
+scope = energy_scope_totals(energy, tipo=tipo_filter)
+n_un = int(scope["n_empreendimentos_nao_associados"])
+
+if level is AudienceLevel.BASIC:
     st.info(
-        f"Escopo ativo: tecnologia **{tipo_filter}**. "
-        "MW e contagens exibidos referem-se somente a este tipo."
+        "O mapa mostra capacidade fiscalizada **conhecida** (MW) por município "
+        "nas usinas SIGA em operação, no filtro de tecnologia escolhido. "
+        "Cinza claro = nenhuma usina **georreferenciada e associada** ao "
+        "polígono nesse escopo — não é prova de ausência absoluta "
+        f"({n_un} usina(s) do escopo sem associação municipal)."
+    )
+elif level is AudienceLevel.INTERMEDIATE:
+    st.info(
+        "Potência fiscalizada ≠ outorgada ≠ energia gerada. "
+        f"Fase padrão: {PHASE_OPERACAO}. Join espacial de referência: QGIS; "
+        "GeoPandas reconcilia CodCEG→CD_MUN (fail-closed). "
+        "O filtro de tecnologia redefine KPIs, ranking e mapa."
     )
 else:
-    st.caption("Escopo ativo: **todas as tecnologias** na fase Operação.")
+    st.info(
+        "Artefatos: `siga_pr_energy_panel.json`, proveniência/qualidade, "
+        "`siga_pr_qgis_join_report.json` (assignments). "
+        "MMGD catalogado, fora deste MVP."
+    )
+
+if tipo_filter:
+    st.info(
+        f"Escopo ativo: tecnologia **{tipo_filter}** "
+        f"(`{scope['metric_scope']}`). "
+        "KPIs superiores, ranking, comparação e mapa referem-se só a este tipo."
+    )
+else:
+    st.caption(
+        "Escopo ativo: **todas as tecnologias** na fase Operação "
+        f"(`{scope['metric_scope']}`)."
+    )
+
+st.warning(scope["nao_associados_limitation_pt"])
+
+c1, c2, c3, c4 = st.columns(4)
+_scope_label = (
+    f"escopo {tipo_filter}" if tipo_filter else "todas as tecnologias"
+)
+c1.metric(
+    f"Empreendimentos ({_scope_label})",
+    f"{scope['n_empreendimentos_fase']}",
+)
+c2.metric(
+    f"MW fiscalizada conhecida ({_scope_label})",
+    f"{float(scope['potencia_fiscalizada_mw_conhecida_fase']):,.1f}",
+)
+c3.metric(
+    f"Municípios com usinas ({_scope_label})",
+    f"{scope['n_municipios_com_usinas']}",
+)
+c4.metric(
+    "Municípios no catálogo (fixo)",
+    f"{scope['municipality_count']}/{EXPECTED_PR_MUNICIPALITY_COUNT}",
+)
+st.caption(scope["kpi_caption_pt"])
+st.caption(
+    f"Rótulo da soma: `{scope['soma_rotulo']}` · cobertura: "
+    f"**{scope['soma_cobertura']}** · "
+    f"ausências de potência fiscalizada: "
+    f"{scope['n_potencia_fiscalizada_ausente_fase']} · "
+    f"não associados no escopo: {n_un}"
+)
+if scope.get("totals_caveat_pt"):
+    st.warning(scope["totals_caveat_pt"])
 
 ranked = municipalities_ranked(
     energy,

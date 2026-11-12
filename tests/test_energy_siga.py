@@ -28,6 +28,7 @@ from geoai.energy.siga_reconcile import (
 )
 from geoai.portal.energy_panel import (
     compare_municipal_energy,
+    energy_scope_totals,
     municipalities_ranked,
     project_municipality_metrics,
 )
@@ -206,6 +207,32 @@ def test_energy_panel_covers_399_and_reconciles() -> None:
         ranked[0]["display_mw"]
         >= ranked[-1]["display_mw"]
     )
+
+
+def test_energy_scope_totals_recalculate_for_technology() -> None:
+    bundle = load_energy_panel_bundle(REPO)
+    if not bundle.available:
+        pytest.skip("painel ausente")
+    all_scope = energy_scope_totals(bundle, tipo=None)
+    assert all_scope["municipality_count"] == EXPECTED_PR_MUNICIPALITY_COUNT
+    assert all_scope["n_empreendimentos_fase"] == 310
+    assert all_scope["n_empreendimentos_nao_associados"] == 34
+    assert all_scope["metric_scope"] == "todas_tecnologias"
+    ufv = energy_scope_totals(bundle, tipo="UFV")
+    assert ufv["metric_scope"] == "tipo:UFV"
+    assert ufv["municipality_count"] == EXPECTED_PR_MUNICIPALITY_COUNT
+    assert ufv["n_empreendimentos_fase"] < all_scope["n_empreendimentos_fase"]
+    assert (
+        ufv["potencia_fiscalizada_mw_conhecida_fase"]
+        < all_scope["potencia_fiscalizada_mw_conhecida_fase"]
+    )
+    assert ufv["n_municipios_com_usinas"] < all_scope["n_municipios_com_usinas"]
+    assert ufv["n_empreendimentos_nao_associados"] == 25
+    assert (
+        ufv["n_empreendimentos_municipios"] + ufv["n_empreendimentos_nao_associados"]
+        == ufv["n_empreendimentos_fase"]
+    )
+    assert "tipo:UFV" in ufv["kpi_caption_pt"]
 
 
 def test_technology_filter_changes_mw_not_just_presence() -> None:

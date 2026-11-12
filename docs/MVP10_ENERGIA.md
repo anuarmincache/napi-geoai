@@ -37,7 +37,8 @@ Licença dos dados abertos ANEEL: **ODbL**. Proveniência e data do conjunto em 
 ## Capacidade e filtro
 
 - Potência fiscalizada ausente/inválida/negativa **≠** 0 MW; `n_potencia_fiscalizada_ausente_*` e `soma_cobertura`
-- Filtro de tecnologia altera MW, contagens, ranking, comparação e mapa (`metric_scope=tipo:X`)
+- Filtro de tecnologia (acima dos KPIs) redefine MW, contagens, municípios com usinas, não associados, ranking, comparação e mapa (`energy_scope_totals`, `metric_scope=tipo:X`)
+- Catálogo municipal permanece **399** (KPI «Municípios no catálogo (fixo)»)
 
 ## Artefatos
 
