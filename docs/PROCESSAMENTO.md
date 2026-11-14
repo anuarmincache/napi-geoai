@@ -43,7 +43,7 @@ O bbox deste job não substitui `AREA_KM2` oficial nem um join QGIS.
 - classes SCL 0, 1, 3, 8, 9, 10 e 11 ficam de fora da máscara válida;
 - `download_in_this_release: false` e `operational_sentinel: false`.
 
-O piloto de Maringá está em [SENTINEL_PILOTO.md](SENTINEL_PILOTO.md). A página lê o catálogo estático. A passagem S2B de 12/11 é candidata geométrica. A sobreposição usa a primeira tile válida, em blocos GDAL, sem manter as matrizes inteiras. `--dry-run` só estima consumo. `--measure-only` calcula a fração e não publica o COG. A sonda OIDC só honra HTTP 206 com o `Content-Range` do intervalo `0-1023`. HTTP 200 não marca o range como honrado. A fração de Maringá ainda não foi medida. O NDVI em memória desta fundação continua sintético. Não há raster Sentinel publicado e não há recorte do Paraná.
+O piloto de Maringá está em [SENTINEL_PILOTO.md](SENTINEL_PILOTO.md). A malha IBGE entra no GDAL por `/vsizip/` e o shapefile interno, com barras normais no Windows e no Linux. A página lê o catálogo estático. A passagem S2B de 12/11 é candidata geométrica. A sobreposição usa a primeira tile válida, em blocos GDAL, sem manter as matrizes inteiras. `--dry-run` só estima consumo. `--measure-only` calcula a fração e não publica o COG. A sonda OIDC só honra HTTP 206 com o `Content-Range` do intervalo `0-1023`. HTTP 200 não marca o range como honrado. A fração de Maringá ainda não foi medida. O NDVI em memória desta fundação continua sintético. Não há raster Sentinel publicado e não há recorte do Paraná.
 
 NDVI é índice espectral. Não é biogás, biomassa, rendimento nem receita.
 

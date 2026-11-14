@@ -8,6 +8,8 @@ O diagnóstico de Pinhais está em `docs/evidence/sentinel/exploracao_pinhais_20
 
 Feição `CD_MUN=4115200` em `data/raw/ibge/PR_Municipios_2025.zip`.
 
+O GDAL abre esse ZIP por `/vsizip/` e o shapefile interno `PR_Municipios_2025.shp`, com barras normais. O mesmo caminho vale no Windows e no Linux. A leitura no QGIS 3.44.15 / GDAL 3.13.3 está em `docs/evidence/sentinel/ibge_mesh_gdal.json`: CRS igual a EPSG:4674, geometria válida e máscara 64×64 com o ponto interior dentro do município. Essa máscara é só da malha; não é NDVI.
+
 - Nome: Maringá
 - `AREA_KM2` oficial: 487,912
 - CRS: EPSG:4674

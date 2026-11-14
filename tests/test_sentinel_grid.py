@@ -6,6 +6,7 @@ import json
 import subprocess
 import sys
 import urllib.request
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -18,6 +19,11 @@ from geoai.sentinel.cdse_auth import (
     _complete_download,
 )
 from geoai.sentinel.gdal_blocks import measure_blocks
+from geoai.sentinel.gdal_scene import (
+    municipality_bounds,
+    ogr_mesh_path,
+    rasterize_municipality,
+)
 from geoai.sentinel.grid import (
     clip_placement,
     nearest_sample,
@@ -331,3 +337,75 @@ def test_dry_run_cli_does_not_publish(tmp_path: Path) -> None:
     payload = json.loads(evidence.read_text(encoding="utf-8"))
     assert payload["download_started"] is False
     assert payload["ndvi_published"] is False
+
+
+def _zip_with(path: Path, names: list[str]) -> None:
+    with zipfile.ZipFile(path, "w") as handle:
+        for name in names:
+            handle.writestr(name, b"")
+
+
+def test_ogr_mesh_path_uses_vsizip(tmp_path: Path) -> None:
+    archive = tmp_path / "PR_Municipios_2025.zip"
+    _zip_with(archive, ["PR_Municipios_2025.shp"])
+    opened = ogr_mesh_path(archive)
+    posix = archive.resolve().as_posix()
+    assert opened == f"/vsizip/{posix}/PR_Municipios_2025.shp"
+    assert "\\" not in opened
+
+
+def test_ogr_mesh_path_rejects_a_missing_or_ambiguous_shapefile(tmp_path: Path) -> None:
+    empty = tmp_path / "empty.zip"
+    _zip_with(empty, ["LEIA-ME.txt"])
+    with pytest.raises(FileNotFoundError, match="ausente"):
+        ogr_mesh_path(empty)
+    ambiguous = tmp_path / "two.zip"
+    _zip_with(ambiguous, ["PR_Municipios_2025.shp", "outro_municipio.shp"])
+    with pytest.raises(FileNotFoundError, match="ambíguo"):
+        ogr_mesh_path(ambiguous)
+
+
+def test_municipality_code_is_rejected_before_gdal(tmp_path: Path) -> None:
+    mesh = tmp_path / "ausente.zip"
+    with pytest.raises(ValueError, match="CD_MUN"):
+        municipality_bounds(mesh, "41A", "WKT")
+    with pytest.raises(ValueError, match="CD_MUN"):
+        rasterize_municipality(mesh, "4115200 ", (0, 1, 0, 0, 0, -1), 1, 1, "WKT")
+
+
+def test_real_ibge_mesh_path_uses_vsizip_when_present() -> None:
+    mesh = REPO / "data" / "raw" / "ibge" / "PR_Municipios_2025.zip"
+    if not mesh.is_file():
+        pytest.skip("malha IBGE ausente")
+    opened = ogr_mesh_path(mesh)
+    assert opened.startswith("/vsizip/")
+    assert "\\" not in opened
+    assert opened.endswith("/PR_Municipios_2025.shp")
+    assert mesh.resolve().as_posix() in opened
+
+
+def test_ibge_mesh_gdal_evidence_reads_maringa() -> None:
+    path = REPO / "docs" / "evidence" / "sentinel" / "ibge_mesh_gdal.json"
+    if not path.is_file():
+        pytest.skip("evidência da malha GDAL ainda não gerada")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    assert payload["cd_mun"] == "4115200"
+    assert payload["name"] == "Maringá"
+    assert payload["area_km2_official"] == pytest.approx(487.912)
+    assert payload["crs_same_as_epsg_4674"] is True
+    assert payload["geometry_valid"] is True
+    assert payload["geometry_type"] == "Polygon"
+    assert payload["bbox"] == pytest.approx(
+        [-52.1000868, -23.5583336, -51.8358064999999, -23.2539786999999]
+    )
+    assert payload["member"] == "PR_Municipios_2025.shp"
+    assert payload["open_path"] == "vsizip"
+    assert payload["path_has_backslash"] is False
+    assert payload["mask_shape"] == [64, 64]
+    assert payload["mask_true"] > 0
+    assert payload["mask_false"] > 0
+    assert payload["point_on_surface_inside"] is True
+    assert payload["sentinel_scene"] is False
+    assert payload["official_pixels"] is False
+    assert payload["ndvi_published"] is False
+    assert payload["download_started"] is False
