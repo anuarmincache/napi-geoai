@@ -4,7 +4,7 @@
 
 **Language:** [Português](README.md) | [English](README.en.md)
 
-> **Status:** early planning and implementation. No validated territorial results or production application are available yet.
+> **Status:** in development, with no public deployment. The repository already includes territorial artifacts with provenance: IBGE 2025 municipalities (MVP 09), the ANEEL SIGA panel (MVP 10), and IBGE 2026 population estimates (MVP 11). That is in-repository data validation. It is not a production application, not a photovoltaic-suitability result, and not a Streamlit Cloud release.
 
 ## Overview
 
@@ -47,7 +47,9 @@ ruff check .
 pytest -q
 ```
 
-The `geoai/` package currently exposes only metadata and a testable entry point. Connectors, maps, and a published application are not included yet.
+Delivered MVP status is documented in the [Portuguese README](README.md). This English page does not repeat that history.
+
+Geospatial job foundation (Issue #40): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). Streamlit still reads prepared artifacts only. Local jobs (`vector_bbox_metrics` and an in-memory NDVI window) run from `scripts/run_geo_job.py`, with atomic publish and a local per-key lock. Job output under `data/jobs/` is gitignored. Sentinel-2 download and imagery visualization are not part of this stage. A small measurement is stored in `docs/evidence/processing/benchmark_small.json`.
 
 ## Scientific integrity and license
 

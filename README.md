@@ -14,7 +14,7 @@
 
 **Idioma:** [Português](README.md) | [English](README.en.md)
 
-> **Status:** projeto em fase de planejamento e implementação inicial. Ainda não há resultados territoriais validados ou aplicação em produção.
+> **Status:** em desenvolvimento, sem implantação pública. O repositório já integra artefatos territoriais com proveniência: municípios IBGE 2025 (MVP 09), painel SIGA/ANEEL (MVP 10) e estimativas populacionais IBGE 2026 (MVP 11). Isso é validação de dados e de contratos no repositório. Não é aplicação em produção, não é aptidão fotovoltaica e não é publicação no Streamlit Cloud.
 
 ## Visão geral
 
@@ -103,6 +103,8 @@ Explorador territorial (MVP 09): [docs/MVP09_EXPLORADOR.md](docs/MVP09_EXPLORADO
 Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERGIA.md) — capacidade fiscalizada (MW) por município, fase Operação, join QGIS, MMGD fora do escopo.
 
 População IBGE 2026 e ficha municipal (MVP 11): [docs/MVP11_POPULACAO.md](docs/MVP11_POPULACAO.md) — estimativa 01/07/2026, densidade, kW/hab SIGA, 399 municípios.
+
+Fundação de jobs geoespaciais (Issue #40, sem visualização Sentinel): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). O Streamlit continua lendo artefatos prontos. Jobs locais (`vector_bbox_metrics`, janela NDVI sintética) ficam em `scripts/run_geo_job.py`, com publicação atômica, lock local por chave e `data/jobs/` fora do Git. Não há download Sentinel-2 nem mapa de imagem nesta etapa. Medição pequena: `docs/evidence/processing/benchmark_small.json`.
 
 ```powershell
 py -3 -m pip install -e ".[dev,ui]"
