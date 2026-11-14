@@ -49,7 +49,9 @@ pytest -q
 
 Delivered MVP status is documented in the [Portuguese README](README.md). This English page does not repeat that history.
 
-Geospatial job foundation (Issue #40): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). Streamlit still reads prepared artifacts only. Local jobs (`vector_bbox_metrics` and an in-memory NDVI window) run from `scripts/run_geo_job.py`, with atomic publish and a local per-key lock. Job output under `data/jobs/` is gitignored. Sentinel-2 download and imagery visualization are not part of this stage. A small measurement is stored in `docs/evidence/processing/benchmark_small.json`.
+Geospatial job foundation (Issue #40): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). Streamlit still reads prepared artifacts only. Local jobs run from `scripts/run_geo_job.py`, with atomic publish and a local per-key lock. Job output under `data/jobs/` is gitignored. A small measurement is stored in `docs/evidence/processing/benchmark_small.json`.
+
+Sentinel-2 pilot for Maringá, IBGE code 4115200 (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). Geometry comes from the 2025 IBGE mesh, opened by GDAL through `/vsizip/`. The 12 November 2026 Sentinel-2B pass, relative orbit R081, is the geometric candidate, with tiles 22KCV and 22KDV. Overlap keeps the first valid tile, with no average and no double count. The valid-pixel fraction has not been measured. The dry run did not download any JP2: the six-band ceiling is 298,256,664 bytes and one processing block fits in 3.3 MiB, plus the AOI mask. `--measure-only` computes the fraction and does not write a COG. No NDVI raster or imagery map is published. The Streamlit page only reads the catalog.
 
 ## Scientific integrity and license
 

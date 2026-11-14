@@ -1,0 +1,29 @@
+{
+  "sentinel_scene": false,
+  "official_pixels": false,
+  "ndvi_published": false,
+  "download_started": false,
+  "cd_mun": "4115200",
+  "name": "Maringá",
+  "area_km2_official": 487.912,
+  "crs_same_as_epsg_4674": true,
+  "geometry_valid": true,
+  "geometry_type": "Polygon",
+  "bbox": [
+    -52.1000868,
+    -23.5583336,
+    -51.8358064999999,
+    -23.2539786999999
+  ],
+  "member": "PR_Municipios_2025.shp",
+  "open_path": "vsizip",
+  "path_has_backslash": false,
+  "mask_shape": [
+    64,
+    64
+  ],
+  "mask_true": 2195,
+  "mask_false": 1901,
+  "point_on_surface_inside": true,
+  "gdal": "3.13.3"
+}

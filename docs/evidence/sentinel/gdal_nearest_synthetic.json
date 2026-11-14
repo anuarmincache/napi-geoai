@@ -1,0 +1,35 @@
+{
+  "sentinel_scene": false,
+  "method": "gdal_warp_nearest",
+  "src_gsd_m": 20,
+  "dst_gsd_m": 10,
+  "src_crs": "EPSG:32722",
+  "classes_in": [
+    4,
+    8,
+    9,
+    4
+  ],
+  "values_out": [
+    4,
+    4,
+    8,
+    8,
+    4,
+    4,
+    8,
+    8,
+    9,
+    9,
+    4,
+    4,
+    9,
+    9,
+    4,
+    4
+  ],
+  "classes_not_blended": true,
+  "elapsed_seconds": 0.047033,
+  "gdal": "3.13.3",
+  "qgis_python": true
+}

@@ -1,0 +1,89 @@
+{
+  "acquisition_id": "S2B_20261112T133149_R081",
+  "fallback_acquisition_id": "S2A_20261109T133231_R081",
+  "tiles": [
+    "22KCV",
+    "22KDV"
+  ],
+  "n_bands": 6,
+  "bands": [
+    {
+      "tile": "22KCV",
+      "band": "B04_10m",
+      "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116",
+      "href_verified": true,
+      "file_bytes": 49709444,
+      "transfer": "complete_jp2"
+    },
+    {
+      "tile": "22KCV",
+      "band": "B08_10m",
+      "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116",
+      "href_verified": true,
+      "file_bytes": null,
+      "transfer": "size_unknown"
+    },
+    {
+      "tile": "22KCV",
+      "band": "SCL_20m",
+      "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116",
+      "href_verified": true,
+      "file_bytes": null,
+      "transfer": "size_unknown"
+    },
+    {
+      "tile": "22KDV",
+      "band": "B04_10m",
+      "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+      "href_verified": false,
+      "file_bytes": null,
+      "transfer": "size_unknown"
+    },
+    {
+      "tile": "22KDV",
+      "band": "B08_10m",
+      "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+      "href_verified": false,
+      "file_bytes": null,
+      "transfer": "size_unknown"
+    },
+    {
+      "tile": "22KDV",
+      "band": "SCL_20m",
+      "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+      "href_verified": false,
+      "file_bytes": null,
+      "transfer": "size_unknown"
+    }
+  ],
+  "full_jp2_download": "complete_file",
+  "clipped_read": "gdal_window",
+  "full_jp2_known_bytes": 49709444,
+  "full_jp2_unknown_assets": 5,
+  "full_jp2_ceiling_bytes": 298256664,
+  "ceiling_rule": "each_band_le_known_b04",
+  "aoi_pixels_envelope_estimate": 9085500,
+  "block": 256,
+  "block_working_bytes": 3342336,
+  "aoi_mask_bytes": 9085500,
+  "full_matrix_bytes": 545130000,
+  "selected_memory": "gdal_blocks",
+  "max_transfer_bytes": 750000000,
+  "max_memory_bytes": 536870912,
+  "min_free_disk_bytes": 5368709120,
+  "disk_free_bytes": 263384064000,
+  "metadata": {
+    "matches_official_l2a": true,
+    "scale": 0.0001,
+    "offset": -0.1,
+    "nodata": 0,
+    "quantification": 10000,
+    "add_offset": -1000,
+    "baseline": 513
+  },
+  "metadata_ok": true,
+  "download_allowed": true,
+  "download_started": false,
+  "ndvi_published": false,
+  "dates_combined": false
+}
