@@ -8,6 +8,8 @@
     2
   ],
   "values_match": true,
-  "elapsed_seconds": 0.073,
+  "write": "WriteArray",
+  "write_matches": true,
+  "elapsed_seconds": 0.02,
   "gdal": "3.13.3"
 }

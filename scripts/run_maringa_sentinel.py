@@ -5,6 +5,7 @@ Executar com python-qgis-ltr.bat. Credenciais ficam só no ambiente do processo.
 
 from __future__ import annotations
 
+import argparse
 import ctypes
 import json
 import shutil
@@ -20,6 +21,11 @@ sys.path.insert(0, str(REPO))
 import numpy as np  # noqa: E402
 from geoai.processing.safety import atomic_write_json  # noqa: E402
 from geoai.sentinel.assets import BANDS, https_band_urls, official_asset_url  # noqa: E402
+from geoai.sentinel.budget import (  # noqa: E402
+    MAX_TRANSFER_BYTES,
+    l2a_contract,
+    plan_from_catalog,
+)
 from geoai.sentinel.cdse_auth import (  # noqa: E402
     _token_from_environment as token_from_environment,
 )
@@ -27,19 +33,20 @@ from geoai.sentinel.cdse_auth import (  # noqa: E402
     credential_flags,
     download_official_asset,
 )
-from geoai.sentinel.gdal_blocks import compose_blocked, reflectance_block  # noqa: E402
+from geoai.sentinel.gdal_blocks import measure_blocks, reflectance_block  # noqa: E402
 from geoai.sentinel.gdal_scene import (  # noqa: E402
     municipality_bounds,
     raster_info,
     rasterize_municipality,
     read_window,
     same_projection,
-    write_raster,
 )
 from geoai.sentinel.grid import (  # noqa: E402
+    clip_placement,
     grid_bounds,
     nearest_sample,
     place_array,
+    shift_geotransform,
     snap_aoi_grid,
     source_window_for_output,
     window_covering_bounds,
@@ -59,6 +66,7 @@ NODATA = 0
 PUBLISHED_NODATA = -9999.0
 MAX_PIXELS = 20_000_000
 EVIDENCE = REPO / "docs" / "evidence" / "sentinel" / "maringa_aoi_measurement.json"
+DRY_RUN = REPO / "docs" / "evidence" / "sentinel" / "maringa_dry_run.json"
 CATALOG = REPO / "data" / "derived" / CATALOG_NAME
 
 
@@ -192,6 +200,8 @@ def _measure(
         nonlocal downloaded, on_disk
         destination = raw_root / tile / f"{band}.jp2"
         counts = _ensure_band(urls[tile][band], destination, token)
+        if downloaded + counts["bytes_downloaded"] > MAX_TRANSFER_BYTES:
+            raise RuntimeError("transferencia_acima_do_limite")
         downloaded += counts["bytes_downloaded"]
         on_disk += counts["bytes_on_disk"]
         stored[(tile, band)] = destination
@@ -210,90 +220,43 @@ def _measure(
             if (tile, band) not in stored:
                 take(tile, band)
     output_gt = grid["geotransform"]
-    red_tiles: list[np.ndarray] = []
-    nir_tiles: list[np.ndarray] = []
-    scl_tiles: list[np.ndarray] = []
+    probe = catalog.get("access_probe_scene") or {}
+    contract = l2a_contract(
+        float(probe["raster_scale"]),
+        float(probe["raster_offset"]),
+        int(probe["nodata"]),
+        int(str(probe["product_id"]).split("_N")[1][:4]),
+    )
+    if contract["matches_official_l2a"] is not True:
+        raise RuntimeError("metadata_l2a_recusada")
+    placements: dict[str, dict[str, Any]] = {}
     for tile in TILES:
         red_info = raster_info(stored[(tile, "B04_10m")])
         nir_info = raster_info(stored[(tile, "B08_10m")])
+        scl_info = raster_info(stored[(tile, "SCL_20m")])
         if not same_projection(reference["projection"], red_info["projection"]):
             raise RuntimeError("crs_divergente")
         if not same_projection(reference["projection"], nir_info["projection"]):
             raise RuntimeError("crs_divergente")
-        red = np.zeros((rows, cols), dtype=np.uint16)
-        nir = np.zeros((rows, cols), dtype=np.uint16)
-        window = source_window_for_output(
-            red_info["geotransform"],
-            red_info["cols"],
-            red_info["rows"],
-            output_gt,
-            cols,
-            rows,
-        )
-        if window is not None:
-            place_array(
-                red,
-                read_window(
-                    stored[(tile, "B04_10m")],
-                    window["src_xoff"],
-                    window["src_yoff"],
-                    window["xsize"],
-                    window["ysize"],
-                ),
-                window,
-            )
-        nir_window = source_window_for_output(
-            nir_info["geotransform"],
-            nir_info["cols"],
-            nir_info["rows"],
-            output_gt,
-            cols,
-            rows,
-        )
-        if nir_window is not None:
-            place_array(
-                nir,
-                read_window(
-                    stored[(tile, "B08_10m")],
-                    nir_window["src_xoff"],
-                    nir_window["src_yoff"],
-                    nir_window["xsize"],
-                    nir_window["ysize"],
-                ),
-                nir_window,
-            )
-        red_tiles.append(
-            reflectance_block(red, scale=SCALE, offset=OFFSET, nodata=NODATA)
-        )
-        nir_tiles.append(
-            reflectance_block(nir, scale=SCALE, offset=OFFSET, nodata=NODATA)
-        )
-        scl_info = raster_info(stored[(tile, "SCL_20m")])
-        covered = window_covering_bounds(
-            scl_info["geotransform"],
-            scl_info["cols"],
-            scl_info["rows"],
-            grid_bounds(output_gt, cols, rows),
-        )
-        if covered is None:
-            scl_tiles.append(np.zeros((rows, cols), dtype=np.uint8))
-            continue
-        scl_window = read_window(
-            stored[(tile, "SCL_20m")],
-            covered["xoff"],
-            covered["yoff"],
-            covered["xsize"],
-            covered["ysize"],
-        )
-        scl_tiles.append(
-            nearest_sample(
-                scl_window,
-                covered["geotransform"],
+        placements[tile] = {
+            "red": source_window_for_output(
+                red_info["geotransform"],
+                red_info["cols"],
+                red_info["rows"],
                 output_gt,
-                rows,
                 cols,
-            )
-        )
+                rows,
+            ),
+            "nir": source_window_for_output(
+                nir_info["geotransform"],
+                nir_info["cols"],
+                nir_info["rows"],
+                output_gt,
+                cols,
+                rows,
+            ),
+            "scl": scl_info,
+        }
     aoi = rasterize_municipality(
         mesh,
         PILOT_CD_MUN,
@@ -302,7 +265,91 @@ def _measure(
         rows,
         reference["projection"],
     )
-    composed = compose_blocked(red_tiles, nir_tiles, scl_tiles, aoi, block=256)
+
+    def read_piece(
+        path: Path,
+        placement: dict[str, int] | None,
+        height: int,
+        width: int,
+    ):
+        canvas = np.zeros((height, width), dtype=np.uint16)
+        if placement is None:
+            return canvas
+        place_array(
+            canvas,
+            read_window(
+                path,
+                placement["src_xoff"],
+                placement["src_yoff"],
+                placement["xsize"],
+                placement["ysize"],
+            ),
+            placement,
+        )
+        return canvas
+
+    def reader(row0: int, row1: int, col0: int, col1: int):
+        height = row1 - row0
+        width = col1 - col0
+        block_gt = shift_geotransform(output_gt, col0, row0)
+        reds = []
+        nirs = []
+        scls = []
+        for tile in TILES:
+            reds.append(
+                reflectance_block(
+                    read_piece(
+                        stored[(tile, "B04_10m")],
+                        clip_placement(placements[tile]["red"], row0, row1, col0, col1),
+                        height,
+                        width,
+                    ),
+                    scale=float(contract["scale"]),
+                    offset=float(contract["offset"]),
+                    nodata=int(contract["nodata"]),
+                )
+            )
+            nirs.append(
+                reflectance_block(
+                    read_piece(
+                        stored[(tile, "B08_10m")],
+                        clip_placement(placements[tile]["nir"], row0, row1, col0, col1),
+                        height,
+                        width,
+                    ),
+                    scale=float(contract["scale"]),
+                    offset=float(contract["offset"]),
+                    nodata=int(contract["nodata"]),
+                )
+            )
+            scl_info = placements[tile]["scl"]
+            covered = window_covering_bounds(
+                scl_info["geotransform"],
+                scl_info["cols"],
+                scl_info["rows"],
+                grid_bounds(block_gt, width, height),
+            )
+            if covered is None:
+                scls.append(np.zeros((height, width), dtype=np.uint8))
+            else:
+                scls.append(
+                    nearest_sample(
+                        read_window(
+                            stored[(tile, "SCL_20m")],
+                            covered["xoff"],
+                            covered["yoff"],
+                            covered["xsize"],
+                            covered["ysize"],
+                        ),
+                        covered["geotransform"],
+                        block_gt,
+                        height,
+                        width,
+                    )
+                )
+        return reds, nirs, scls, aoi[row0:row1, col0:col1]
+
+    composed = measure_blocks(reader, rows, cols, block=256)
     return {
         "acquisition_id": acquisition_id,
         "official_pixels": True,
@@ -318,13 +365,12 @@ def _measure(
         "rule": composed["rule"],
         "bytes_downloaded": downloaded,
         "bytes_on_disk": on_disk,
-        "ndvi": composed["ndvi"],
-        "provenance": composed["provenance"],
+        "retained_grid": False,
         "geotransform": output_gt,
         "projection": reference["projection"],
-        "scale": SCALE,
-        "offset": OFFSET,
-        "nodata_dn": NODATA,
+        "scale": contract["scale"],
+        "offset": contract["offset"],
+        "nodata_dn": contract["nodata"],
     }
 
 
@@ -363,27 +409,35 @@ def _apply_catalog(
     results: list[dict[str, Any]],
     published: dict[str, Any] | None,
     elapsed: float,
+    *,
+    publish: bool,
 ) -> None:
     chosen = published or results[-1]
     fraction = chosen["valid_fraction"]
-    approved = published is not None
+    approved = bool(chosen["quality_approved"])
     catalog["valid_pixel_fraction"] = fraction
     catalog["quality_approved"] = approved
     catalog["quality_status"] = "approved" if approved else "rejected"
     catalog["geometric_candidate_only"] = not approved
     catalog["processing_status"] = "measured"
-    catalog["ndvi_published"] = approved
-    catalog["status"] = "ready" if approved else "quality_rejected"
+    catalog["ndvi_published"] = bool(publish and approved)
+    catalog["status"] = "ready" if catalog["ndvi_published"] else "measured"
     catalog["downloaded_bytes"] = sum(item["bytes_downloaded"] for item in results)
     catalog["measured_acquisition_id"] = chosen["acquisition_id"]
     catalog["dates_combined"] = False
     catalog["aoi_measurements"] = results
     catalog["measurement_seconds"] = round(elapsed, 3)
-    if approved:
+    if catalog["ndvi_published"]:
         catalog["cog"] = published["cog"]
         message = (
             f"Maringá: passagem {chosen['acquisition_id']} com fração válida "
             f"{fraction:.6f} na AOI. NDVI publicado. Datas não foram misturadas."
+        )
+    elif approved:
+        catalog["cog"] = None
+        message = (
+            f"Maringá: passagem {chosen['acquisition_id']} com fração válida "
+            f"{fraction:.6f} na AOI. Medição sem publicação de COG."
         )
     else:
         catalog["cog"] = None
@@ -401,14 +455,53 @@ def _apply_catalog(
         raise
 
 
-def main() -> int:
+def _dry_run(evidence: Path | None) -> int:
+    catalog = json.loads(CATALOG.read_text(encoding="utf-8"))
+    plan = plan_from_catalog(catalog, shutil.disk_usage(REPO).free)
+    _assert_public(plan)
+    destination = evidence or DRY_RUN
+    atomic_write_json(destination, plan)
+    print(f"acquisition={plan['acquisition_id']}")
+    print(f"full_jp2_ceiling_bytes={plan['full_jp2_ceiling_bytes']}")
+    print(f"block_working_bytes={plan['block_working_bytes']}")
+    print(f"aoi_mask_bytes={plan['aoi_mask_bytes']}")
+    print(f"full_matrix_bytes={plan['full_matrix_bytes']}")
+    print(f"disk_free_bytes={plan['disk_free_bytes']}")
+    print(f"download_allowed={plan['download_allowed']}")
+    print("download_started False")
+    print("ndvi_published False")
+    return 0 if plan["metadata_ok"] else 2
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Piloto Sentinel-2 de Maringá")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--measure-only", action="store_true")
+    parser.add_argument("--evidence", default="")
+    args = parser.parse_args(argv)
+    if args.dry_run and args.measure_only:
+        print("modo_exclusivo", file=sys.stderr)
+        print("ndvi_published False")
+        return 2
+    evidence = Path(args.evidence) if args.evidence else None
+    if args.dry_run:
+        return _dry_run(evidence)
+    if not args.measure_only:
+        print("informe --dry-run ou --measure-only", file=sys.stderr)
+        print("ndvi_published False")
+        return 2
     started = time.perf_counter()
+    catalog = json.loads(CATALOG.read_text(encoding="utf-8"))
+    plan = plan_from_catalog(catalog, shutil.disk_usage(REPO).free)
+    if not plan["download_allowed"]:
+        print("orcamento_recusado", file=sys.stderr)
+        print("ndvi_published False")
+        return 2
     flags = credential_flags()
     if not (flags["password_grant_configured"] or flags["bearer_configured"]):
         print("credencial ausente neste processo")
         print("ndvi_published False")
         return 2
-    catalog = json.loads(CATALOG.read_text(encoding="utf-8"))
     token = token_from_environment()
     if not token:
         print("credencial ausente neste processo")
@@ -425,48 +518,16 @@ def main() -> int:
         for acquisition_id in order:
             urls = _urls_for_acquisition(catalog, acquisition_id)
             measured = _measure(catalog, acquisition_id, urls, token)
-            allowed = publication_allowed(
+            publish = publication_allowed(
                 official_pixels=True,
                 valid_fraction=measured["valid_fraction"],
                 acquisition_ids=(acquisition_id,),
             )
-            cog_name = None
-            if allowed:
-                cog_path = (
-                    REPO
-                    / "data"
-                    / "processed"
-                    / "sentinel"
-                    / f"maringa_{acquisition_id}_ndvi.tif"
-                )
-                provenance_path = cog_path.with_name(
-                    f"maringa_{acquisition_id}_provenance.tif"
-                )
-                write_raster(
-                    cog_path,
-                    measured["ndvi"],
-                    measured["geotransform"],
-                    measured["projection"],
-                    nodata=PUBLISHED_NODATA,
-                )
-                write_raster(
-                    provenance_path,
-                    measured["provenance"].astype(np.float32),
-                    measured["geotransform"],
-                    measured["projection"],
-                    nodata=-1,
-                )
-                cog_name = cog_path.relative_to(REPO).as_posix()
-                published = _public_result(measured, True, cog_name)
-                published["provenance"] = provenance_path.relative_to(REPO).as_posix()
-            public = _public_result(measured, allowed, cog_name)
-            if published is not None:
-                public["provenance"] = published.get("provenance")
+            public = _public_result(measured, False, None)
+            public["would_publish"] = publish
             results.append(public)
-            measured["ndvi"] = None
-            measured["provenance"] = None
             arrays = measured
-            if allowed:
+            if publish:
                 break
             if measured["valid_fraction"] is None:
                 break
@@ -480,7 +541,7 @@ def main() -> int:
         return 2
     elapsed = time.perf_counter() - started
     try:
-        _apply_catalog(catalog, results, published, elapsed)
+        _apply_catalog(catalog, results, published, elapsed, publish=False)
     except Exception:
         if published and published.get("cog"):
             (REPO / published["cog"]).unlink(missing_ok=True)

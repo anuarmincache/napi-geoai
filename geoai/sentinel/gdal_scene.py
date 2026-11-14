@@ -150,6 +150,7 @@ def write_raster(
     gdal.UseExceptions()
     path.parent.mkdir(parents=True, exist_ok=True)
     partial = path.with_name(path.name + ".partial.tif")
+    staged = path.with_name(path.name + ".new")
     rows, cols = array.shape
     memory = gdal.GetDriverByName("MEM").Create("", cols, rows, 1, gdal.GDT_Float32)
     memory.SetGeoTransform(geotransform)
@@ -166,12 +167,16 @@ def write_raster(
         creationOptions=["COMPRESS=DEFLATE", "BIGTIFF=IF_SAFER"],
     )
     try:
+        if path.exists():
+            raise FileExistsError("destino_ja_existe")
         gdal.Translate(str(partial), memory, options=options)
         memory = None
         if not partial.is_file() or partial.stat().st_size <= 0:
             raise OSError("cog vazio")
-        partial.replace(path)
+        partial.replace(staged)
+        staged.replace(path)
     except Exception:
         partial.unlink(missing_ok=True)
+        staged.unlink(missing_ok=True)
         raise
     return path.stat().st_size

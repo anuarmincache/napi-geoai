@@ -58,7 +58,9 @@ Na grade comum, cada pixel da AOI conta uma vez. A tile entra só se a SCL não 
 
 ## Pipeline em blocos
 
-`scripts/run_maringa_sentinel.py` baixa só B04, B08 e SCL de 22KCV e 22KDV, lê a janela da AOI com `ReadAsArray` e monta o mosaico pela primeira tile válida. `compose_blocked()` ainda aloca as matrizes da AOI inteira; a cena completa não entra na memória. A SCL de 20 m é amostrada no centro do pixel de 10 m. O COG só é escrito se a fração válida oficial for pelo menos 0,70. Se a S2B ficar abaixo disso, a S2A de 09/11 é medida à parte e as datas não se misturam. Uma falha de publicação não troca um raster anterior.
+`scripts/run_maringa_sentinel.py --dry-run` não baixa JP2 e não publica NDVI. Confere as seis bandas da passagem S2B, tiles 22KCV e 22KDV, e separa o download do arquivo inteiro da leitura recortada. O teto de transferência é 750.000.000 bytes. O B04 conhecido da 22KCV tem 49.709.444 bytes; os outros cinco tamanhos não estão no catálogo, então o teto usado é seis vezes esse valor: 298.256.664 bytes. A memória de um bloco de 256 pixels é 3.342.336 bytes, mais 9.085.500 bytes da máscara da AOI. Manter as matrizes inteiras custaria 545.130.000 bytes e passa do limite de 512 MiB, por isso a medição percorre blocos e descarta cada janela. O disco livre neste plano foi 263.384.064.000 bytes, acima do mínimo de 5 GiB. `download_started` ficou falso.
+
+`--measure-only` calcula a fração válida e não grava COG. A escala 0,0001, o offset −0,1 e o nodata 0 conferem com o L2A de baseline N0513 (quantificação 10000 e offset −1000). Se a S2B ficar abaixo de 0,70, a S2A de 09/11 entra em outra execução. Datas não se misturam. Se a geração ou o catálogo falham, o raster anterior é restaurado.
 
 A leitura de janela com GDAL 3.13.3, em raster sintético, está em `docs/evidence/sentinel/gdal_window_synthetic.json`. Durou 0,073 s, leu uma janela 2×2 e manteve `sentinel_scene` e `ndvi_published` falsos. O mosaico sintético anterior, em `docs/evidence/sentinel/gdal_mosaic_synthetic.json`, durou 0,022 s: 24 pixels, 23 válidos, 7 da primeira tile e 16 da segunda. O `PeakWorkingSetSize` daquele processo QGIS foi 62,961 MB e inclui o processo inteiro.
 
@@ -106,7 +108,8 @@ A credencial, quando existir, fica só no ambiente do processo. Não entra no Gi
 - Bytes lidos na requisição autorizada: 0
 - Mosaico sintético no Python do QGIS: 0,022 s, 0 bytes gravados no piloto
 - RSS de pico desse processo QGIS: 62,961 MB, processo inteiro
-- Janela sintética `ReadAsArray` no Python do QGIS: 0,073 s
+- Dry-run sem download: teto JP2 298.256.664 bytes; bloco 3.342.336 bytes
+- Janela sintética `ReadAsArray` e `WriteArray` no Python do QGIS: 0,020 s
 - Fração válida da cena oficial: não medida neste processo
 - Leitura de preview no Streamlit: não medido
 

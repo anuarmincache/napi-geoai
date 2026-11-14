@@ -207,3 +207,55 @@ def nearest_sample(
     output = np.full((output_rows, output_cols), fill, dtype=source.dtype)
     output[inside] = source[row_grid[inside], col_grid[inside]]
     return output
+
+
+def shift_geotransform(
+    geotransform: GeoTransform,
+    col0: int,
+    row0: int,
+) -> GeoTransform:
+    """Origem do bloco (col0, row0) na mesma grade."""
+
+    origin_x = float(geotransform[0]) + col0 * float(geotransform[1])
+    origin_x += row0 * float(geotransform[2])
+    origin_y = float(geotransform[3]) + col0 * float(geotransform[4])
+    origin_y += row0 * float(geotransform[5])
+    return (
+        origin_x,
+        float(geotransform[1]),
+        float(geotransform[2]),
+        origin_y,
+        float(geotransform[4]),
+        float(geotransform[5]),
+    )
+
+
+def clip_placement(
+    window: dict[str, int] | None,
+    row0: int,
+    row1: int,
+    col0: int,
+    col1: int,
+) -> dict[str, int] | None:
+    """Interseção da janela de origem com um bloco. O destino fica relativo ao bloco."""
+
+    if window is None:
+        return None
+    x0 = int(window["dst_xoff"])
+    y0 = int(window["dst_yoff"])
+    x1 = x0 + int(window["xsize"])
+    y1 = y0 + int(window["ysize"])
+    left = max(x0, col0)
+    top = max(y0, row0)
+    right = min(x1, col1)
+    bottom = min(y1, row1)
+    if right <= left or bottom <= top:
+        return None
+    return {
+        "src_xoff": int(window["src_xoff"]) + (left - x0),
+        "src_yoff": int(window["src_yoff"]) + (top - y0),
+        "xsize": right - left,
+        "ysize": bottom - top,
+        "dst_xoff": left - col0,
+        "dst_yoff": top - row0,
+    }

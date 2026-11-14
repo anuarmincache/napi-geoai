@@ -94,3 +94,71 @@ def compose_blocked(
                 valid[index, row0:row1, col0:col1] = usable
                 values[index, row0:row1, col0:col1] = ndvi
     return compose_first_valid(valid, values, aoi)
+
+
+def iter_blocks(rows: int, cols: int, block: int) -> list[tuple[int, int, int, int]]:
+    """Fatias (linha0, linha1, coluna0, coluna1). Não aloca a grade."""
+
+    if block < 1:
+        raise ValueError("bloco inválido")
+    pieces: list[tuple[int, int, int, int]] = []
+    for row0 in range(0, rows, block):
+        for col0 in range(0, cols, block):
+            pieces.append(
+                (row0, min(rows, row0 + block), col0, min(cols, col0 + block))
+            )
+    return pieces
+
+
+def measure_blocks(
+    reader: Any,
+    rows: int,
+    cols: int,
+    *,
+    block: int = 256,
+    writer: Any | None = None,
+) -> dict[str, Any]:
+    """Soma a fração por bloco e descarta o NDVI de cada janela.
+
+    `reader` devolve as bandas só daquele bloco. O resultado não contém a grade.
+    """
+
+    from geoai.sentinel.mosaic_rule import MIN_VALID_PIXEL_FRACTION, RULE
+
+    n_aoi = 0
+    n_valid = 0
+    overlap = 0
+    pixels: list[int] | None = None
+    for row0, row1, col0, col1 in iter_blocks(rows, cols, block):
+        reds, nirs, scls, aoi = reader(row0, row1, col0, col1)
+        expected = (row1 - row0, col1 - col0)
+        if aoi.shape != expected:
+            raise ValueError("bloco maior que a janela pedida")
+        for band in (*reds, *nirs, *scls):
+            if band.shape != expected:
+                raise ValueError("banda maior que o bloco")
+        composed = compose_blocked(list(reds), list(nirs), list(scls), aoi, block=block)
+        if pixels is None:
+            pixels = [0 for _ in composed["pixels_per_tile"]]
+        if len(pixels) != len(composed["pixels_per_tile"]):
+            raise ValueError("número de tiles mudou entre blocos")
+        n_aoi += int(composed["n_aoi"])
+        n_valid += int(composed["n_valid"])
+        overlap += int(composed["overlap_both_valid"])
+        for index, count in enumerate(composed["pixels_per_tile"]):
+            pixels[index] += int(count)
+        if writer is not None:
+            writer(row0, col0, composed["ndvi"], composed["provenance"])
+        del composed
+    fraction = None if n_aoi == 0 else n_valid / n_aoi
+    approved = fraction is not None and fraction >= MIN_VALID_PIXEL_FRACTION
+    return {
+        "n_aoi": n_aoi,
+        "n_valid": n_valid,
+        "valid_fraction": fraction,
+        "pixels_per_tile": pixels or [],
+        "overlap_both_valid": overlap,
+        "quality_approved": approved,
+        "rule": RULE,
+        "retained_grid": False,
+    }
