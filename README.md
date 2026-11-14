@@ -104,7 +104,7 @@ Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERG
 
 População IBGE 2026 e ficha municipal (MVP 11): [docs/MVP11_POPULACAO.md](docs/MVP11_POPULACAO.md) — estimativa 01/07/2026, densidade, kW/hab SIGA, 399 municípios.
 
-Fundação de jobs geoespaciais (Issue #40, sem visualização Sentinel): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). O Streamlit continua lendo artefatos prontos. Jobs locais (`vector_bbox_metrics`, janela NDVI sintética) ficam em `scripts/run_geo_job.py`, com publicação atômica e `data/jobs/` fora do Git. Não há download Sentinel-2 nem mapa de imagem nesta etapa. Medição pequena: `docs/evidence/processing/benchmark_small.json`.
+Fundação de jobs geoespaciais (Issue #40, sem visualização Sentinel): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). O Streamlit continua lendo artefatos prontos. Jobs locais (`vector_bbox_metrics`, janela NDVI sintética) ficam em `scripts/run_geo_job.py`, com publicação atômica, lock local por chave e `data/jobs/` fora do Git. Não há download Sentinel-2 nem mapa de imagem nesta etapa. Medição pequena: `docs/evidence/processing/benchmark_small.json`.
 
 ```powershell
 py -3 -m pip install -e ".[dev,ui]"

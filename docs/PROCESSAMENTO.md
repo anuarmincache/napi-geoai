@@ -26,7 +26,9 @@ Tipos permitidos:
 
 Contrato em `geoai/processing/contract.py`: estado, fonte, parâmetros, algoritmos, hashes, tempo e RSS quando a API do Windows responde. A chave de idempotência inclui o SHA-256 real do arquivo (ou dos parâmetros, na janela em memória), a versão e o algoritmo. Não inclui timestamp. Um digest informado pelo chamador que não confere com a entrada é recusado. O mesmo caminho com bytes novos gera outra chave.
 
-Publicação: cada escrita usa um temporário exclusivo no mesmo diretório e `os.replace`. O JSON de resultado é gravado primeiro. O manifest `.job.json` é o ponteiro de commit: reutilizar só ocorre se o status for `succeeded`, a chave do manifest e a do payload coincidirem e `output_sha256` for o SHA-256 atual do arquivo. Arquivo truncado, adulterado ou manifest defasado não é reutilizado. Falha não reescreve um manifest que ainda confere. Saídas de execução ficam em `data/jobs/` (gitignored).
+Publicação: cada escrita usa um temporário exclusivo no mesmo diretório e `os.replace`. Duas execuções da mesma chave no mesmo computador esperam um lock local `{chave}.lock` (`O_EXCL` no diretório do job). Não há fila, Redis nem worker distribuído. O JSON de resultado é gravado primeiro, ainda com o lock. O manifest `.job.json` é o ponteiro de commit: reutilizar só ocorre se o status for `succeeded`, a chave do manifest e a do payload coincidirem e `output_sha256` for o SHA-256 atual do arquivo. Ao soltar o lock, essa conferência precisa passar. Arquivo truncado, adulterado ou manifest defasado não é reutilizado. Falha não reescreve um manifest que ainda confere. Saídas de execução ficam em `data/jobs/` (gitignored).
+
+O SHA-256 da chave é o dos bytes lidos para montar a chave. Dentro do lock o arquivo é lido de novo. Se o digest mudou, o job falha e não publica. Isso cobre a troca do arquivo entre as duas leituras. Não cobre um rasgo no meio de uma única leitura: a origem deve ser substituída com `os.replace`, não reescrita no lugar. Uma mudança depois do snapshot confirmado vale para a próxima chave, não para a publicação já feita.
 
 O bbox deste job não substitui `AREA_KM2` oficial nem um join QGIS.
 

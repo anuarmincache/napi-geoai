@@ -24,7 +24,11 @@ from geoai.processing.ndvi import (
     resample_nearest,
     valid_mask_from_scl,
 )
-from geoai.processing.safety import atomic_write_json, resolve_allowed_path
+from geoai.processing.safety import (
+    atomic_write_json,
+    exclusive_key_lock,
+    resolve_allowed_path,
+)
 
 PIPELINE_VERSION = "geo-foundation-1"
 
@@ -105,12 +109,19 @@ def _coordinate_pairs(coords: Any) -> list[tuple[float, float]]:
     return pairs
 
 
-def _vector_bbox_metrics(path: Path) -> dict[str, Any]:
+def _read_input_bytes(path: Path) -> bytes:
+    try:
+        return path.read_bytes()
+    except OSError as exc:
+        raise JobContractError("arquivo de entrada ilegível") from exc
+
+
+def _vector_bbox_metrics(data: bytes) -> dict[str, Any]:
     """Lê FeatureCollection e devolve contagem + bbox. Não calcula área oficial."""
 
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
+        payload = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise JobContractError("GeoJSON inválido") from exc
     if not isinstance(payload, dict) or payload.get("type") != "FeatureCollection":
         raise JobContractError("GeoJSON deve ser FeatureCollection")
@@ -178,10 +189,7 @@ def _bind_source(
         if not isinstance(rel, str) or not rel:
             raise JobContractError("input_path obrigatório")
         path = resolve_allowed_path(Path(rel), roots=allowed_roots)
-        try:
-            digest = _sha256_file(path)
-        except OSError as exc:
-            raise JobContractError("arquivo de entrada ilegível") from exc
+        digest = hashlib.sha256(_read_input_bytes(path)).hexdigest()
         if source_sha256 is not None and source_sha256 != digest:
             raise JobContractError("source_sha256 não confere com o arquivo")
         return digest, path
@@ -253,6 +261,75 @@ def _rejected_record(
     )
 
 
+def _confirm_snapshot(resolved: Path | None, source_sha256: str) -> bytes | None:
+    """Segunda leitura. O digest tem de ser o dos bytes que serão processados."""
+
+    if resolved is None:
+        return None
+    confirmed = _read_input_bytes(resolved)
+    if hashlib.sha256(confirmed).hexdigest() != source_sha256:
+        raise JobContractError(
+            "arquivo de entrada mudou entre o SHA-256 e a leitura"
+        )
+    return confirmed
+
+
+def _new_record(
+    *,
+    job_type: str,
+    source_id: str,
+    source_uri: str,
+    source_date: str | None,
+    source_sha256: str,
+    input_paths: list[str],
+    params: dict[str, Any],
+    algorithms: list[str],
+    key: str,
+) -> JobRecord:
+    return JobRecord(
+        job_id=uuid.uuid4().hex,
+        job_type=job_type,
+        created_at_utc=utc_now(),
+        status="running",
+        started_at_utc=utc_now(),
+        source_id=source_id,
+        source_uri=source_uri,
+        source_date=source_date,
+        source_sha256=source_sha256,
+        input_paths=input_paths,
+        params=params,
+        algorithm_ids=algorithms,
+        idempotency_key=key,
+        pipeline_version=PIPELINE_VERSION,
+    )
+
+
+def _compute(
+    *,
+    job_type: str,
+    params: dict[str, Any],
+    confirmed: bytes | None,
+    resolved: Path | None,
+    record: JobRecord,
+) -> dict[str, Any]:
+    if job_type == "vector_bbox_metrics":
+        if confirmed is None or resolved is None:
+            raise JobContractError("entrada vetorial ausente")
+        record.input_bytes = len(confirmed)
+        record.input_paths = [str(resolved)]
+        result = _vector_bbox_metrics(confirmed)
+        record.spatial_extent = result.get("bbox")
+        record.crs = params.get("declared_crs")
+        return result
+    if job_type == "sentinel2_ndvi_window":
+        record.warnings.append(
+            "Janela sintética em memória. Não é cena Sentinel baixada. "
+            "SCL, se houver, usa nearest por índice, sem geotransform."
+        )
+        return _ndvi_from_params(params)
+    raise JobContractError(f"job_type não implementado: {job_type}")
+
+
 def execute_job(
     *,
     job_type: str,
@@ -268,9 +345,9 @@ def execute_job(
 ) -> JobRecord:
     """Executa um job da allowlist.
 
-    O SHA-256 da entrada entra na chave antes de qualquer reuso. A saída é
-    gravada primeiro; o manifest `.job.json` é o ponteiro de commit e só é
-    aceito se o hash registrado bater com o arquivo e com a chave.
+    O SHA-256 da entrada entra na chave antes de qualquer reuso. A mesma chave
+    é publicada sob um lock local. A saída é gravada primeiro; o manifest
+    `.job.json` é o ponteiro de commit e só vale se o hash conferir.
     """
 
     validate_job_request(job_type=job_type, params=params)
@@ -310,85 +387,98 @@ def execute_job(
     )
     out_path = jobs_dir / f"{key}.json"
     record_path = jobs_dir / f"{key}.job.json"
-    verified = _load_verified_publication(record_path, out_path, key)
-    if verified is not None:
-        verified["reused_previous"] = True
-        return JobRecord(**_filter_record(verified))
-
-    record = JobRecord(
-        job_id=uuid.uuid4().hex,
-        job_type=job_type,
-        created_at_utc=utc_now(),
-        status="running",
-        started_at_utc=utc_now(),
-        source_id=source_id,
-        source_uri=source_uri,
-        source_date=source_date,
-        source_sha256=source_sha256,
-        input_paths=list(input_paths or []),
-        params=params,
-        algorithm_ids=algorithms,
-        idempotency_key=key,
-        pipeline_version=PIPELINE_VERSION,
-    )
-    started = time.perf_counter()
     try:
-        if job_type == "vector_bbox_metrics":
-            if resolved is None:
-                raise JobContractError("entrada vetorial ausente")
-            record.input_bytes = resolved.stat().st_size
-            record.input_paths = [str(resolved)]
-            result = _vector_bbox_metrics(resolved)
-            record.spatial_extent = result.get("bbox")
-            record.crs = params.get("declared_crs")
-        elif job_type == "sentinel2_ndvi_window":
-            result = _ndvi_from_params(params)
-            record.warnings.append(
-                "Janela sintética em memória. Não é cena Sentinel baixada. "
-                "SCL, se houver, usa nearest por índice, sem geotransform."
+        with exclusive_key_lock(jobs_dir, key):
+            confirmed = _confirm_snapshot(resolved, source_sha256)
+            verified = _load_verified_publication(record_path, out_path, key)
+            if verified is not None:
+                verified["reused_previous"] = True
+                return JobRecord(**_filter_record(verified))
+            record = _new_record(
+                job_type=job_type,
+                source_id=source_id,
+                source_uri=source_uri,
+                source_date=source_date,
+                source_sha256=source_sha256,
+                input_paths=list(input_paths or []),
+                params=params,
+                algorithms=algorithms,
+                key=key,
             )
-        else:
-            raise JobContractError(f"job_type não implementado: {job_type}")
-        payload = {
-            "idempotency_key": key,
-            "job_type": job_type,
-            "source_id": source_id,
-            "source_sha256": source_sha256,
-            "publication_role": "result",
-            "commit_pointer": record_path.name,
-            "result": result,
-        }
-        nbytes = atomic_write_json(out_path, payload)
-        published_sha = _sha256_file(out_path)
-        record.output_paths = [str(out_path)]
-        record.output_sha256 = {str(out_path): published_sha}
-        record.output_bytes = nbytes
-        record.status = "succeeded"
+            started = time.perf_counter()
+            try:
+                result = _compute(
+                    job_type=job_type,
+                    params=params,
+                    confirmed=confirmed,
+                    resolved=resolved,
+                    record=record,
+                )
+                payload = {
+                    "idempotency_key": key,
+                    "job_type": job_type,
+                    "source_id": source_id,
+                    "source_sha256": source_sha256,
+                    "publication_role": "result",
+                    "commit_pointer": record_path.name,
+                    "result": result,
+                }
+                nbytes = atomic_write_json(out_path, payload)
+                published_sha = _sha256_file(out_path)
+                record.output_paths = [str(out_path)]
+                record.output_sha256 = {str(out_path): published_sha}
+                record.output_bytes = nbytes
+                record.status = "succeeded"
+            except JobContractError as exc:
+                record.status = "failed"
+                record.error_code = "invalid_input"
+                record.error_message = str(exc)
+            except Exception as exc:  # noqa: BLE001
+                record.status = "failed"
+                record.error_code = "job_failed"
+                record.error_message = f"{type(exc).__name__}: {exc}"
+            record.finished_at_utc = utc_now()
+            record.elapsed_seconds = round(time.perf_counter() - started, 6)
+            rss, note = sample_rss_mb()
+            record.peak_rss_mb = None if rss is None else round(rss, 3)
+            record.rss_note = note
+            if record.status != "succeeded":
+                kept = _load_verified_publication(record_path, out_path, key)
+                if kept is not None:
+                    kept["reused_previous"] = True
+                    warnings = list(kept.get("warnings") or [])
+                    warnings.append(
+                        "nova tentativa falhou; resultado validado foi mantido"
+                    )
+                    kept["warnings"] = warnings
+                    return JobRecord(**_filter_record(kept))
+            atomic_write_json(record_path, record.to_dict())
+            if (
+                record.status == "succeeded"
+                and _load_verified_publication(record_path, out_path, key) is None
+            ):
+                record.status = "failed"
+                record.error_code = "publication_mismatch"
+                record.error_message = (
+                    "resultado e manifest não conferem após a publicação"
+                )
+                atomic_write_json(record_path, record.to_dict())
+            return record
     except JobContractError as exc:
-        record.status = "failed"
-        record.error_code = "invalid_input"
-        record.error_message = str(exc)
-    except Exception as exc:  # noqa: BLE001
-        record.status = "failed"
-        record.error_code = "job_failed"
-        record.error_message = f"{type(exc).__name__}: {exc}"
-    record.finished_at_utc = utc_now()
-    record.elapsed_seconds = round(time.perf_counter() - started, 6)
-    rss, note = sample_rss_mb()
-    record.peak_rss_mb = None if rss is None else round(rss, 3)
-    record.rss_note = note
-    if record.status != "succeeded":
-        kept = _load_verified_publication(record_path, out_path, key)
-        if kept is not None:
-            kept["reused_previous"] = True
-            warnings = list(kept.get("warnings") or [])
-            warnings.append(
-                "nova tentativa falhou; resultado validado foi mantido"
-            )
-            kept["warnings"] = warnings
-            return JobRecord(**_filter_record(kept))
-    atomic_write_json(record_path, record.to_dict())
-    return record
+        rejected = _rejected_record(
+            job_type=job_type,
+            source_id=source_id,
+            params=params,
+            algorithms=algorithms,
+            message=str(exc),
+            source_uri=source_uri,
+            source_date=source_date,
+        )
+        atomic_write_json(
+            jobs_dir / f"rejected-{rejected.job_id}.job.json",
+            rejected.to_dict(),
+        )
+        return rejected
 
 
 def _default_algorithms(job_type: str) -> list[str]:

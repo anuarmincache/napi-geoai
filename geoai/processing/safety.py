@@ -6,6 +6,8 @@ import json
 import os
 import tempfile
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -92,3 +94,49 @@ def atomic_write_json(destination: Path, payload: dict[str, Any]) -> int:
     finally:
         _unlink_own(partial)
     return destination.stat().st_size
+
+
+@contextmanager
+def exclusive_key_lock(
+    directory: Path,
+    key: str,
+    timeout_s: float = 120.0,
+) -> Iterator[None]:
+    """Lock local por chave, no mesmo diretório dos jobs. Sem fila distribuída.
+
+    Um processo que morre deixa o arquivo. Depois de timeout_s ele é removido.
+    """
+
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{key}.lock"
+    flags = os.O_CREAT | os.O_EXCL | os.O_RDWR | getattr(os, "O_BINARY", 0)
+    deadline = time.monotonic() + timeout_s
+    fd: int | None = None
+    while fd is None:
+        try:
+            fd = os.open(path, flags)
+        except FileExistsError:
+            try:
+                age = time.time() - path.stat().st_mtime
+            except FileNotFoundError:
+                continue
+            if age > timeout_s:
+                try:
+                    path.unlink()
+                except FileNotFoundError:
+                    pass
+                continue
+            if time.monotonic() >= deadline:
+                raise JobContractError(
+                    "outra execução local ainda publica esta chave"
+                ) from None
+            time.sleep(0.02)
+    try:
+        os.write(fd, str(os.getpid()).encode("ascii"))
+        yield
+    finally:
+        os.close(fd)
+        try:
+            path.unlink()
+        except FileNotFoundError:
+            pass

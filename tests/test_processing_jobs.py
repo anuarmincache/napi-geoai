@@ -9,7 +9,12 @@ from pathlib import Path
 
 import pytest
 from geoai.processing.contract import JobContractError, idempotency_key
-from geoai.processing.jobs import PIPELINE_VERSION, _sha256_file, execute_job
+from geoai.processing.jobs import (
+    PIPELINE_VERSION,
+    _load_verified_publication,
+    _sha256_file,
+    execute_job,
+)
 from geoai.processing.ndvi import (
     SENTINEL_SEARCH_POLICY,
     ndvi_window,
@@ -378,3 +383,91 @@ def test_invalid_payload_preserves_destination(tmp_path: Path) -> None:
         atomic_write_json(dest, ["nao-objeto"])  # type: ignore[arg-type]
     assert dest.read_text(encoding="utf-8") == '{"ok": true}\n'
     assert list(tmp_path.glob("*.partial")) == []
+
+
+def test_two_jobs_same_key_publish_consistent_pair(tmp_path: Path) -> None:
+    src = _tiny(tmp_path)
+    params = {"input_path": str(src)}
+    barrier = threading.Barrier(2)
+    records: list = []
+    errors: list[BaseException] = []
+
+    def _run_one() -> None:
+        try:
+            barrier.wait(timeout=5)
+            records.append(
+                _run(
+                    tmp_path,
+                    job_type="vector_bbox_metrics",
+                    source_id="fixture.tiny",
+                    params=params,
+                )
+            )
+        except BaseException as exc:  # noqa: BLE001
+            errors.append(exc)
+
+    threads = [threading.Thread(target=_run_one) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert errors == []
+    assert len(records) == 2
+    assert all(item.status == "succeeded" for item in records)
+    assert records[0].idempotency_key == records[1].idempotency_key
+    assert sum(bool(item.reused_previous) for item in records) == 1
+    out = Path(records[0].output_paths[0])
+    manifest = tmp_path / "jobs" / f"{records[0].idempotency_key}.job.json"
+    verified = _load_verified_publication(
+        manifest, out, records[0].idempotency_key
+    )
+    assert verified is not None
+    assert verified["output_sha256"][str(out)] == _sha256_file(out)
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    assert payload["idempotency_key"] == records[0].idempotency_key
+    assert payload["source_sha256"] == records[0].source_sha256
+    assert payload["result"]["n_features"] == 1
+    assert list((tmp_path / "jobs").glob("*.lock")) == []
+
+
+def test_input_change_between_hash_and_read_does_not_publish(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    src = _tiny(tmp_path)
+    original = src.read_bytes()
+    other = json.dumps(
+        {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [9, 9]},
+                }
+            ],
+        }
+    ).encode("utf-8")
+    calls = {"n": 0}
+
+    def _flip(path: Path) -> bytes:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return original
+        return other
+
+    monkeypatch.setattr("geoai.processing.jobs._read_input_bytes", _flip)
+    record = _run(
+        tmp_path,
+        job_type="vector_bbox_metrics",
+        source_id="fixture.tiny",
+        params={"input_path": str(src)},
+    )
+    assert record.status == "failed"
+    assert record.error_code == "invalid_input"
+    assert "mudou" in (record.error_message or "")
+    published = [
+        path
+        for path in (tmp_path / "jobs").glob("*.json")
+        if not path.name.endswith(".job.json")
+    ]
+    assert published == []
+    assert list((tmp_path / "jobs").glob("*.lock")) == []
