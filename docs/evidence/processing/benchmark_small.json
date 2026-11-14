@@ -1,0 +1,15 @@
+{
+  "operation": "vector_bbox_metrics",
+  "fixture": "tests/fixtures/processing/tiny_bbox.geojson",
+  "status": "succeeded",
+  "elapsed_seconds": 0.002435,
+  "peak_rss_mb": 21.031,
+  "rss_note": "PeakWorkingSetSize do processo (vida do processo, não só o job)",
+  "input_bytes": 238,
+  "output_bytes": 404,
+  "n_features": 1,
+  "python": "3.14.7",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "pipeline_version": "geo-foundation-1",
+  "qgis_executed": false
+}
