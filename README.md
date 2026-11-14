@@ -106,7 +106,7 @@ População IBGE 2026 e ficha municipal (MVP 11): [docs/MVP11_POPULACAO.md](docs
 
 Fundação de jobs geoespaciais (Issue #40): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). O Streamlit continua lendo artefatos prontos. Jobs locais ficam em `scripts/run_geo_job.py`, com publicação atômica, lock local por chave e `data/jobs/` fora do Git. Medição pequena: `docs/evidence/processing/benchmark_small.json`.
 
-Piloto Sentinel-2 em Maringá, CD_MUN 4115200 (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). A geometria sai da malha IBGE 2025. A passagem S2B de 2026-11-12, órbita R081, é a candidata geométrica, com as tiles 22KCV e 22KDV. A sobreposição usa a primeira tile válida, sem média e sem contar o pixel duas vezes. A fração válida ainda não foi medida. O acesso OIDC não foi tentado porque não há credencial local, e o GET anônimo ao B04 respondeu 401. Não há raster nem mapa de NDVI. A página só lê o catálogo.
+Piloto Sentinel-2 em Maringá, CD_MUN 4115200 (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). A geometria sai da malha IBGE 2025. A passagem S2B de 2026-11-12, órbita R081, é a candidata geométrica, com as tiles 22KCV e 22KDV. A sobreposição usa a primeira tile válida, sem média e sem contar o pixel duas vezes. A fração válida ainda não foi medida neste processo: os escopos Process e User não expõem a credencial do CDSE, e o download de B04, B08 e SCL não começou. O COG só seria escrito com fração oficial de pelo menos 0,70. Não há raster nem mapa de NDVI. A página só lê o catálogo.
 
 ```powershell
 py -3 -m pip install -e ".[dev,ui]"

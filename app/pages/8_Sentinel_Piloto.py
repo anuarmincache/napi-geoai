@@ -55,10 +55,16 @@ else:
     st.write(f"Lacuna: {selected.get('gap')}")
     st.write(f"Sobreposição: {selected.get('overlap_coverage')}")
     st.write("Composição: uma única aquisição. Datas diferentes não foram misturadas.")
-    st.write(
-        "Qualidade municipal: não avaliada. "
-        "A cobertura geométrica não aprova o NDVI."
-    )
+    fraction = catalog.get("valid_pixel_fraction")
+    if fraction is None:
+        st.write(
+            "Qualidade municipal: não avaliada. "
+            "A cobertura geométrica não aprova o NDVI."
+        )
+    else:
+        st.write(f"Fração válida na AOI: {fraction}")
+        st.write(f"Qualidade aprovada: {catalog.get('quality_approved') is True}")
+        st.write(f"NDVI publicado: {catalog.get('ndvi_published') is True}")
     st.write(f"Regra de sobreposição: {catalog.get('overlap_rule', 'n/d')}")
     fallback = catalog.get("fallback_acquisition_id")
     if fallback:
@@ -70,8 +76,7 @@ else:
     if rows:
         st.dataframe(rows, use_container_width=True, hide_index=True)
     st.write(
-        "A nuvem do item STAC não é a fração de pixels válidos no município. "
-        "Essa fração não foi medida."
+        "A nuvem do item STAC não é a fração de pixels válidos no município."
     )
 
 access = catalog.get("asset_access") or {}
@@ -92,10 +97,17 @@ if access:
         st.write(f"Token endpoint OIDC publicado: {access['openid_token_endpoint']}")
 
 st.subheader("Limitações")
-st.write(
-    "Sem raster publicado não há mapa de NDVI. "
-    "A fração válida no município só existe depois da leitura de B04, B08 e SCL. "
-    "A atualização é manual. O estado inteiro não foi processado. "
-    "O processamento raster desta passagem não foi executado."
-)
+if catalog.get("processing_status") == "measured":
+    st.write(
+        "A fração vale só para a passagem medida. Datas diferentes não entram "
+        "no mesmo raster. O estado inteiro não foi processado. "
+        "NDVI é índice espectral, não biomassa nem produtividade."
+    )
+else:
+    st.write(
+        "Sem raster publicado não há mapa de NDVI. "
+        "A fração válida no município só existe depois da leitura de B04, B08 e SCL. "
+        "A atualização é manual. O estado inteiro não foi processado. "
+        "O processamento raster desta passagem não foi executado."
+    )
 render_footer()

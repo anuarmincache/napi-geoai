@@ -58,7 +58,9 @@ Na grade comum, cada pixel da AOI conta uma vez. A tile entra só se a SCL não 
 
 ## Pipeline em blocos
 
-`geoai/sentinel/gdal_blocks.py` calcula reflectância com escala e offset e aplica a máscara em janelas lógicas. `compose_blocked()` hoje recebe as bandas inteiras e aloca `valid` e `values` para a grade toda; o parâmetro `block` só recorta essas matrizes. A etapa seguinte deve ler e gravar com `ReadAsArray(xoff, yoff, xsize, ysize)` e `WriteArray(array, xoff, yoff)` em datasets GDAL, sem materializar a cena. Esse contrato está em `describe_future_gdal_windows()` e não foi executado: não houve download completo nem escrita de COG. O teste sintético com GDAL 3.13.3, nearest e EPSG:32722, está em `docs/evidence/sentinel/gdal_mosaic_synthetic.json`. Durou 0,022 s, não gravou raster do piloto e manteve `ndvi_published` falso. A grade tinha 24 pixels: 23 válidos, 7 da primeira tile e 16 da segunda, soma 23. O `PeakWorkingSetSize` do processo QGIS foi 62,961 MB e inclui o processo inteiro, não só o mosaico. `sentinel_scene` é falso. COG do piloto só seria escrito depois da fração válida oficial. Isso ainda não ocorreu.
+`scripts/run_maringa_sentinel.py` baixa só B04, B08 e SCL de 22KCV e 22KDV, lê a janela da AOI com `ReadAsArray` e monta o mosaico pela primeira tile válida. `compose_blocked()` ainda aloca as matrizes da AOI inteira; a cena completa não entra na memória. A SCL de 20 m é amostrada no centro do pixel de 10 m. O COG só é escrito se a fração válida oficial for pelo menos 0,70. Se a S2B ficar abaixo disso, a S2A de 09/11 é medida à parte e as datas não se misturam. Uma falha de publicação não troca um raster anterior.
+
+A leitura de janela com GDAL 3.13.3, em raster sintético, está em `docs/evidence/sentinel/gdal_window_synthetic.json`. Durou 0,073 s, leu uma janela 2×2 e manteve `sentinel_scene` e `ndvi_published` falsos. O mosaico sintético anterior, em `docs/evidence/sentinel/gdal_mosaic_synthetic.json`, durou 0,022 s: 24 pixels, 23 válidos, 7 da primeira tile e 16 da segunda. O `PeakWorkingSetSize` daquele processo QGIS foi 62,961 MB e inclui o processo inteiro.
 
 ## Acesso
 
@@ -69,7 +71,7 @@ O método preparado é OIDC/OData, fora do Streamlit, em `geoai/sentinel/cdse_au
 - Variáveis locais, se existirem: `CDSE_USERNAME` e `CDSE_PASSWORD`, ou `CDSE_ACCESS_TOKEN`
 - Host do asset: `download.dataspace.copernicus.eu`
 
-Nenhuma dessas variáveis está definida. A requisição autorizada não foi enviada e nenhum valor fictício foi usado. `authorized_attempted` é falso e `bytes_read` é 0. Nenhum segredo foi gravado.
+O catálogo gravado na busca ainda tem `authorized_attempted` falso. Uma sessão local posterior informou sonda autorizada com HTTP 206, 1024 bytes e `range_honored` verdadeiro. Neste processo, os escopos Process e User não contêm `CDSE_USERNAME`, `CDSE_PASSWORD` nem `CDSE_ACCESS_TOKEN`. O comando das bandas parou antes da rede. A fração válida na AOI não foi medida e nenhum COG foi escrito. Nenhum segredo foi gravado.
 
 O cliente só aceita HTTPS em `download.dataspace.copernicus.eu`, caminho `/odata/v1/Products(...)/$value`, sem usuário, senha ou query na URL. Redirecionamento para outro host é recusado antes de reenviar `Authorization`. A sonda pede `Range: bytes=0-1023` e lê no máximo 1024 bytes. `range_honored` só fica verdadeiro com HTTP 206, `Content-Range` começando em 0 e terminando no máximo em 1023, tamanho igual aos bytes lidos e, se `Content-Length` vier, igual a esse tamanho. Um objeto menor só vale se o total declarado for exatamente `fim + 1`. HTTP 200 deixa `range_honored` falso, mesmo com corpo curto ou com `Content-Range`.
 
@@ -104,9 +106,10 @@ A credencial, quando existir, fica só no ambiente do processo. Não entra no Gi
 - Bytes lidos na requisição autorizada: 0
 - Mosaico sintético no Python do QGIS: 0,022 s, 0 bytes gravados no piloto
 - RSS de pico desse processo QGIS: 62,961 MB, processo inteiro
-- Fração válida da cena oficial: não medida
+- Janela sintética `ReadAsArray` no Python do QGIS: 0,073 s
+- Fração válida da cena oficial: não medida neste processo
 - Leitura de preview no Streamlit: não medido
 
 ## Fora desta entrega
 
-Raster oficial, COG do piloto, fração válida da S2B, passagem S2A caso a S2B fique abaixo de 0,70, composição de datas, agendamento, Paraná inteiro, Cloud e Supabase.
+Fração válida da S2B, passagem S2A caso a S2B fique abaixo de 0,70, COG do piloto, composição de datas, agendamento, Paraná inteiro, Cloud e Supabase. O comando que mede a AOI é `scripts/run_maringa_sentinel.py`, pelo `python-qgis-ltr.bat`, no processo em que a credencial já existe.

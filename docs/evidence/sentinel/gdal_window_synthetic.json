@@ -1,0 +1,13 @@
+{
+  "sentinel_scene": false,
+  "official_pixels": false,
+  "ndvi_published": false,
+  "read": "ReadAsArray",
+  "window_shape": [
+    2,
+    2
+  ],
+  "values_match": true,
+  "elapsed_seconds": 0.073,
+  "gdal": "3.13.3"
+}

@@ -8,6 +8,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
+from pathlib import Path
 from typing import Any
 
 TOKEN_ENDPOINT = (
@@ -88,6 +89,116 @@ class _GuardedRedirect(urllib.request.HTTPRedirectHandler):
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: ANN001
         raise RedirectRefused(int(code))
+
+
+class _AssetRedirect(urllib.request.HTTPRedirectHandler):
+    """No host oficial reenvia Authorization. Em outro host HTTPS, não reenvia."""
+
+    max_redirections = MAX_REDIRECTS
+    max_repeats = MAX_REDIRECTS
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: ANN001
+        if code not in (301, 302, 303, 307, 308):
+            raise RedirectRefused(int(code))
+        try:
+            assert_odata_asset_url(newurl)
+        except ValueError:
+            parsed = urllib.parse.urlparse(newurl)
+            trusted = (
+                parsed.scheme == "https"
+                and parsed.hostname
+                and not parsed.username
+                and not parsed.password
+                and not parsed.fragment
+            )
+            if not trusted:
+                raise RedirectRefused(int(code)) from None
+            return urllib.request.Request(newurl, method="GET")
+        authorization = req.get_header("Authorization")
+        if not authorization:
+            raise RedirectRefused(int(code))
+        return urllib.request.Request(
+            newurl,
+            headers={"Authorization": authorization},
+            method="GET",
+        )
+
+
+def _complete_download(status: int, content_range: str | None, written: int) -> bool:
+    if status == 200:
+        return written > 0
+    if status != 206 or not content_range:
+        return False
+    match = re.fullmatch(r"bytes (\d+)-(\d+)/(\d+)", content_range.strip())
+    if match is None:
+        return False
+    start = int(match.group(1))
+    end = int(match.group(2))
+    total = int(match.group(3))
+    return start == 0 and end == total - 1 and written == total
+
+
+def download_official_asset(
+    url: str,
+    destination: Path,
+    token: str,
+    *,
+    max_bytes: int = 120_000_000,
+) -> dict[str, Any]:
+    """Grava uma banda oficial. Não devolve URL, token nem cabeçalho."""
+
+    assert_odata_asset_url(url)
+    if not token:
+        raise PermissionError("credencial_ausente")
+    request = urllib.request.Request(
+        url,
+        headers={"Authorization": f"Bearer {token}"},
+        method="GET",
+    )
+    opener = urllib.request.build_opener(_AssetRedirect)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    partial = destination.with_name(destination.name + ".partial")
+    written = 0
+    status: int | None = None
+    content_range = None
+    content_length = None
+    try:
+        with opener.open(request, timeout=180) as response:
+            status = int(response.status)
+            content_range = response.headers.get("Content-Range")
+            content_length = response.headers.get("Content-Length")
+            with partial.open("wb") as handle:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    written += len(chunk)
+                    if written > max_bytes:
+                        raise PermissionError("asset_maior_que_o_limite")
+                    handle.write(chunk)
+        length_matches = (
+            not content_length
+            or not str(content_length).isdigit()
+            or written == int(content_length)
+        )
+        if not length_matches:
+            raise PermissionError("asset_incompleto")
+        if not _complete_download(status or 0, content_range, written):
+            raise PermissionError("asset_incompleto")
+        os.replace(partial, destination)
+    except PermissionError:
+        partial.unlink(missing_ok=True)
+        raise
+    except RedirectRefused:
+        partial.unlink(missing_ok=True)
+        raise PermissionError("redirect_recusado") from None
+    except urllib.error.HTTPError as error:
+        partial.unlink(missing_ok=True)
+        raise PermissionError(f"asset_http_{int(error.code)}") from None
+    except Exception:
+        partial.unlink(missing_ok=True)
+        raise
+    return {"http_status": status, "bytes_written": written}
 
 
 def content_range_matches_request(
