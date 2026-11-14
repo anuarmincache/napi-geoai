@@ -14,7 +14,7 @@
 
 **Idioma:** [Português](README.md) | [English](README.en.md)
 
-> **Status:** projeto em fase de planejamento e implementação inicial. Ainda não há resultados territoriais validados ou aplicação em produção.
+> **Status:** em desenvolvimento, sem implantação pública. O repositório já integra artefatos territoriais com proveniência: municípios IBGE 2025 (MVP 09), painel SIGA/ANEEL (MVP 10) e estimativas populacionais IBGE 2026 (MVP 11). Isso é validação de dados e de contratos no repositório. Não é aplicação em produção, não é aptidão fotovoltaica e não é publicação no Streamlit Cloud.
 
 ## Visão geral
 

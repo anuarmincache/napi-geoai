@@ -4,7 +4,7 @@
 
 **Language:** [Português](README.md) | [English](README.en.md)
 
-> **Status:** early planning and implementation. No validated territorial results or production application are available yet.
+> **Status:** in development, with no public deployment. The repository already includes territorial artifacts with provenance: IBGE 2025 municipalities (MVP 09), the ANEEL SIGA panel (MVP 10), and IBGE 2026 population estimates (MVP 11). That is in-repository data validation. It is not a production application, not a photovoltaic-suitability result, and not a Streamlit Cloud release.
 
 ## Overview
 

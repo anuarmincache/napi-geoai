@@ -32,7 +32,9 @@ def _sha256(path: Path) -> str:
 
 
 def main() -> int:
-    import processing  # type: ignore[import-not-found]
+    # PyQGIS só existe no interpretador do QGIS. Não subir estes imports
+    # para o topo: pytest e Streamlit não têm esse path.
+    import processing  # type: ignore[import-not-found]  # noqa: I001
     from osgeo import gdal, osr
     from qgis.core import (  # type: ignore[import-not-found]
         Qgis,

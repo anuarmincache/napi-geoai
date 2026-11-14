@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
@@ -30,26 +32,63 @@ def resolve_allowed_path(path: Path, *, roots: list[Path]) -> Path:
     )
 
 
-def atomic_write_json(destination: Path, payload: dict[str, Any]) -> int:
-    """Grava JSON via arquivo temporário e troca atômica.
+def _replace_exclusive(source: Path, destination: Path) -> None:
+    """os.replace com nova tentativa. No Windows o alvo pode estar em troca."""
 
-    Se a validação falhar, o destino anterior permanece intacto.
+    delay = 0.01
+    for attempt in range(8):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt == 7:
+                raise
+            time.sleep(delay)
+            delay *= 2
+
+
+def _unlink_own(path: Path) -> None:
+    delay = 0.01
+    for _ in range(8):
+        try:
+            if path.exists():
+                path.unlink()
+            return
+        except PermissionError:
+            time.sleep(delay)
+            delay *= 2
+    if path.exists():
+        path.unlink()
+
+
+def atomic_write_json(destination: Path, payload: dict[str, Any]) -> int:
+    """Grava JSON em temporário exclusivo e troca com os.replace.
+
+    Cada chamada cria o seu arquivo no mesmo diretório do destino e apaga
+    só esse temporário. Uma falha de validação não altera o destino.
     """
 
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    partial = destination.with_name(destination.name + ".partial")
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
-    partial.write_text(text, encoding="utf-8")
+    fd, name = tempfile.mkstemp(
+        prefix=f".{destination.name}.",
+        suffix=".partial",
+        dir=destination.parent,
+    )
+    partial = Path(name)
     try:
-        reloaded = json.loads(partial.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        partial.unlink(missing_ok=True)
-        raise JobContractError(
-            "JSON de saída inválido; destino anterior preservado"
-        ) from exc
-    if not isinstance(reloaded, dict):
-        partial.unlink(missing_ok=True)
-        raise JobContractError("saída JSON não é objeto")
-    os.replace(partial, destination)
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(text)
+        try:
+            reloaded = json.loads(partial.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise JobContractError(
+                "JSON de saída inválido; destino anterior preservado"
+            ) from exc
+        if not isinstance(reloaded, dict):
+            raise JobContractError("saída JSON não é objeto")
+        _replace_exclusive(partial, destination)
+    finally:
+        _unlink_own(partial)
     return destination.stat().st_size

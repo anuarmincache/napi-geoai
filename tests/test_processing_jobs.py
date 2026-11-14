@@ -2,18 +2,21 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import threading
 from pathlib import Path
 
 import pytest
 from geoai.processing.contract import JobContractError, idempotency_key
-from geoai.processing.jobs import PIPELINE_VERSION, execute_job
+from geoai.processing.jobs import PIPELINE_VERSION, _sha256_file, execute_job
 from geoai.processing.ndvi import (
     SENTINEL_SEARCH_POLICY,
     ndvi_window,
     resample_nearest,
     valid_mask_from_scl,
 )
+from geoai.processing.safety import atomic_write_json
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -99,7 +102,7 @@ def test_failure_does_not_replace_validated_output(tmp_path: Path) -> None:
     key = idempotency_key(
         job_type="vector_bbox_metrics",
         source_id="broken",
-        source_sha256=None,
+        source_sha256=hashlib.sha256(b"{").hexdigest(),
         params=params,
         algorithm_ids=["napi.vector_bbox_metrics.v1"],
         pipeline_version=PIPELINE_VERSION,
@@ -147,18 +150,21 @@ def test_ndvi_window_masks_invalid_and_does_not_invent_zero() -> None:
     b04 = [[0.1, 0.2], [0.0, None]]
     b08 = [[0.3, 0.2], [0.0, 0.4]]
     scl = [[4, 8], [0, 4]]
-    mask = valid_mask_from_scl(resample_nearest(scl, 2, 2))
+    mask = valid_mask_from_scl(
+        resample_nearest(scl, 2, 2, allow_index_only=True)
+    )
     grid = ndvi_window(b04, b08, valid=mask)
     assert grid[0][0] == pytest.approx(0.5)
     assert grid[0][1] is None
     assert grid[1][0] is None
     assert grid[1][1] is None
     assert SENTINEL_SEARCH_POLICY["download_in_this_release"] is False
+    assert SENTINEL_SEARCH_POLICY["operational_sentinel"] is False
 
 
 def test_scl_nearest_does_not_blend_classes() -> None:
     scl = [[4, 8], [9, 4]]
-    out = resample_nearest(scl, 4, 4)
+    out = resample_nearest(scl, 4, 4, allow_index_only=True)
     assert out[0][0] == 4
     assert out[0][3] == 8
     assert out[3][0] == 9
@@ -181,3 +187,194 @@ def test_streamlit_does_not_import_qgis_or_run_jobs() -> None:
             text = path.read_text(encoding="utf-8")
             for token in banned:
                 assert token not in text, f"{path} contém {token}"
+
+
+def _tiny(tmp_path: Path) -> Path:
+    src = tmp_path / "tiny.geojson"
+    src.write_text(
+        (REPO / "tests" / "fixtures" / "processing" / "tiny_bbox.geojson").read_text(
+            encoding="utf-8"
+        ),
+        encoding="utf-8",
+    )
+    return src
+
+
+def test_same_path_new_bytes_is_not_reused(tmp_path: Path) -> None:
+    src = _tiny(tmp_path)
+    params = {"input_path": str(src)}
+    first = _run(
+        tmp_path,
+        job_type="vector_bbox_metrics",
+        source_id="fixture.tiny",
+        params=params,
+    )
+    src.write_text(
+        json.dumps(
+            {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {},
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[[0, 0], [2, 0], [2, 2], [0, 0]]],
+                        },
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    second = _run(
+        tmp_path,
+        job_type="vector_bbox_metrics",
+        source_id="fixture.tiny",
+        params=params,
+    )
+    assert first.status == "succeeded"
+    assert second.status == "succeeded"
+    assert second.reused_previous is False
+    assert second.idempotency_key != first.idempotency_key
+    assert second.source_sha256 != first.source_sha256
+    fresh = json.loads(Path(second.output_paths[0]).read_text(encoding="utf-8"))
+    assert fresh["result"]["bbox"] == [0.0, 0.0, 2.0, 2.0]
+    old = json.loads(Path(first.output_paths[0]).read_text(encoding="utf-8"))
+    assert old["result"]["bbox"] == [0.0, 0.0, 1.0, 1.0]
+
+
+def test_declared_sha_must_match_file(tmp_path: Path) -> None:
+    src = _tiny(tmp_path)
+    record = _run(
+        tmp_path,
+        job_type="vector_bbox_metrics",
+        source_id="fixture.tiny",
+        params={"input_path": str(src)},
+        source_sha256="0" * 64,
+    )
+    assert record.status == "failed"
+    assert record.error_code == "invalid_input"
+    assert record.output_paths == []
+
+
+def test_truncated_or_tampered_cache_is_recomputed(tmp_path: Path) -> None:
+    src = _tiny(tmp_path)
+    params = {"input_path": str(src)}
+    kwargs = {
+        "job_type": "vector_bbox_metrics",
+        "source_id": "fixture.tiny",
+        "params": params,
+    }
+    first = _run(tmp_path, **kwargs)
+    out = Path(first.output_paths[0])
+    manifest = out.with_name(out.name.replace(".json", ".job.json"))
+    out.write_text("{", encoding="utf-8")
+    rerun = _run(tmp_path, **kwargs)
+    assert rerun.reused_previous is False
+    assert rerun.status == "succeeded"
+    body = json.loads(out.read_text(encoding="utf-8"))
+    assert body["result"]["n_features"] == 1
+    assert body["idempotency_key"] == first.idempotency_key
+    recorded = json.loads(manifest.read_text(encoding="utf-8"))
+    recorded["output_sha256"] = {str(out): "0" * 64}
+    manifest.write_text(json.dumps(recorded), encoding="utf-8")
+    again = _run(tmp_path, **kwargs)
+    assert again.reused_previous is False
+    assert _sha256_file(out) != "0" * 64
+    checked = json.loads(manifest.read_text(encoding="utf-8"))
+    assert checked["output_sha256"][str(out)] == _sha256_file(out)
+
+
+def test_invalid_geojson_does_not_publish_bbox(tmp_path: Path) -> None:
+    src = tmp_path / "bad.geojson"
+    src.write_text(
+        json.dumps(
+            {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {"type": "Point", "coordinates": ["x", "y"]},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    record = _run(
+        tmp_path,
+        job_type="vector_bbox_metrics",
+        source_id="bad",
+        params={"input_path": str(src)},
+    )
+    assert record.status == "failed"
+    assert record.error_code == "invalid_input"
+    assert record.output_paths == []
+    empty = tmp_path / "empty.geojson"
+    empty.write_text(
+        json.dumps({"type": "FeatureCollection", "features": []}),
+        encoding="utf-8",
+    )
+    empty_record = _run(
+        tmp_path,
+        job_type="vector_bbox_metrics",
+        source_id="empty",
+        params={"input_path": str(empty)},
+    )
+    assert empty_record.status == "failed"
+    assert empty_record.output_paths == []
+
+
+def test_ndvi_rejects_empty_grid_and_mask_shape() -> None:
+    with pytest.raises(ValueError, match="incompatível|vazia"):
+        ndvi_window([], [])
+    with pytest.raises(ValueError, match="vazia"):
+        ndvi_window([[]], [[]])
+    with pytest.raises(ValueError, match="máscara"):
+        ndvi_window([[0.1, 0.2]], [[0.2, 0.3]], valid=[[True]])
+
+
+def test_resample_nearest_refuses_real_scene_inputs() -> None:
+    grid = [[4, 8], [9, 4]]
+    with pytest.raises(ValueError, match="allow_index_only"):
+        resample_nearest(grid, 2, 2)
+    with pytest.raises(ValueError, match="geotransform"):
+        resample_nearest(
+            grid,
+            2,
+            2,
+            allow_index_only=True,
+            geotransform=(0, 10, 0, 0, 0, -10),
+            crs="EPSG:4326",
+        )
+
+
+def test_concurrent_atomic_write_keeps_one_valid_json(tmp_path: Path) -> None:
+    dest = tmp_path / "out.json"
+    errors: list[BaseException] = []
+
+    def _write(index: int) -> None:
+        try:
+            atomic_write_json(dest, {"i": index, "pad": "x" * 200})
+        except BaseException as exc:  # noqa: BLE001
+            errors.append(exc)
+
+    threads = [threading.Thread(target=_write, args=(i,)) for i in range(8)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert errors == []
+    body = json.loads(dest.read_text(encoding="utf-8"))
+    assert body["i"] in range(8)
+    assert list(tmp_path.glob("*.partial")) == []
+
+
+def test_invalid_payload_preserves_destination(tmp_path: Path) -> None:
+    dest = tmp_path / "out.json"
+    dest.write_text('{"ok": true}\n', encoding="utf-8")
+    with pytest.raises(JobContractError):
+        atomic_write_json(dest, ["nao-objeto"])  # type: ignore[arg-type]
+    assert dest.read_text(encoding="utf-8") == '{"ok": true}\n'
+    assert list(tmp_path.glob("*.partial")) == []

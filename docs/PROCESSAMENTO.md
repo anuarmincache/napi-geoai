@@ -11,7 +11,7 @@ PyQGIS continua apenas nos workers já existentes, fora da interface:
 - `scripts/_qgis_mun_worker.py`
 - `scripts/_qgis_siga_join_worker.py`
 
-Esses workers não foram reescritos.
+A lógica PyQGIS desses workers não mudou. O `import processing` continua dentro da função e, no join SIGA, depois do `sys.path` do plugin. Há `# noqa: I001` nesse ponto para o Ruff não reordenar o import.
 
 ## Jobs desta fundação
 
@@ -24,9 +24,9 @@ Tipos permitidos:
 | `vector_bbox_metrics` | GeoJSON sob `data/derived` ou `tests/fixtures` | contagem de feições e bbox |
 | `sentinel2_ndvi_window` | grades `b04`/`b08` (e `scl` opcional) em memória | NDVI da janela; pixel inválido fica nulo |
 
-Contrato em `geoai/processing/contract.py`: estado, fonte, parâmetros, algoritmos, hashes, tempo e RSS quando a API do Windows responde. A chave de idempotência é o hash de fonte + versão + parâmetros + algoritmo, sem timestamp.
+Contrato em `geoai/processing/contract.py`: estado, fonte, parâmetros, algoritmos, hashes, tempo e RSS quando a API do Windows responde. A chave de idempotência inclui o SHA-256 real do arquivo (ou dos parâmetros, na janela em memória), a versão e o algoritmo. Não inclui timestamp. Um digest informado pelo chamador que não confere com a entrada é recusado. O mesmo caminho com bytes novos gera outra chave.
 
-Publicação: arquivo temporário, releitura do JSON e `os.replace`. Falha não substitui um JSON já publicado da mesma chave. Saídas de execução ficam em `data/jobs/` (gitignored).
+Publicação: cada escrita usa um temporário exclusivo no mesmo diretório e `os.replace`. O JSON de resultado é gravado primeiro. O manifest `.job.json` é o ponteiro de commit: reutilizar só ocorre se o status for `succeeded`, a chave do manifest e a do payload coincidirem e `output_sha256` for o SHA-256 atual do arquivo. Arquivo truncado, adulterado ou manifest defasado não é reutilizado. Falha não reescreve um manifest que ainda confere. Saídas de execução ficam em `data/jobs/` (gitignored).
 
 O bbox deste job não substitui `AREA_KM2` oficial nem um join QGIS.
 
@@ -37,8 +37,9 @@ O bbox deste job não substitui `AREA_KM2` oficial nem um join QGIS.
 - busca preferida de 7 dias e alternativa de 30 dias (busca, não garantia de cena limpa);
 - nível L2A, bandas B04 e B08;
 - NDVI \((B08-B04)/(B08+B04)\) sem clamp e sem tratar nulo como zero;
-- SCL reamostrado por vizinho mais próximo; classes 0, 1, 3, 8, 9, 10 e 11 ficam de fora da máscara válida;
-- `download_in_this_release: false`.
+- SCL por vizinho mais próximo **apenas por índice**, em grade sintética já alinhada (`allow_index_only=True`). Geotransform e CRS são recusados. Cena real exigiria nearest georreferenciado com GDAL ou rasterio; isso não está implementado;
+- classes SCL 0, 1, 3, 8, 9, 10 e 11 ficam de fora da máscara válida;
+- `download_in_this_release: false` e `operational_sentinel: false`.
 
 Não há conector Copernicus, não há recorte do Paraná e não há visualização Sentinel na interface. A Issue #40 precisa permanecer válida antes dessa visualização.
 
@@ -46,13 +47,13 @@ NDVI é índice espectral. Não é biogás, biomassa, rendimento nem receita.
 
 ## Medição
 
-`py -3 scripts/benchmark_spatial_small.py` grava `docs/evidence/processing/benchmark_small.json` a partir do fixture `tests/fixtures/processing/tiny_bbox.geojson`. Os números desse arquivo são da máquina que rodou o script. Não são limite de produção.
+`py -3 scripts/benchmark_spatial_small.py` grava `docs/evidence/processing/benchmark_small.json` a partir do fixture `tests/fixtures/processing/tiny_bbox.geojson` (238 bytes de entrada na medição registrada). Os números são da máquina que rodou o script. Não são teste de raster, não medem o Paraná e não são SLA.
 
 ## Testes
 
 ```powershell
-ruff check geoai/processing scripts/run_geo_job.py scripts/benchmark_spatial_small.py tests/test_processing_jobs.py
-pytest -q tests/test_processing_jobs.py
+ruff check .
+pytest -q
 ```
 
-A suíte nova não exige QGIS. Os testes de PyQGIS dos MVPs anteriores continuam dependentes de QGIS instalado e não entram no CI.
+A suíte nova não exige QGIS. A varredura estática de `app/` e `geoai/portal/` procura imports diretos de QGIS e `execute_job`; ela não prova a ausência de todo caminho indireto. Nenhum teste PyQGIS entra no CI.

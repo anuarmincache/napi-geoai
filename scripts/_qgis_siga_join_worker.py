@@ -73,7 +73,8 @@ def _ensure_qgis_processing():
         text = str(plugin_path)
         if text and text not in sys.path:
             sys.path.append(text)
-    import processing  # type: ignore[import-not-found]
+    # Este import tem de ficar depois do sys.path do plugin. Não reordenar.
+    import processing  # type: ignore[import-not-found]  # noqa: I001
     from processing.core.Processing import Processing  # type: ignore[import-not-found]
 
     Processing.initialize()

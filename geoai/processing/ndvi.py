@@ -18,15 +18,35 @@ def resample_nearest(
     values: list[list[int | None]],
     out_rows: int,
     out_cols: int,
+    *,
+    allow_index_only: bool = False,
+    geotransform: object | None = None,
+    crs: object | None = None,
 ) -> list[list[int | None]]:
-    """Reamostra grade categórica por vizinho mais próximo (não bilinear)."""
+    """Vizinho mais próximo por índice, só em grades sintéticas já alinhadas.
 
+    Não lê geotransform nem CRS. Cena Sentinel real continua fechada: a
+    reamostragem teria de ser nearest georreferenciado (GDAL ou rasterio).
+    """
+
+    if geotransform is not None or crs is not None:
+        raise ValueError(
+            "resample_nearest não aplica geotransform nem CRS; "
+            "cena real exige nearest georreferenciado (GDAL ou rasterio)"
+        )
+    if not allow_index_only:
+        raise ValueError(
+            "resample_nearest exige allow_index_only=True; "
+            "não reamostra cena Sentinel"
+        )
     if out_rows <= 0 or out_cols <= 0:
         raise ValueError("grade de saída inválida")
     src_rows = len(values)
     src_cols = len(values[0]) if src_rows else 0
     if src_rows == 0 or src_cols == 0:
         raise ValueError("grade SCL vazia")
+    if any(len(row) != src_cols for row in values):
+        raise ValueError("grade SCL não retangular")
     out: list[list[int | None]] = []
     for r in range(out_rows):
         src_r = min(src_rows - 1, int((r + 0.5) * src_rows / out_rows))
@@ -55,11 +75,19 @@ def ndvi_window(
     rows = len(b04)
     if rows == 0 or len(b08) != rows:
         raise ValueError("bandas B04/B08 com forma incompatível")
-    cols = len(b04[0])
+    cols = len(b04[0]) if b04 else 0
+    if cols == 0 or any(len(row) == 0 for row in b08):
+        raise ValueError("grade vazia")
+    if valid is not None and (
+        len(valid) != rows or any(len(row) != cols for row in valid)
+    ):
+        raise ValueError("máscara valid com forma diferente das bandas")
     out: list[list[float | None]] = []
     for r in range(rows):
         if len(b04[r]) != cols or len(b08[r]) != cols:
             raise ValueError("janela não retangular")
+        if valid is not None and len(valid[r]) != cols:
+            raise ValueError("máscara valid com forma diferente das bandas")
         line: list[float | None] = []
         for c in range(cols):
             if valid is not None and not valid[r][c]:
@@ -108,9 +136,13 @@ SENTINEL_SEARCH_POLICY = {
     "preferred_search_days": 7,
     "fallback_search_days": 30,
     "bands": ["B04", "B08"],
-    "scl_resampling": "nearest",
+    "scl_resampling": "index_nearest_synthetic_only",
+    "real_scene_resample": (
+        "não implementado; exige nearest georreferenciado com GDAL ou rasterio"
+    ),
     "guarantee": (
         "Janelas de 7 e 30 dias são busca, não garantia de cena sem nuvens."
     ),
     "download_in_this_release": False,
+    "operational_sentinel": False,
 }
