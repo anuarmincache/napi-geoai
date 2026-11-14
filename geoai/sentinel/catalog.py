@@ -6,9 +6,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+from geoai.sentinel.pilot import CATALOG_NAME
+
 
 def catalog_path(repo_root: Path) -> Path:
-    return repo_root / "data" / "derived" / "sentinel_pinhais_pilot.json"
+    return repo_root / "data" / "derived" / CATALOG_NAME
 
 
 def load_pilot_catalog(repo_root: Path) -> dict[str, Any]:

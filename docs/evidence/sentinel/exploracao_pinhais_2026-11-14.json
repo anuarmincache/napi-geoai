@@ -48,5 +48,8 @@
   "n_full_coverage": 2,
   "download_http_status": 401,
   "source": "Copernicus Data Space STAC sentinel-2-l2a",
-  "source_url": "https://stac.dataspace.copernicus.eu/v1/search"
+  "source_url": "https://stac.dataspace.copernicus.eu/v1/search",
+  "role": "exploracao_anterior",
+  "pilot_aoi": false,
+  "note_pt": "Diagnóstico preliminar da PR #43 antes da decisão de 14/11/2026. Não é o piloto. A AOI oficial é Maringá, CD_MUN 4115200."
 }

@@ -1,6 +1,7 @@
-"""Prepara o NDVI do piloto. Não baixa e não publica sem bandas locais.
+"""Estágio incompleto do NDVI de Maringá.
 
-Com o Python do QGIS, passe --b04, --b08 e --scl apontando para JP2 locais.
+Mesmo com B04, B08 e SCL locais, este comando não recorta, não alinha SCL
+e não publica raster. Credencial de download, se existir, não conclui o piloto.
 """
 
 from __future__ import annotations
@@ -9,33 +10,27 @@ import argparse
 import sys
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO))
-
-from geoai.sentinel.catalog import load_pilot_catalog  # noqa: E402
-
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="NDVI piloto Pinhais, só com arquivos locais"
+        description="NDVI piloto Maringá; o pipeline real ainda não publica"
     )
     parser.add_argument("--b04", default="")
     parser.add_argument("--b08", default="")
     parser.add_argument("--scl", default="")
     args = parser.parse_args(argv)
-    catalog = load_pilot_catalog(REPO)
     paths = [args.b04, args.b08, args.scl]
     if not all(paths) or not all(Path(item).is_file() for item in paths):
-        message = catalog.get("public_message_pt") or "bandas locais ausentes"
-        print(message, file=sys.stderr)
+        print("Bandas locais ausentes. ndvi_published falso.", file=sys.stderr)
         print("ndvi_published", False)
         return 2
     print(
-        "Arquivos locais presentes, mas o recorte GDAL georreferenciado "
-        "ainda não foi executado nesta entrega porque o download oficial "
-        "não foi autorizado.",
+        "Os três caminhos existem, mas o pipeline georreferenciado "
+        "(recorte, SCL nearest, reflectância, NDVI e COG) não está "
+        "implementado. Este comando não publica raster.",
         file=sys.stderr,
     )
+    print("ndvi_published", False)
     return 2
 
 

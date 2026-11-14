@@ -106,7 +106,7 @@ População IBGE 2026 e ficha municipal (MVP 11): [docs/MVP11_POPULACAO.md](docs
 
 Fundação de jobs geoespaciais (Issue #40): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). O Streamlit continua lendo artefatos prontos. Jobs locais ficam em `scripts/run_geo_job.py`, com publicação atômica, lock local por chave e `data/jobs/` fora do Git. Medição pequena: `docs/evidence/processing/benchmark_small.json`.
 
-Piloto Sentinel-2 em Pinhais (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). A consulta STAC de 7 dias achou uma cena L2A que cobre o município. O download das bandas respondeu 401. Não há raster nem mapa de NDVI publicado. A página do Streamlit só lê o catálogo e informa a indisponibilidade.
+Piloto Sentinel-2 em Maringá, CD_MUN 4115200 (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). A geometria sai da malha IBGE 2025. Nenhuma tile cobre o município sozinha; a união dos footprints cobre a área e o mosaico não foi montado. A requisição HTTPS sem Authorization ao asset B04 respondeu 401. Não há raster nem mapa de NDVI. A página só lê o catálogo.
 
 ```powershell
 py -3 -m pip install -e ".[dev,ui]"
