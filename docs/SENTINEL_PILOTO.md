@@ -46,7 +46,19 @@ Tiles da mesma passagem S2B, processamento `20261112T184116`:
 | 22KCU | 0,090778 | 44,88% | não |
 | 22KDU | 0,003316 | 9,91% | não |
 
-O menor conjunto é 22KCV + 22KDV. União 1,0, lacuna 0,0 e sobreposição 0,447949, na sexta casa decimal. `mosaic_required` é verdadeiro. `dates_combined` é falso. A nuvem do item não mede pixel válido na AOI. `valid_pixel_fraction` permanece nulo. `selection_status` é `mosaic_candidate`.
+O menor conjunto é 22KCV + 22KDV. União 1,0, lacuna 0,0 e sobreposição geométrica 0,447949, na sexta casa decimal. Essa sobreposição é área do footprint, não pixel válido e não entra duas vezes na fração municipal. `mosaic_required` é verdadeiro. `dates_combined` é falso. A nuvem do item não mede pixel válido na AOI. `valid_pixel_fraction` permanece nulo. `selection_status` é `mosaic_candidate`. `quality_approved` é falso: a S2B é candidata geométrica, não aprovação de qualidade.
+
+Se a fração válida dessa passagem, depois da leitura de B04, B08 e SCL, ficar abaixo de 0,70, a reserva é a passagem `S2A_20261109T133231_R081`. As duas datas não se misturam.
+
+## Regra de sobreposição
+
+`first_valid_tile_in_declared_order`, em `geoai/sentinel/mosaic_rule.py`.
+
+Na grade comum, cada pixel da AOI conta uma vez. A tile entra só se a SCL não está nas classes inválidas, o DN não é nodata e o NDVI tem denominador utilizável. Se as duas tiles são válidas no mesmo pixel, fica o valor da primeira na ordem declarada (22KCV, depois 22KDV). Não há média. A origem fica num raster de proveniência. A fração válida é o número de pixels escolhidos dividido pelo número de pixels da AOI.
+
+## Pipeline em blocos
+
+`geoai/sentinel/gdal_blocks.py` calcula reflectância com escala e offset, alinha a decisão de SCL e percorre a grade em janelas. O teste sintético com GDAL 3.13.3, nearest e EPSG:32722, está em `docs/evidence/sentinel/gdal_mosaic_synthetic.json`. Durou 0,022 s, não gravou raster do piloto e manteve `ndvi_published` falso. A grade tinha 24 pixels: 23 válidos, 7 da primeira tile e 16 da segunda, soma 23. O `PeakWorkingSetSize` do processo QGIS foi 62,961 MB e inclui o processo inteiro, não só o mosaico. `sentinel_scene` é falso. COG do piloto só seria escrito depois da fração válida oficial. Isso ainda não ocorreu.
 
 ## Acesso
 
@@ -57,7 +69,9 @@ O método preparado é OIDC/OData, fora do Streamlit, em `geoai/sentinel/cdse_au
 - Variáveis locais, se existirem: `CDSE_USERNAME` e `CDSE_PASSWORD`, ou `CDSE_ACCESS_TOKEN`
 - Host do asset: `download.dataspace.copernicus.eu`
 
-Nenhuma dessas variáveis está definida. A requisição autorizada não foi enviada. `authorized_attempted` é falso e `bytes_read` é 0. Nenhum segredo foi gravado.
+Nenhuma dessas variáveis está definida. A requisição autorizada não foi enviada e nenhum valor fictício foi usado. `authorized_attempted` é falso e `bytes_read` é 0. Nenhum segredo foi gravado.
+
+O cliente só aceita HTTPS em `download.dataspace.copernicus.eu`, caminho `/odata/v1/Products(...)/$value`, sem usuário, senha ou query na URL. Redirecionamento para outro host é recusado antes de reenviar `Authorization`. A sonda lê no máximo 1024 bytes e trata HTTP 206 com `Content-Range` como leitura limitada. HTTP 200 de um objeto longo não autoriza o piloto.
 
 Para o B04 da tile 22KCV desta passagem, um GET sem `Authorization` e com `Range: bytes=0-0` respondeu HTTP 401. `WWW-Authenticate` veio vazio. O corpo não foi armazenado. `access_status` é `blocked_auth`.
 
@@ -86,11 +100,13 @@ A credencial, quando existir, fica só no ambiente do processo. Não entra no Gi
 ## Medições
 
 - Busca STAC e cobertura da janela de 7 dias: 9,197 s
-- Bytes de banda gravados: 0
+- Bytes de banda oficiais gravados: 0
 - Bytes lidos na requisição autorizada: 0
-- RSS do NDVI: não medido
+- Mosaico sintético no Python do QGIS: 0,022 s, 0 bytes gravados no piloto
+- RSS de pico desse processo QGIS: 62,961 MB, processo inteiro
+- Fração válida da cena oficial: não medida
 - Leitura de preview no Streamlit: não medido
 
 ## Fora desta entrega
 
-Raster, COG, fração válida por pixel, composição de datas, agendamento, Paraná inteiro, Cloud e Supabase.
+Raster oficial, COG do piloto, fração válida da S2B, passagem S2A caso a S2B fique abaixo de 0,70, composição de datas, agendamento, Paraná inteiro, Cloud e Supabase.

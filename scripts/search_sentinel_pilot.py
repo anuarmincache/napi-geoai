@@ -422,6 +422,13 @@ def main(argv: list[str] | None = None) -> int:
         "selection_status": selection_status,
         "access_status": access_status,
         "processing_status": "not_evaluated",
+        "quality_status": "not_evaluated",
+        "quality_approved": False,
+        "geometric_candidate_only": True,
+        "overlap_rule": "first_valid_tile_in_declared_order",
+        "fallback_if_valid_fraction_below": 0.70,
+        "fallback_acquisition_id": "S2A_20261109T133231_R081",
+        "valid_pixel_fraction": None,
         "ndvi_published": False,
         "pilot_aoi": True,
         "public_message_pt": _public_message(

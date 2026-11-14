@@ -51,7 +51,7 @@ Delivered MVP status is documented in the [Portuguese README](README.md). This E
 
 Geospatial job foundation (Issue #40): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). Streamlit still reads prepared artifacts only. Local jobs run from `scripts/run_geo_job.py`, with atomic publish and a local per-key lock. Job output under `data/jobs/` is gitignored. A small measurement is stored in `docs/evidence/processing/benchmark_small.json`.
 
-Sentinel-2 pilot for Maringá, IBGE code 4115200 (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). Geometry comes from the 2025 IBGE mesh. The 12 November 2026 Sentinel-2B pass, relative orbit R081, covers the municipality with tiles 22KCV and 22KDV. It is one acquisition. The OIDC request was not sent because no local credential is configured, and an anonymous B04 GET returned HTTP 401. No NDVI raster or imagery map is published. The Streamlit page only reads the catalog.
+Sentinel-2 pilot for Maringá, IBGE code 4115200 (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). Geometry comes from the 2025 IBGE mesh. The 12 November 2026 Sentinel-2B pass, relative orbit R081, is the geometric candidate, with tiles 22KCV and 22KDV. Overlap keeps the first valid tile, with no average and no double count. The valid-pixel fraction has not been measured. The OIDC request was not sent because no local credential is configured, and an anonymous B04 GET returned HTTP 401. No NDVI raster or imagery map is published. The Streamlit page only reads the catalog.
 
 ## Scientific integrity and license
 

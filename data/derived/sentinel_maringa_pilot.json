@@ -394,5 +394,12 @@
     "s3_credentials_loaded": false
   },
   "source": "Copernicus Data Space STAC sentinel-2-l2a",
-  "source_url": "https://stac.dataspace.copernicus.eu/v1/search"
+  "source_url": "https://stac.dataspace.copernicus.eu/v1/search",
+  "quality_status": "not_evaluated",
+  "quality_approved": false,
+  "geometric_candidate_only": true,
+  "overlap_rule": "first_valid_tile_in_declared_order",
+  "fallback_if_valid_fraction_below": 0.7,
+  "fallback_acquisition_id": "S2A_20261109T133231_R081",
+  "valid_pixel_fraction": null
 }

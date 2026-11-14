@@ -5,13 +5,22 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
+import numpy as np
 import pytest
 from geoai.sentinel.access import describe_asset_response
 from geoai.sentinel.aoi import load_official_municipality, sirgas_utm_epsg
 from geoai.sentinel.catalog import load_pilot_catalog, show_ndvi
-from geoai.sentinel.cdse_auth import authorized_probe
+from geoai.sentinel.cdse_auth import (
+    RedirectRefused,
+    _GuardedRedirect,
+    authorized_probe,
+    classify_probe_response,
+)
+from geoai.sentinel.gdal_blocks import compose_blocked, reflectance_block
+from geoai.sentinel.mosaic_rule import compose_first_valid
 from geoai.sentinel.passes import minimal_covering_tiles, parse_product_id
 from geoai.sentinel.reflectance import ReflectanceMetadataError, reflectance_dn
 from geoai.sentinel.selection import (
@@ -78,6 +87,13 @@ def test_catalog_is_maringa_and_does_not_publish_ndvi() -> None:
     assert selected["dates_combined"] is False
     assert selected["composition"] == "single_acquisition"
     assert selected["covers_threshold"] is True
+    assert catalog["quality_approved"] is False
+    assert catalog["geometric_candidate_only"] is True
+    assert catalog["quality_status"] == "not_evaluated"
+    assert catalog["valid_pixel_fraction"] is None
+    assert selected["acquisition_id"] == "S2B_20261112T133149_R081"
+    assert catalog["fallback_acquisition_id"] == "S2A_20261109T133231_R081"
+    assert catalog["overlap_rule"] == "first_valid_tile_in_declared_order"
     sensing = selected["sensing_time"]
     chosen = [tile for tile in selected["tiles"] if tile["selected"]]
     assert chosen
@@ -260,6 +276,92 @@ def test_missing_cdse_credentials_do_not_open_the_network(monkeypatch) -> None:
     assert report["bytes_read"] == 0
     assert report["access_status"] == "blocked_auth"
     assert "access_token" not in json.dumps(report)
+
+
+def test_overlap_uses_first_valid_tile_once() -> None:
+    valid = np.zeros((2, 2, 2), dtype=bool)
+    values = np.full((2, 2, 2), np.nan)
+    valid[:, :, :] = True
+    valid[0, :, 1] = False
+    values[0] = 0.2
+    values[1] = 0.8
+    aoi = np.ones((2, 2), dtype=bool)
+    result = compose_first_valid(valid, values, aoi)
+    assert result["n_aoi"] == 4
+    assert result["n_valid"] == 4
+    assert sum(result["pixels_per_tile"]) == result["n_valid"]
+    assert result["pixels_per_tile"] == [2, 2]
+    assert result["overlap_both_valid"] == 2
+    assert result["provenance"][0, 0] == 1
+    assert result["provenance"][0, 1] == 2
+    assert result["ndvi"][0, 0] == pytest.approx(0.2)
+    assert result["ndvi"][0, 1] == pytest.approx(0.8)
+
+
+def test_blocked_windows_do_not_average_tiles() -> None:
+    red = [np.full((2, 2), 0.1), np.full((2, 2), 0.1)]
+    nir = [np.full((2, 2), 0.3), np.full((2, 2), 0.5)]
+    scl = [np.full((2, 2), 4), np.full((2, 2), 4)]
+    scl[0][:, 1] = 9
+    aoi = np.ones((2, 2), dtype=bool)
+    result = compose_blocked(red, nir, scl, aoi, block=1)
+    assert result["pixels_per_tile"] == [2, 2]
+    assert sum(result["pixels_per_tile"]) == result["n_valid"]
+    assert result["ndvi"][0, 0] == pytest.approx((0.3 - 0.1) / (0.3 + 0.1))
+    assert result["ndvi"][0, 1] == pytest.approx((0.5 - 0.1) / (0.5 + 0.1))
+
+
+def test_nodata_does_not_receive_offset_in_block() -> None:
+    out = reflectance_block(np.array([[0, 2000]]), scale=0.0001, offset=-0.1, nodata=0)
+    assert np.isnan(out[0, 0])
+    assert out[0, 1] == pytest.approx(0.1)
+
+
+def test_redirect_to_another_host_drops_authorization() -> None:
+    request = urllib.request.Request(
+        "https://download.dataspace.copernicus.eu/odata/v1/Products(a)/$value",
+        headers={"Authorization": "Bearer local-test", "Range": "bytes=0-1023"},
+    )
+    with pytest.raises(RedirectRefused):
+        _GuardedRedirect().redirect_request(
+            request,
+            None,
+            302,
+            "found",
+            {},
+            "https://evil.example/odata/v1/Products(a)/$value",
+        )
+
+
+def test_range_response_must_stay_small() -> None:
+    honored = classify_probe_response(
+        http_status=206,
+        content_range="bytes 0-1023/999999",
+        content_length="1024",
+        bytes_read=1024,
+    )
+    ignored = classify_probe_response(
+        http_status=200,
+        content_range=None,
+        content_length="120000000",
+        bytes_read=1024,
+    )
+    assert honored["access_status"] == "authorized"
+    assert honored["range_honored"] is True
+    assert ignored["access_status"] == "range_not_honored"
+    assert ignored["bytes_read"] == 1024
+
+
+def test_gdal_mosaic_evidence_is_not_a_sentinel_scene() -> None:
+    path = REPO / "docs" / "evidence" / "sentinel" / "gdal_mosaic_synthetic.json"
+    if not path.is_file():
+        pytest.skip("evidência GDAL do mosaico ainda não gerada")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    assert payload["sentinel_scene"] is False
+    assert payload["ndvi_published"] is False
+    assert payload["quality_approved_for_pilot"] is False
+    assert sum(payload["pixels_per_tile"]) == payload["n_valid"]
+    assert payload["n_valid"] <= payload["n_aoi"]
 
 
 def test_odata_url_with_query_is_refused(monkeypatch) -> None:

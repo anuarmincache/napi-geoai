@@ -25,9 +25,10 @@ def main(argv: list[str] | None = None) -> int:
         print("ndvi_published", False)
         return 2
     print(
-        "Os três caminhos existem, mas o pipeline georreferenciado "
-        "(recorte, SCL nearest, reflectância, NDVI e COG) não está "
-        "implementado. Este comando não publica raster.",
+        "Os arquivos locais existem. O cálculo em blocos está em "
+        "geoai/sentinel/gdal_blocks.py e a regra de sobreposição em "
+        "geoai/sentinel/mosaic_rule.py. Este comando não publica raster "
+        "nem altera ndvi_published.",
         file=sys.stderr,
     )
     print("ndvi_published", False)

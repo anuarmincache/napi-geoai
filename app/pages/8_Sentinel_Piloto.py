@@ -55,6 +55,17 @@ else:
     st.write(f"Lacuna: {selected.get('gap')}")
     st.write(f"Sobreposição: {selected.get('overlap_coverage')}")
     st.write("Composição: uma única aquisição. Datas diferentes não foram misturadas.")
+    st.write(
+        "Qualidade municipal: não avaliada. "
+        "A cobertura geométrica não aprova o NDVI."
+    )
+    st.write(f"Regra de sobreposição: {catalog.get('overlap_rule', 'n/d')}")
+    fallback = catalog.get("fallback_acquisition_id")
+    if fallback:
+        st.write(
+            f"Passagem reserva, ainda não lida: {fallback}. "
+            "Ela só entra se a fração válida da candidata ficar abaixo de 0,70."
+        )
     rows = selected.get("tiles") or []
     if rows:
         st.dataframe(rows, use_container_width=True, hide_index=True)
