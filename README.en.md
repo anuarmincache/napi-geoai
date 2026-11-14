@@ -49,7 +49,9 @@ pytest -q
 
 Delivered MVP status is documented in the [Portuguese README](README.md). This English page does not repeat that history.
 
-Geospatial job foundation (Issue #40): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). Streamlit still reads prepared artifacts only. Local jobs (`vector_bbox_metrics` and an in-memory NDVI window) run from `scripts/run_geo_job.py`, with atomic publish and a local per-key lock. Job output under `data/jobs/` is gitignored. Sentinel-2 download and imagery visualization are not part of this stage. A small measurement is stored in `docs/evidence/processing/benchmark_small.json`.
+Geospatial job foundation (Issue #40): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). Streamlit still reads prepared artifacts only. Local jobs run from `scripts/run_geo_job.py`, with atomic publish and a local per-key lock. Job output under `data/jobs/` is gitignored. A small measurement is stored in `docs/evidence/processing/benchmark_small.json`.
+
+Sentinel-2 pilot for Pinhais (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). A 7-day STAC search found one L2A scene covering the municipality. Band download returned HTTP 401. No NDVI raster or imagery map is published. The Streamlit page only reads the catalog and reports that the product is unavailable.
 
 ## Scientific integrity and license
 

@@ -94,6 +94,8 @@ data/raw/
 data/processed/
 data/external/
 data/jobs/
+data/raw/sentinel/
+data/processed/sentinel/
 # GeoJSON derivados pequenos e metadados de proveniência podem ser versionados
 !data/derived/
 !data/derived/**/*.geojson
