@@ -17,6 +17,7 @@ TOKEN_ENDPOINT = (
 )
 PUBLIC_CLIENT_ID = "cdse-public"
 DOWNLOAD_HOST = "download.dataspace.copernicus.eu"
+MAX_ASSET_BYTES = 150_000_000
 PRODUCT_PREFIX = "/odata/v1/Products("
 PROBE_BYTES = 1024
 MAX_REDIRECTS = 2
@@ -138,12 +139,42 @@ def _complete_download(status: int, content_range: str | None, written: int) -> 
     return start == 0 and end == total - 1 and written == total
 
 
+def assert_asset_size(written: int, max_bytes: int = MAX_ASSET_BYTES) -> None:
+    """Recusa um corpo maior que o teto. O tamanho contado é o recebido."""
+
+    if written > max_bytes:
+        raise PermissionError("asset_maior_que_o_limite")
+
+
+def abort_partial(partial: Path) -> None:
+    """Remove só o parcial desta tentativa. O destino existente permanece."""
+
+    partial.unlink(missing_ok=True)
+
+
+def local_jp2_action(path: Path) -> str:
+    """Um JP2 já legível é reutilizado. Um arquivo existente ilegível fica no disco."""
+
+    if not path.is_file():
+        return "download"
+    header = path.read_bytes()[:64]
+    if b"ftypjp2" in header or b"jP  " in header:
+        try:
+            from geoai.sentinel.gdal_scene import raster_info
+
+            raster_info(path)
+        except Exception:
+            return "preserve"
+        return "reuse"
+    return "preserve"
+
+
 def download_official_asset(
     url: str,
     destination: Path,
     token: str,
     *,
-    max_bytes: int = 120_000_000,
+    max_bytes: int = MAX_ASSET_BYTES,
 ) -> dict[str, Any]:
     """Grava uma banda oficial. Não devolve URL, token nem cabeçalho."""
 
@@ -173,8 +204,7 @@ def download_official_asset(
                     if not chunk:
                         break
                     written += len(chunk)
-                    if written > max_bytes:
-                        raise PermissionError("asset_maior_que_o_limite")
+                    assert_asset_size(written, max_bytes)
                     handle.write(chunk)
         length_matches = (
             not content_length
@@ -187,16 +217,16 @@ def download_official_asset(
             raise PermissionError("asset_incompleto")
         os.replace(partial, destination)
     except PermissionError:
-        partial.unlink(missing_ok=True)
+        abort_partial(partial)
         raise
     except RedirectRefused:
-        partial.unlink(missing_ok=True)
+        abort_partial(partial)
         raise PermissionError("redirect_recusado") from None
     except urllib.error.HTTPError as error:
-        partial.unlink(missing_ok=True)
+        abort_partial(partial)
         raise PermissionError(f"asset_http_{int(error.code)}") from None
     except Exception:
-        partial.unlink(missing_ok=True)
+        abort_partial(partial)
         raise
     return {"http_status": status, "bytes_written": written}
 

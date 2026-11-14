@@ -20,9 +20,15 @@ sys.path.insert(0, str(REPO))
 
 import numpy as np  # noqa: E402
 from geoai.processing.safety import atomic_write_json  # noqa: E402
-from geoai.sentinel.assets import BANDS, https_band_urls, official_asset_url  # noqa: E402
+from geoai.sentinel.assets import (  # noqa: E402
+    BANDS,
+    https_band_urls,
+    https_path_matches,
+    official_asset_url,
+)
 from geoai.sentinel.budget import (  # noqa: E402
     MAX_TRANSFER_BYTES,
+    acquisitions_authorized_for_measure,
     l2a_contract,
     plan_from_catalog,
 )
@@ -32,6 +38,7 @@ from geoai.sentinel.cdse_auth import (  # noqa: E402
 from geoai.sentinel.cdse_auth import (  # noqa: E402
     credential_flags,
     download_official_asset,
+    local_jp2_action,
 )
 from geoai.sentinel.gdal_blocks import measure_blocks, reflectance_block  # noqa: E402
 from geoai.sentinel.gdal_scene import (  # noqa: E402
@@ -55,7 +62,12 @@ from geoai.sentinel.pilot import (  # noqa: E402
     CATALOG_NAME,
     MESH_RELATIVE,
     PILOT_CD_MUN,
+    PILOT_REPOSITORY,
+    REUSE_ENV,
     STAC_SEARCH_URL,
+    band_read_path,
+    configured_reuse_b04,
+    reuse_report,
 )
 from geoai.sentinel.publish import publication_allowed  # noqa: E402
 
@@ -153,12 +165,22 @@ def _urls_for_acquisition(
             raise RuntimeError("stac_sem_produto")
         urls[tile] = https_band_urls(feature)
     probe = catalog.get("access_probe_scene") or {}
-    if probe.get("product_id") == products["22KCV"]:
-        expected = {
-            key: official_asset_url(probe["assets"][key]["https_path"]) for key in BANDS
-        }
-        if urls["22KCV"] != expected:
-            raise RuntimeError("url_b04_divergente")
+    stored = (
+        catalog.get("official_https_paths")
+        or probe.get("official_https_paths")
+        or {}
+    )
+    for tile, product_id in products.items():
+        expected: dict[str, str] = {}
+        for key in BANDS:
+            path = (stored.get(tile) or {}).get(key)
+            if not isinstance(path, str) or not https_path_matches(
+                path, product_id, tile, key
+            ):
+                raise RuntimeError("url_oficial_ausente")
+            expected[key] = official_asset_url(path)
+        if urls[tile] != expected:
+            raise RuntimeError("url_divergente")
     return urls
 
 
@@ -167,18 +189,29 @@ def _jp2_signature(path: Path) -> bool:
     return b"ftypjp2" in header or b"jP  " in header
 
 
-def _ensure_band(url: str, destination: Path, token: str) -> dict[str, int]:
-    if destination.is_file() and _jp2_signature(destination):
-        try:
-            raster_info(destination)
-            return {"bytes_downloaded": 0, "bytes_on_disk": destination.stat().st_size}
-        except Exception:
-            destination.unlink(missing_ok=True)
+def _ensure_band(
+    url: str,
+    destination: Path,
+    token: str,
+    *,
+    allow_download: bool,
+) -> dict[str, int]:
+    action = local_jp2_action(destination)
+    if action == "reuse":
+        return {"bytes_downloaded": 0, "bytes_on_disk": destination.stat().st_size}
+    if action == "preserve":
+        raise FileExistsError("jp2_existente_preservado")
+    if not allow_download:
+        raise RuntimeError("b04_reuso_recusado")
     report = download_official_asset(url, destination, token)
     if not _jp2_signature(destination):
         destination.unlink(missing_ok=True)
         raise PermissionError("asset_nao_jp2")
-    raster_info(destination)
+    try:
+        raster_info(destination)
+    except Exception:
+        destination.unlink(missing_ok=True)
+        raise
     return {
         "bytes_downloaded": int(report["bytes_written"]),
         "bytes_on_disk": destination.stat().st_size,
@@ -198,8 +231,16 @@ def _measure(
 
     def take(tile: str, band: str) -> None:
         nonlocal downloaded, on_disk
-        destination = raw_root / tile / f"{band}.jp2"
-        counts = _ensure_band(urls[tile][band], destination, token)
+        local = raw_root / tile / f"{band}.jp2"
+        reuse_b04 = tile == "22KCV" and band == "B04_10m"
+        external = configured_reuse_b04() if reuse_b04 else None
+        destination = band_read_path(local, external)
+        counts = _ensure_band(
+            urls[tile][band],
+            destination,
+            token,
+            allow_download=not reuse_b04,
+        )
         if downloaded + counts["bytes_downloaded"] > MAX_TRANSFER_BYTES:
             raise RuntimeError("transferencia_acima_do_limite")
         downloaded += counts["bytes_downloaded"]
@@ -455,18 +496,38 @@ def _apply_catalog(
         raise
 
 
+def _apply_reuse_gate(catalog: dict[str, Any], plan: dict[str, Any]) -> dict[str, Any]:
+    reuse = reuse_report(REPO, catalog)
+    plan["pipeline_repository"] = PILOT_REPOSITORY
+    plan["b04_reuse"] = reuse["status"]
+    plan["b04_reuse_env"] = REUSE_ENV
+    plan["budget_allowed"] = bool(plan["download_allowed"])
+    plan["download_allowed"] = bool(
+        plan["budget_allowed"]
+        and reuse["status"] in {"local_verified", "external_verified"}
+    )
+    return plan
+
+
 def _dry_run(evidence: Path | None) -> int:
     catalog = json.loads(CATALOG.read_text(encoding="utf-8"))
-    plan = plan_from_catalog(catalog, shutil.disk_usage(REPO).free)
+    plan = _apply_reuse_gate(
+        catalog,
+        plan_from_catalog(catalog, shutil.disk_usage(REPO).free),
+    )
     _assert_public(plan)
     destination = evidence or DRY_RUN
     atomic_write_json(destination, plan)
     print(f"acquisition={plan['acquisition_id']}")
-    print(f"full_jp2_ceiling_bytes={plan['full_jp2_ceiling_bytes']}")
+    print(f"full_jp2_bytes={plan['full_jp2_bytes']}")
+    print(f"full_jp2_unknown_assets={plan['full_jp2_unknown_assets']}")
+    print(f"max_asset_bytes={plan['max_asset_bytes']}")
     print(f"block_working_bytes={plan['block_working_bytes']}")
     print(f"aoi_mask_bytes={plan['aoi_mask_bytes']}")
     print(f"full_matrix_bytes={plan['full_matrix_bytes']}")
     print(f"disk_free_bytes={plan['disk_free_bytes']}")
+    print(f"budget_allowed={plan['budget_allowed']}")
+    print(f"b04_reuse={plan['b04_reuse']}")
     print(f"download_allowed={plan['download_allowed']}")
     print("download_started False")
     print("ndvi_published False")
@@ -492,7 +553,10 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     started = time.perf_counter()
     catalog = json.loads(CATALOG.read_text(encoding="utf-8"))
-    plan = plan_from_catalog(catalog, shutil.disk_usage(REPO).free)
+    plan = _apply_reuse_gate(
+        catalog,
+        plan_from_catalog(catalog, shutil.disk_usage(REPO).free),
+    )
     if not plan["download_allowed"]:
         print("orcamento_recusado", file=sys.stderr)
         print("ndvi_published False")
@@ -507,32 +571,22 @@ def main(argv: list[str] | None = None) -> int:
         print("credencial ausente neste processo")
         print("ndvi_published False")
         return 2
-    order = [
-        catalog["selected_acquisition"]["acquisition_id"],
-        catalog["fallback_acquisition_id"],
-    ]
     results: list[dict[str, Any]] = []
     published: dict[str, Any] | None = None
     arrays: dict[str, Any] | None = None
     try:
-        for acquisition_id in order:
-            urls = _urls_for_acquisition(catalog, acquisition_id)
-            measured = _measure(catalog, acquisition_id, urls, token)
-            publish = publication_allowed(
-                official_pixels=True,
-                valid_fraction=measured["valid_fraction"],
-                acquisition_ids=(acquisition_id,),
-            )
-            public = _public_result(measured, False, None)
-            public["would_publish"] = publish
-            results.append(public)
-            arrays = measured
-            if publish:
-                break
-            if measured["valid_fraction"] is None:
-                break
-            if acquisition_id == order[-1]:
-                break
+        acquisition_id = acquisitions_authorized_for_measure(catalog)[0]
+        urls = _urls_for_acquisition(catalog, acquisition_id)
+        measured = _measure(catalog, acquisition_id, urls, token)
+        publish = publication_allowed(
+            official_pixels=True,
+            valid_fraction=measured["valid_fraction"],
+            acquisition_ids=(acquisition_id,),
+        )
+        public = _public_result(measured, False, None)
+        public["would_publish"] = publish
+        results.append(public)
+        arrays = measured
     finally:
         token = None
     if not results or arrays is None:

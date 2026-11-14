@@ -70,7 +70,7 @@ else:
     if fallback:
         st.write(
             f"Passagem reserva, ainda não lida: {fallback}. "
-            "Ela só entra se a fração válida da candidata ficar abaixo de 0,70."
+            "Ela fica fora desta medição até uma autorização nova."
         )
     rows = selected.get("tiles") or []
     if rows:

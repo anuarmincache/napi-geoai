@@ -5,6 +5,16 @@
   "processing_status": "not_evaluated",
   "ndvi_published": false,
   "pilot_aoi": true,
+  "pipeline_repository": "napi-geoai-mvp04",
+  "validated_b04": {
+    "tile": "22KCV",
+    "band": "B04_10m",
+    "bytes": 49709444,
+    "source_repository": "napi-geoai-app",
+    "relative_path": "data/raw/sentinel/S2B_20261112T133149_R081/22KCV/B04_10m.jp2",
+    "reuse_env": "NAPI_VALIDATED_B04",
+    "copied": false
+  },
   "public_message_pt": "Maringá: passagem S2B_20261112T133149_R081 (2026-11-12T13:31:49Z, órbita R081) cobre 1.0 do polígono com as tiles 22KCV, 22KDV. Lacuna 0.0. Sobreposição 0.447949. É uma única aquisição, não uma composição de datas. O ambiente local não tem credencial OIDC do CDSE. A requisição autorizada não foi enviada. Uma requisição sem Authorization ao B04 de uma tile selecionada respondeu HTTP 401. A fração de pixels válidos não foi medida. O processamento raster não foi executado. Nenhum NDVI foi publicado.",
   "as_of_utc": "2026-11-14T17:56:56Z",
   "queried_at_utc": "2026-11-14T18:14:53Z",
@@ -288,6 +298,30 @@
     "raster_offset": -0.1,
     "nodata": 0,
     "reported_b04_bytes": 49709444,
+    "official_band_bytes": {
+      "22KCV": {
+        "B04_10m": 49709444,
+        "B08_10m": 54152551,
+        "SCL_20m": 795578
+      },
+      "22KDV": {
+        "B04_10m": 118638016,
+        "B08_10m": 132693962,
+        "SCL_20m": 1880746
+      }
+    },
+    "official_https_paths": {
+      "22KCV": {
+        "B04_10m": "/odata/v1/Products(d73dbc6e-4ce4-440e-b61c-26188cfbbf51)/Nodes(S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116.SAFE)/Nodes(GRANULE)/Nodes(L2A_T22KCV_A050586_20261112T133449)/Nodes(IMG_DATA)/Nodes(R10m)/Nodes(T22KCV_20261112T133149_B04_10m.jp2)/$value",
+        "B08_10m": "/odata/v1/Products(d73dbc6e-4ce4-440e-b61c-26188cfbbf51)/Nodes(S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116.SAFE)/Nodes(GRANULE)/Nodes(L2A_T22KCV_A050586_20261112T133449)/Nodes(IMG_DATA)/Nodes(R10m)/Nodes(T22KCV_20261112T133149_B08_10m.jp2)/$value",
+        "SCL_20m": "/odata/v1/Products(d73dbc6e-4ce4-440e-b61c-26188cfbbf51)/Nodes(S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116.SAFE)/Nodes(GRANULE)/Nodes(L2A_T22KCV_A050586_20261112T133449)/Nodes(IMG_DATA)/Nodes(R20m)/Nodes(T22KCV_20261112T133149_SCL_20m.jp2)/$value"
+      },
+      "22KDV": {
+        "B04_10m": "/odata/v1/Products(d95a8674-3805-4ecf-9e79-06645595be14)/Nodes(S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116.SAFE)/Nodes(GRANULE)/Nodes(L2A_T22KDV_A050586_20261112T133449)/Nodes(IMG_DATA)/Nodes(R10m)/Nodes(T22KDV_20261112T133149_B04_10m.jp2)/$value",
+        "B08_10m": "/odata/v1/Products(d95a8674-3805-4ecf-9e79-06645595be14)/Nodes(S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116.SAFE)/Nodes(GRANULE)/Nodes(L2A_T22KDV_A050586_20261112T133449)/Nodes(IMG_DATA)/Nodes(R10m)/Nodes(T22KDV_20261112T133149_B08_10m.jp2)/$value",
+        "SCL_20m": "/odata/v1/Products(d95a8674-3805-4ecf-9e79-06645595be14)/Nodes(S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116.SAFE)/Nodes(GRANULE)/Nodes(L2A_T22KDV_A050586_20261112T133449)/Nodes(IMG_DATA)/Nodes(R20m)/Nodes(T22KDV_20261112T133149_SCL_20m.jp2)/$value"
+      }
+    },
     "downloaded_bytes": 0,
     "assets": {
       "B04_10m": {

@@ -16,6 +16,34 @@ def official_asset_url(https_path: str) -> str:
     return url
 
 
+def https_path_matches(
+    https_path: str,
+    product_id: str,
+    tile: str,
+    band: str,
+) -> bool:
+    """O caminho precisa ser o $value oficial daquele produto, tile e banda."""
+
+    if band not in BANDS or not product_id or not tile:
+        return False
+    try:
+        official_asset_url(https_path)
+    except ValueError:
+        return False
+    filename = {
+        "B04_10m": "B04_10m.jp2",
+        "B08_10m": "B08_10m.jp2",
+        "SCL_20m": "SCL_20m.jp2",
+    }[band]
+    resolution = "R20m" if band == "SCL_20m" else "R10m"
+    return (
+        f"Nodes({product_id}.SAFE)" in https_path
+        and f"T{tile}_" in https_path
+        and f"Nodes({resolution})" in https_path
+        and https_path.endswith(f"{filename})/$value")
+    )
+
+
 def https_band_urls(feature: dict[str, Any]) -> dict[str, str]:
     """Três bandas de um item STAC. Falha se alguma URL não for o $value oficial."""
 
