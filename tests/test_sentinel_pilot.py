@@ -11,6 +11,8 @@ import pytest
 from geoai.sentinel.access import describe_asset_response
 from geoai.sentinel.aoi import load_official_municipality, sirgas_utm_epsg
 from geoai.sentinel.catalog import load_pilot_catalog, show_ndvi
+from geoai.sentinel.cdse_auth import authorized_probe
+from geoai.sentinel.passes import minimal_covering_tiles, parse_product_id
 from geoai.sentinel.reflectance import ReflectanceMetadataError, reflectance_dn
 from geoai.sentinel.selection import (
     footprint_coverage,
@@ -70,20 +72,25 @@ def test_catalog_is_maringa_and_does_not_publish_ndvi() -> None:
     assert catalog["aoi"]["name"] == "Maringá"
     assert catalog["aoi"]["geometry_source"] == "data/raw/ibge/PR_Municipios_2025.zip"
     assert catalog["downloaded_bytes"] == 0
-    assert catalog["status"] == "no_adequate_footprint"
+    assert catalog["processing_status"] == "not_evaluated"
     assert catalog["candidate"] is None
-    assert catalog["mosaic_required"] is True
-    assert catalog["criteria"]["window_used"] == "30d"
-    assert catalog["n_full_coverage_7d"] == 0
-    probe_scene = catalog["access_probe_scene"]
-    assert probe_scene["accepted"] is False
-    assert probe_scene["valid_pixel_fraction"] is None
-    assert probe_scene["role"] == "access_probe_only"
-    assert probe_scene["downloaded_bytes"] == 0
-    probe = catalog["asset_access"]["probe"]
-    assert probe["authorization_sent"] is False
-    assert probe["body_stored"] is False
-    assert probe["http_status"] == 401
+    selected = catalog["selected_acquisition"]
+    assert selected["dates_combined"] is False
+    assert selected["composition"] == "single_acquisition"
+    assert selected["covers_threshold"] is True
+    sensing = selected["sensing_time"]
+    chosen = [tile for tile in selected["tiles"] if tile["selected"]]
+    assert chosen
+    assert all(sensing in tile["product_id"] for tile in chosen)
+    assert len({tile["product_id"].split("_")[2] for tile in chosen}) == 1
+    assert catalog["mosaic_required"] is (len(selected["selected_tiles"]) > 1)
+    authorized = catalog["asset_access"]["authorized"]
+    assert authorized["authorized_attempted"] is False
+    assert authorized["bytes_read"] == 0
+    assert authorized["body_stored"] is False
+    anonymous = catalog["asset_access"]["anonymous_probe"]
+    assert anonymous["authorization_sent"] is False
+    assert anonymous["body_stored"] is False
     text = json.dumps(catalog)
     assert "4119152" not in text
     assert "Pinhais" not in text
@@ -204,3 +211,60 @@ def test_pinhais_file_is_only_labeled_history() -> None:
     assert payload["aoi"]["cd_mun"] == "4119152"
     live = REPO / "data" / "derived" / "sentinel_pinhais_pilot.json"
     assert not live.is_file()
+
+
+def test_acquisition_id_does_not_mix_dates() -> None:
+    same_a = parse_product_id(
+        "S2A_MSIL2A_20261114T133231_N0513_R081_T22KCV_20261114T150000"
+    )
+    same_b = parse_product_id(
+        "S2A_MSIL2A_20261114T133231_N0513_R081_T22KDV_20261114T150100"
+    )
+    other = parse_product_id(
+        "S2B_MSIL2A_20261109T133229_N0513_R081_T22KCV_20261109T160000"
+    )
+    assert same_a is not None and same_b is not None and other is not None
+    assert same_a["acquisition_id"] == same_b["acquisition_id"]
+    assert same_a["acquisition_id"] != other["acquisition_id"]
+
+
+def test_minimal_tile_set_is_one_acquisition_geometry() -> None:
+    plan = minimal_covering_tiles(
+        {
+            "22KCV": box(0, 0, 9, 10),
+            "22KDV": box(8, 0, 10, 10),
+        },
+        box(0, 0, 10, 10),
+        0.999,
+    )
+    assert plan["covers_threshold"] is True
+    assert plan["mosaic_required"] is True
+    assert plan["selected_tiles"] == ["22KCV", "22KDV"]
+    assert plan["union_coverage"] == pytest.approx(1)
+    assert plan["overlap_coverage"] == pytest.approx(0.1)
+    assert plan["gap"] == pytest.approx(0)
+
+
+def test_missing_cdse_credentials_do_not_open_the_network(monkeypatch) -> None:
+    for name in ("CDSE_USERNAME", "CDSE_PASSWORD", "CDSE_ACCESS_TOKEN"):
+        monkeypatch.delenv(name, raising=False)
+
+    def refuse(*_args, **_kwargs):
+        raise AssertionError("rede")
+
+    monkeypatch.setattr("geoai.sentinel.cdse_auth.urllib.request.urlopen", refuse)
+    report = authorized_probe(
+        "https://download.dataspace.copernicus.eu/odata/v1/Products(x)/$value"
+    )
+    assert report["authorized_attempted"] is False
+    assert report["bytes_read"] == 0
+    assert report["access_status"] == "blocked_auth"
+    assert "access_token" not in json.dumps(report)
+
+
+def test_odata_url_with_query_is_refused(monkeypatch) -> None:
+    monkeypatch.setenv("CDSE_ACCESS_TOKEN", "local-test-token")
+    with pytest.raises(ValueError):
+        authorized_probe(
+            "https://download.dataspace.copernicus.eu/odata/v1/x?sig=secret"
+        )

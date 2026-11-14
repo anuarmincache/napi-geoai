@@ -43,7 +43,7 @@ O bbox deste job não substitui `AREA_KM2` oficial nem um join QGIS.
 - classes SCL 0, 1, 3, 8, 9, 10 e 11 ficam de fora da máscara válida;
 - `download_in_this_release: false` e `operational_sentinel: false`.
 
-O conector STAC do piloto de Maringá está em [SENTINEL_PILOTO.md](SENTINEL_PILOTO.md). Essa página lê o catálogo estático. O NDVI em memória desta fundação continua sintético. Não há raster Sentinel publicado, não há recorte do Paraná e o preparo georreferenciado ainda não está implementado.
+O piloto de Maringá está em [SENTINEL_PILOTO.md](SENTINEL_PILOTO.md). A página lê o catálogo estático. Há um mosaico candidato de uma única passagem, bloqueado no acesso OIDC/OData. O NDVI em memória desta fundação continua sintético. Não há raster Sentinel publicado, não há recorte do Paraná e o preparo georreferenciado ainda não foi executado.
 
 NDVI é índice espectral. Não é biogás, biomassa, rendimento nem receita.
 

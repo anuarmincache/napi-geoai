@@ -22,14 +22,21 @@ sys.path.insert(0, str(REPO))
 from geoai.sentinel.access import (  # noqa: E402
     collection_auth_summary,
     declared_asset_access,
-    describe_asset_response,
 )
 from geoai.sentinel.aoi import (  # noqa: E402
     footprint_coverage_m2,
     load_official_municipality,
-    union_coverage_m2,
 )
 from geoai.sentinel.catalog import catalog_path  # noqa: E402
+from geoai.sentinel.cdse_auth import (  # noqa: E402
+    authorized_probe,
+    credential_flags,
+    unattempted_report,
+)
+from geoai.sentinel.passes import (  # noqa: E402
+    minimal_covering_tiles,
+    parse_product_id,
+)
 from geoai.sentinel.pilot import (  # noqa: E402
     MESH_RELATIVE,
     MIN_FOOTPRINT_COVERAGE,
@@ -39,11 +46,11 @@ from geoai.sentinel.pilot import (  # noqa: E402
     STAC_COLLECTION_URL,
     STAC_SEARCH_URL,
 )
-from geoai.sentinel.selection import (  # noqa: E402
-    rank_full_coverage,
-    scene_is_accepted,
+from geoai.sentinel.windows import (  # noqa: E402
+    choose_search_window,
+    parse_as_of,
+    search_windows,
 )
-from geoai.sentinel.windows import choose_search_window, parse_as_of, search_windows  # noqa: E402
 
 _TILE = re.compile(r"_T(\d{2}[A-Z]{3})_")
 _PAGE_CAP = 200
@@ -126,23 +133,6 @@ def _candidate(feature: dict[str, Any], coverage: float) -> dict[str, Any]:
     }
 
 
-def _tile_rows(scenes: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    grouped: dict[str, dict[str, Any]] = {}
-    for scene in scenes:
-        tile = scene.get("mgrs_tile") or "desconhecida"
-        row = grouped.setdefault(
-            tile,
-            {"mgrs_tile": tile, "max_aoi_coverage": 0.0, "n_scenes": 0},
-        )
-        row["n_scenes"] += 1
-        coverage = float(scene.get("aoi_coverage") or 0.0)
-        if coverage > row["max_aoi_coverage"]:
-            row["max_aoi_coverage"] = coverage
-    rows = list(grouped.values())
-    rows.sort(key=lambda item: item["max_aoi_coverage"], reverse=True)
-    return rows
-
-
 def _probe_https(url: str) -> dict[str, Any]:
     request = urllib.request.Request(
         url,
@@ -167,79 +157,145 @@ def _probe_https(url: str) -> dict[str, Any]:
     }
 
 
-def _best_intersecting(scenes: list[dict[str, Any]]) -> dict[str, Any] | None:
-    if not scenes:
-        return None
-
-    def _cloud_key(item: dict[str, Any]) -> tuple[bool, float]:
-        cloud = item.get("eo_cloud_cover")
-        if cloud is None:
-            return (True, 0.0)
-        return (False, float(cloud))
-
-    ordered = list(scenes)
-    ordered.sort(key=lambda item: item.get("datetime") or "", reverse=True)
-    ordered.sort(key=_cloud_key)
-    ordered.sort(key=lambda item: float(item.get("aoi_coverage") or 0.0), reverse=True)
-    return ordered[0]
-
-
 def _public_scene(scene: dict[str, Any] | None) -> dict[str, Any] | None:
     if scene is None:
         return None
     return {key: value for key, value in scene.items() if not key.startswith("_")}
 
 
+def _public_plan(plan: dict[str, Any] | None) -> dict[str, Any] | None:
+    if plan is None:
+        return None
+    return {key: value for key, value in plan.items() if not key.startswith("_")}
+
+
+def _acquisition_plans(
+    scenes: list[dict[str, Any]],
+    municipality,
+) -> list[dict[str, Any]]:
+    import geopandas as gpd
+    from shapely import make_valid
+    from shapely.geometry import shape
+
+    grouped: dict[str, list[tuple[dict[str, Any], dict[str, str]]]] = {}
+    for scene in scenes:
+        parsed = parse_product_id(str(scene.get("product_id") or ""))
+        if parsed is None or not scene.get("_geometry"):
+            continue
+        grouped.setdefault(parsed["acquisition_id"], []).append((scene, parsed))
+    plans = []
+    aoi_metric = (
+        gpd.GeoSeries([municipality.geometry], crs=municipality.crs)
+        .to_crs(municipality.coverage_crs)
+        .iloc[0]
+    )
+    for _acquisition_id, items in grouped.items():
+        per_tile: dict[str, tuple[dict[str, Any], dict[str, str]]] = {}
+        for scene, parsed in items:
+            current = per_tile.get(parsed["mgrs_tile"])
+            newer = parsed["processing_time"]
+            if current is None or newer > current[1]["processing_time"]:
+                per_tile[parsed["mgrs_tile"]] = (scene, parsed)
+        names = list(per_tile)
+        geometries = []
+        for name in names:
+            geom = shape(per_tile[name][0]["_geometry"])
+            if not geom.is_valid:
+                geom = make_valid(geom)
+            geometries.append(geom)
+        projected = gpd.GeoSeries(geometries, crs="EPSG:4326").to_crs(
+            municipality.coverage_crs
+        )
+        tile_map = {name: projected.iloc[index] for index, name in enumerate(names)}
+        measured = minimal_covering_tiles(
+            tile_map,
+            aoi_metric,
+            MIN_FOOTPRINT_COVERAGE,
+        )
+        identity = per_tile[names[0]][1]
+        tiles = []
+        for name in names:
+            scene, parsed = per_tile[name]
+            tiles.append(
+                {
+                    "mgrs_tile": name,
+                    "product_id": scene.get("product_id"),
+                    "datetime": scene.get("datetime"),
+                    "eo_cloud_cover": scene.get("eo_cloud_cover"),
+                    "aoi_coverage": round(
+                        float(measured["tile_coverages"].get(name, 0.0)),
+                        6,
+                    ),
+                    "selected": name in measured["selected_tiles"],
+                    "valid_pixel_fraction": None,
+                }
+            )
+        probe_name = (
+            measured["selected_tiles"][0] if measured["selected_tiles"] else names[0]
+        )
+        plans.append(
+            {
+                "acquisition_id": identity["acquisition_id"],
+                "satellite": identity["satellite"],
+                "sensing_time": identity["sensing_time"],
+                "sensing_time_utc": identity["sensing_time_utc"],
+                "relative_orbit": identity["relative_orbit"],
+                "composition": "single_acquisition",
+                "dates_combined": False,
+                "union_coverage": round(float(measured["union_coverage"]), 6),
+                "gap": round(float(measured["gap"]), 6),
+                "overlap_coverage": round(float(measured["overlap_coverage"]), 6),
+                "pass_union_coverage": round(float(measured["pass_union_coverage"]), 6),
+                "selected_tiles": measured["selected_tiles"],
+                "covers_threshold": measured["covers_threshold"],
+                "mosaic_required": measured["mosaic_required"],
+                "tiles": tiles,
+                "_probe_scene": per_tile[probe_name][0],
+            }
+        )
+    plans.sort(key=lambda item: item["sensing_time"], reverse=True)
+    return plans
+
+
+def _choose_acquisition(plans: list[dict[str, Any]]) -> dict[str, Any] | None:
+    ready = [plan for plan in plans if plan.get("covers_threshold")]
+    if not ready:
+        return None
+    ready.sort(key=lambda plan: plan["sensing_time"], reverse=True)
+    return ready[0]
+
+
 def _public_message(
     municipality_name: str,
-    window_used: str,
-    candidate: dict[str, Any] | None,
-    http_status: int | None,
-    scheme_names: list[str],
-    union_coverage: float | None,
-    probe_scene: dict[str, Any] | None,
+    selected: dict[str, Any] | None,
+    anonymous_status: int | None,
+    auth_sentence: str,
 ) -> str:
-    access = describe_asset_response(
-        http_status=http_status,
-        authorization_sent=False,
-        scheme_names=scheme_names,
-    )
-    if candidate is None:
-        covered = "n/d" if union_coverage is None else f"{union_coverage:.1%}"
-        probe_bit = ""
-        if probe_scene is not None:
-            probe_bit = (
-                f" A cena {probe_scene.get('product_id')} "
-                f"({probe_scene.get('datetime')}), "
-                f"tile {probe_scene.get('mgrs_tile')}, "
-                f"cobre {probe_scene.get('aoi_coverage')} do polígono e serviu "
-                f"apenas para inspecionar o acesso. {access}"
-            )
+    if selected is None:
         return (
-            f"{municipality_name}: nenhuma cena L2A cobre pelo menos "
-            f"{MIN_FOOTPRINT_COVERAGE:.1%} do polígono oficial em uma única "
-            f"tile na janela {window_used}. A união dos footprints, um por "
-            f"tile, cobre {covered}. Mosaico não foi montado.{probe_bit} "
-            "A fração de pixels válidos na AOI não foi medida. "
+            f"{municipality_name}: nenhuma passagem única cobre pelo menos "
+            f"{MIN_FOOTPRINT_COVERAGE:.1%} do polígono oficial. "
             "Nenhum NDVI foi publicado."
         )
+    tiles = ", ".join(selected.get("selected_tiles") or [])
+    anonymous = ""
+    if anonymous_status is not None:
+        anonymous = (
+            f" Uma requisição sem Authorization ao B04 de uma tile "
+            f"selecionada respondeu HTTP {anonymous_status}."
+        )
     return (
-        f"{municipality_name}: cena {candidate.get('product_id')} "
-        f"({candidate.get('datetime')}), tile {candidate.get('mgrs_tile')}, "
-        f"cobertura geométrica {candidate.get('aoi_coverage')}. {access} "
-        "A fração de pixels válidos na AOI não foi medida. "
-        "Nenhum NDVI foi publicado."
+        f"{municipality_name}: passagem {selected.get('acquisition_id')} "
+        f"({selected.get('sensing_time_utc')}, órbita "
+        f"R{selected.get('relative_orbit')}) cobre "
+        f"{selected.get('union_coverage')} do polígono com as tiles {tiles}. "
+        f"Lacuna {selected.get('gap')}. "
+        f"Sobreposição {selected.get('overlap_coverage')}. "
+        "É uma única aquisição, não uma composição de datas. "
+        f"{auth_sentence}{anonymous} "
+        "A fração de pixels válidos não foi medida. "
+        "O processamento raster não foi executado. Nenhum NDVI foi publicado."
     )
-
-
-def _status(candidate: dict[str, Any] | None, http_status: int | None) -> str:
-    if candidate is None:
-        return "no_adequate_footprint"
-    if http_status in (401, 403):
-        return "assets_unauthorized"
-    if http_status is not None and 200 <= http_status < 300:
-        return "bands_reachable_pipeline_incomplete"
-    return "bands_not_read"
 
 
 def _evaluate(features: list[dict[str, Any]], municipality) -> list[dict[str, Any]]:
@@ -274,40 +330,30 @@ def main(argv: list[str] | None = None) -> int:
     }
     features_7d, truncated_7d = _search_pages(body)
     scenes_7d = _evaluate(features_7d, municipality)
-    ranked_7d = rank_full_coverage(scenes_7d)
-    window_used = choose_search_window(len(ranked_7d))
+    plans_7d = _acquisition_plans(scenes_7d, municipality)
+    adequate_7d = sum(1 for plan in plans_7d if plan.get("covers_threshold"))
+    window_used = choose_search_window(adequate_7d)
     features = features_7d
     scenes = scenes_7d
-    ranked = ranked_7d
+    plans = plans_7d
     truncated = truncated_7d
     if window_used == "30d":
         body["datetime"] = windows["30d"]
         features, truncated = _search_pages(body)
         scenes = _evaluate(features, municipality)
-        ranked = rank_full_coverage(scenes)
+        plans = _acquisition_plans(scenes, municipality)
     elapsed = time.perf_counter() - started
-
-    top = ranked[0] if ranked else None
-    if top is not None:
-        top["accepted"] = scene_is_accepted(top.get("valid_pixel_fraction"))
-    inspected = top if top is not None else _best_intersecting(scenes)
-    per_tile = {}
-    for scene in scenes:
-        tile = scene.get("mgrs_tile") or "desconhecida"
-        current = per_tile.get(tile)
-        if current is None or scene["aoi_coverage"] > current["aoi_coverage"]:
-            per_tile[tile] = scene
-    union_coverage = union_coverage_m2(
-        [scene["_geometry"] for scene in per_tile.values()],
-        municipality,
-    )
+    selected = _choose_acquisition(plans)
+    inspected = None if selected is None else selected.get("_probe_scene")
+    for scene in scenes_7d:
+        scene.pop("_geometry", None)
     for scene in scenes:
         scene.pop("_geometry", None)
 
     collection = _request_json(STAC_COLLECTION_URL)
     auth = collection_auth_summary(collection)
-    scheme_names = sorted((auth.get("auth_schemes") or {}).keys())
     probe: dict[str, Any] | None = None
+    https_href = None
     if inspected is not None:
         raw = next(
             (
@@ -319,9 +365,34 @@ def main(argv: list[str] | None = None) -> int:
         )
         red = ((raw or {}).get("assets") or {}).get("B04_10m") or {}
         https_href = ((red.get("alternate") or {}).get("https") or {}).get("href")
-        if https_href:
+        flags = credential_flags()
+        if https_href and not (
+            flags["password_grant_configured"] or flags["bearer_configured"]
+        ):
             probe = _probe_https(str(https_href))
     http_status = None if probe is None else probe.get("http_status")
+    if https_href and (
+        credential_flags()["password_grant_configured"]
+        or credential_flags()["bearer_configured"]
+    ):
+        try:
+            authorized = authorized_probe(str(https_href))
+        except (PermissionError, ValueError) as error:
+            authorized = unattempted_report()
+            authorized["token_error"] = error.__class__.__name__
+    else:
+        authorized = unattempted_report()
+    if authorized.get("authorized_attempted"):
+        auth_sentence = (
+            "A requisição autorizada ao B04 leu "
+            f"{authorized.get('bytes_read')} bytes "
+            f"com HTTP {authorized.get('http_status')}."
+        )
+    else:
+        auth_sentence = (
+            "O ambiente local não tem credencial OIDC do CDSE. "
+            "A requisição autorizada não foi enviada."
+        )
     openid_url = ((auth.get("auth_schemes") or {}).get("oidc") or {}).get(
         "openIdConnectUrl"
     )
@@ -336,23 +407,28 @@ def main(argv: list[str] | None = None) -> int:
         token_endpoint = document.get("token_endpoint")
 
     if inspected is not None:
-        inspected["meets_footprint_threshold"] = top is not None
-        if top is not None:
-            inspected["role"] = "footprint_candidate"
-        else:
-            inspected["role"] = "access_probe_only"
+        inspected["role"] = "mosaic_member_access_probe"
+        inspected["accepted"] = False
+    selection_status = "no_coverage" if selected is None else "mosaic_candidate"
+    access_status = authorized.get("access_status") or "blocked_auth"
+    if selected is None:
+        catalog_status = "no_coverage"
+    elif access_status != "authorized":
+        catalog_status = "blocked_auth"
+    else:
+        catalog_status = "mosaic_candidate"
     catalog = {
-        "status": _status(top, http_status),
+        "status": catalog_status,
+        "selection_status": selection_status,
+        "access_status": access_status,
+        "processing_status": "not_evaluated",
         "ndvi_published": False,
         "pilot_aoi": True,
         "public_message_pt": _public_message(
             municipality.name,
-            window_used,
-            top,
+            selected,
             http_status,
-            scheme_names,
-            union_coverage,
-            inspected,
+            auth_sentence,
         ),
         "as_of_utc": as_of.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "queried_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -374,7 +450,15 @@ def main(argv: list[str] | None = None) -> int:
             "widened_because": (
                 None
                 if window_used == "7d"
-                else "Nenhuma cena de 7 dias cobre o polígono no limiar geométrico."
+                else (
+                    "Nenhuma passagem única dos 7 dias cobre o polígono "
+                    "no limiar geométrico."
+                )
+            ),
+            "temporal_rule": (
+                "Um grupo é o mesmo satélite, o mesmo instante de aquisição "
+                "no identificador do produto e a mesma órbita relativa. "
+                "Datas diferentes não formam uma aquisição."
             ),
             "min_footprint_coverage": MIN_FOOTPRINT_COVERAGE,
             "min_valid_pixel_fraction": MIN_VALID_PIXEL_FRACTION,
@@ -390,22 +474,24 @@ def main(argv: list[str] | None = None) -> int:
             "stac_filter": "bbox",
             "truncated": truncated,
         },
-        "candidate": _public_scene(top),
+        "candidate": None,
+        "selected_acquisition": _public_plan(selected),
+        "acquisitions": [_public_plan(plan) for plan in plans],
         "access_probe_scene": _public_scene(inspected),
-        "tile_union_coverage": round(union_coverage, 6),
-        "tiles": _tile_rows(scenes),
-        "mosaic_required": top is None,
+        "mosaic_required": bool(selected and selected.get("mosaic_required")),
         "n_features_returned": len(features),
-        "n_full_coverage": len(ranked),
+        "n_acquisitions": len(plans),
         "n_features_7d": len(features_7d),
-        "n_full_coverage_7d": len(ranked_7d),
+        "n_acquisitions_7d": len(plans_7d),
+        "n_adequate_acquisitions_7d": adequate_7d,
         "downloaded_bytes": 0,
         "asset_access": {
             "probed_asset": None if inspected is None else "B04_10m",
             "https_host": ((inspected or {}).get("assets") or {})
             .get("B04_10m", {})
             .get("https_host"),
-            "probe": probe,
+            "anonymous_probe": probe,
+            "authorized": authorized,
             "collection": auth,
             "openid_issuer": issuer,
             "openid_token_endpoint": token_endpoint,
@@ -421,21 +507,21 @@ def main(argv: list[str] | None = None) -> int:
         encoding="utf-8",
     )
     print(path)
+    chosen = catalog["selected_acquisition"] or {}
     summary = {
         "status": catalog["status"],
+        "selection_status": catalog["selection_status"],
         "window_used": window_used,
         "ndvi_published": False,
-        "candidate": None
-        if top is None
-        else {
-            "product_id": top.get("product_id"),
-            "mgrs_tile": top.get("mgrs_tile"),
-            "aoi_coverage": top.get("aoi_coverage"),
-            "accepted": top.get("accepted"),
-        },
-        "http_status": http_status,
-        "tile_union_coverage": catalog["tile_union_coverage"],
-        "tiles": catalog["tiles"],
+        "acquisition_id": chosen.get("acquisition_id"),
+        "sensing_time_utc": chosen.get("sensing_time_utc"),
+        "selected_tiles": chosen.get("selected_tiles"),
+        "union_coverage": chosen.get("union_coverage"),
+        "gap": chosen.get("gap"),
+        "overlap_coverage": chosen.get("overlap_coverage"),
+        "mosaic_required": catalog["mosaic_required"],
+        "authorized_attempted": authorized.get("authorized_attempted"),
+        "anonymous_http_status": http_status,
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0
