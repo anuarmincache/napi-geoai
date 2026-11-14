@@ -12,7 +12,7 @@ from _bootstrap import configure_page, render_footer, sidebar_brand
 configure_page("Sentinel-2 piloto")
 sidebar_brand()
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = Path(__file__).resolve().parents[2]
 catalog = load_pilot_catalog(REPO)
 aoi = catalog.get("aoi") or {}
 name = aoi.get("name") or "AOI não carregada"

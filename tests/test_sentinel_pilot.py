@@ -134,6 +134,53 @@ def test_streamlit_pilot_does_not_process() -> None:
     assert "4119152" not in text
 
 
+def test_streamlit_pilot_page_reads_the_repository_catalog() -> None:
+    page = REPO / "app" / "pages" / "8_Sentinel_Piloto.py"
+    text = page.read_text(encoding="utf-8")
+    assert "REPO = Path(__file__).resolve().parents[2]" in text
+    resolved = page.resolve().parents[2]
+    assert resolved == REPO
+    catalog = load_pilot_catalog(resolved)
+    selected = catalog["selected_acquisition"]
+    assert catalog["aoi"]["name"] == "Maringá"
+    assert catalog["aoi"]["cd_mun"] == "4115200"
+    assert selected["acquisition_id"] == "S2B_20261112T133149_R081"
+    assert selected["selected_tiles"] == ["22KCV", "22KDV"]
+    assert selected["union_coverage"] == 1.0
+    assert catalog["ndvi_published"] is False
+    assert show_ndvi(catalog) is False
+    missing = load_pilot_catalog(page.resolve().parents[1])
+    assert "ausente" in missing["public_message_pt"]
+
+    pytest.importorskip("streamlit")
+    from streamlit.testing.v1 import AppTest
+
+    app_dir = str(REPO / "app")
+    if app_dir not in sys.path:
+        sys.path.insert(0, app_dir)
+    rendered = AppTest.from_file(str(page), default_timeout=60)
+    rendered.run()
+    assert not rendered.exception, rendered.exception
+    title = " ".join(str(item.value) for item in rendered.title)
+    warning = "\n".join(str(item.value) for item in rendered.warning)
+    body = "\n".join(
+        [
+            title,
+            warning,
+            *(str(item.value) for item in rendered.markdown),
+        ]
+    )
+    assert "Maringá" in title
+    assert "AOI não carregada" not in body
+    assert "Catálogo do piloto Sentinel-2 ausente" not in warning
+    assert "4115200" in body
+    assert "S2B_20261112T133149_R081" in body
+    assert "22KCV" in body
+    assert "22KDV" in body
+    assert "Cobertura conjunta: 1.0" in body
+    assert "Nenhum NDVI foi publicado" in warning
+
+
 def test_gdal_nearest_evidence_is_not_a_sentinel_scene() -> None:
     path = REPO / "docs" / "evidence" / "sentinel" / "gdal_nearest_synthetic.json"
     if not path.is_file():

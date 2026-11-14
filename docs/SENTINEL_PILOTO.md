@@ -89,7 +89,7 @@ S3 em `https://eodata.dataspace.copernicus.eu` continua declarado na coleção e
 
 ## Interface
 
-`app/pages/8_Sentinel_Piloto.py` lê `data/derived/sentinel_maringa_pilot.json`. Mostra a passagem, as tiles, a lacuna, a sobreposição e o bloqueio de acesso. Não baixa cena nem calcula NDVI.
+`app/pages/8_Sentinel_Piloto.py` lê `data/derived/sentinel_maringa_pilot.json`. O arquivo da página fica em `app/pages`, então a raiz do repositório é `parents[2]`. Mostra a passagem, as tiles, a lacuna, a sobreposição e o bloqueio de acesso. Não baixa cena nem calcula NDVI.
 
 ## GDAL
 
