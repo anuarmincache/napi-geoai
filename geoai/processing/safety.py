@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import threading
 import time
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -96,47 +97,93 @@ def atomic_write_json(destination: Path, payload: dict[str, Any]) -> int:
     return destination.stat().st_size
 
 
+_THREAD_LOCKS: dict[str, threading.Lock] = {}
+_THREAD_LOCKS_GUARD = threading.Lock()
+
+
+def _thread_lock(name: str) -> threading.Lock:
+    with _THREAD_LOCKS_GUARD:
+        lock = _THREAD_LOCKS.get(name)
+        if lock is None:
+            lock = threading.Lock()
+            _THREAD_LOCKS[name] = lock
+        return lock
+
+
+def _lock_fd(fd: int) -> None:
+    """Lock do sistema no arquivo aberto. Falha imediata se outro já o tem."""
+
+    if os.name == "nt":
+        import msvcrt
+
+        os.lseek(fd, 0, os.SEEK_SET)
+        try:
+            msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+        except OSError as exc:
+            raise BlockingIOError(exc.errno or 0, "lock ocupado") from exc
+        return
+    import fcntl
+
+    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def _unlock_fd(fd: int) -> None:
+    if os.name == "nt":
+        import msvcrt
+
+        os.lseek(fd, 0, os.SEEK_SET)
+        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+        return
+    import fcntl
+
+    fcntl.flock(fd, fcntl.LOCK_UN)
+
+
 @contextmanager
 def exclusive_key_lock(
     directory: Path,
     key: str,
-    timeout_s: float = 120.0,
+    wait_timeout_s: float = 120.0,
 ) -> Iterator[None]:
-    """Lock local por chave, no mesmo diretório dos jobs. Sem fila distribuída.
+    """Exclusão mútua local da chave. Sem fila distribuída.
 
-    Um processo que morre deixa o arquivo. Depois de timeout_s ele é removido.
+    ``wait_timeout_s`` limita só a espera. A posse dura até o ``with`` terminar
+    ou o processo morrer. A idade do arquivo não encerra um lock ativo, e este
+    contexto não apaga o arquivo: isso evitava remover o lock de outro dono.
     """
 
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / f"{key}.lock"
-    flags = os.O_CREAT | os.O_EXCL | os.O_RDWR | getattr(os, "O_BINARY", 0)
-    deadline = time.monotonic() + timeout_s
+    thread_lock = _thread_lock(str(path.resolve()))
+    deadline = time.monotonic() + wait_timeout_s
+    if not thread_lock.acquire(timeout=max(0.0, wait_timeout_s)):
+        raise JobContractError(
+            "outra execução local ainda publica esta chave"
+        ) from None
+    flags = os.O_CREAT | os.O_RDWR | getattr(os, "O_BINARY", 0)
     fd: int | None = None
-    while fd is None:
-        try:
-            fd = os.open(path, flags)
-        except FileExistsError:
-            try:
-                age = time.time() - path.stat().st_mtime
-            except FileNotFoundError:
-                continue
-            if age > timeout_s:
-                try:
-                    path.unlink()
-                except FileNotFoundError:
-                    pass
-                continue
-            if time.monotonic() >= deadline:
-                raise JobContractError(
-                    "outra execução local ainda publica esta chave"
-                ) from None
-            time.sleep(0.02)
+    locked = False
     try:
-        os.write(fd, str(os.getpid()).encode("ascii"))
+        fd = os.open(path, flags)
+        while True:
+            try:
+                _lock_fd(fd)
+                locked = True
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise JobContractError(
+                        "outra execução local ainda publica esta chave"
+                    ) from None
+                time.sleep(0.02)
+        token = f"{os.getpid()}\n".encode("ascii")
+        os.ftruncate(fd, 0)
+        os.lseek(fd, 0, os.SEEK_SET)
+        os.write(fd, token)
         yield
     finally:
-        os.close(fd)
-        try:
-            path.unlink()
-        except FileNotFoundError:
-            pass
+        if fd is not None and locked:
+            _unlock_fd(fd)
+        if fd is not None:
+            os.close(fd)
+        thread_lock.release()

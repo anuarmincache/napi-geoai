@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import threading
+import time
+from multiprocessing import get_context
 from pathlib import Path
 
 import pytest
@@ -21,7 +24,7 @@ from geoai.processing.ndvi import (
     resample_nearest,
     valid_mask_from_scl,
 )
-from geoai.processing.safety import atomic_write_json
+from geoai.processing.safety import atomic_write_json, exclusive_key_lock
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -427,7 +430,13 @@ def test_two_jobs_same_key_publish_consistent_pair(tmp_path: Path) -> None:
     assert payload["idempotency_key"] == records[0].idempotency_key
     assert payload["source_sha256"] == records[0].source_sha256
     assert payload["result"]["n_features"] == 1
-    assert list((tmp_path / "jobs").glob("*.lock")) == []
+    lock_path = tmp_path / "jobs" / f"{records[0].idempotency_key}.lock"
+    with exclusive_key_lock(
+        tmp_path / "jobs",
+        records[0].idempotency_key,
+        wait_timeout_s=2,
+    ):
+        assert lock_path.exists()
 
 
 def test_input_change_between_hash_and_read_does_not_publish(
@@ -470,4 +479,73 @@ def test_input_change_between_hash_and_read_does_not_publish(
         if not path.name.endswith(".job.json")
     ]
     assert published == []
-    assert list((tmp_path / "jobs").glob("*.lock")) == []
+
+
+def _hold_lock_until(directory: str, key: str, started, release, still_inside) -> None:
+    """Alvo de processo separado. Permanece no lock até release."""
+
+    with exclusive_key_lock(Path(directory), key, wait_timeout_s=5):
+        started.set()
+        if not release.wait(timeout=10):
+            raise TimeoutError("liberação do lock de teste não chegou")
+        still_inside.set()
+
+
+def test_live_holder_keeps_lock_older_than_wait(tmp_path: Path) -> None:
+    path = tmp_path / "longa.lock"
+    held = threading.Event()
+    release = threading.Event()
+    still_held: list[bool] = []
+
+    def _hold() -> None:
+        with exclusive_key_lock(tmp_path, "longa", wait_timeout_s=0.2):
+            old = time.time() - 10_000
+            os.utime(path, (old, old))
+            held.set()
+            release.wait(timeout=5)
+            still_held.append(path.exists())
+
+    thread = threading.Thread(target=_hold)
+    thread.start()
+    assert held.wait(timeout=5)
+    with pytest.raises(JobContractError):
+        with exclusive_key_lock(tmp_path, "longa", wait_timeout_s=0.15):
+            pass
+    assert path.exists()
+    assert time.time() - path.stat().st_mtime > 120
+    release.set()
+    thread.join(timeout=5)
+    assert still_held == [True]
+    with exclusive_key_lock(tmp_path, "longa", wait_timeout_s=2):
+        assert path.exists()
+
+
+def test_other_process_does_not_remove_live_lock(tmp_path: Path) -> None:
+    ctx = get_context("spawn")
+    started = ctx.Event()
+    release = ctx.Event()
+    still_inside = ctx.Event()
+    proc = ctx.Process(
+        target=_hold_lock_until,
+        args=(str(tmp_path), "outra", started, release, still_inside),
+    )
+    proc.start()
+    try:
+        assert started.wait(timeout=15)
+        path = tmp_path / "outra.lock"
+        old = time.time() - 10_000
+        os.utime(path, (old, old))
+        size = path.stat().st_size
+        with pytest.raises(JobContractError):
+            with exclusive_key_lock(tmp_path, "outra", wait_timeout_s=0.3):
+                pass
+        assert path.exists()
+        assert path.stat().st_size == size
+        assert time.time() - path.stat().st_mtime > 120
+    finally:
+        release.set()
+        proc.join(timeout=15)
+    assert proc.exitcode == 0
+    assert still_inside.is_set()
+    with exclusive_key_lock(tmp_path, "outra", wait_timeout_s=2):
+        assert (tmp_path / "outra.lock").exists()
