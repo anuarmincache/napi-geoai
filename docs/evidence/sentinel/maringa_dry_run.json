@@ -14,6 +14,7 @@
       "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116",
       "href_verified": true,
       "file_bytes": 49709444,
+      "identity_declared": true,
       "transfer": "complete_jp2"
     },
     {
@@ -22,6 +23,7 @@
       "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116",
       "href_verified": true,
       "file_bytes": 54152551,
+      "identity_declared": true,
       "transfer": "complete_jp2"
     },
     {
@@ -30,6 +32,7 @@
       "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116",
       "href_verified": true,
       "file_bytes": 795578,
+      "identity_declared": true,
       "transfer": "complete_jp2"
     },
     {
@@ -38,6 +41,7 @@
       "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
       "href_verified": true,
       "file_bytes": 118638016,
+      "identity_declared": true,
       "transfer": "complete_jp2"
     },
     {
@@ -46,6 +50,7 @@
       "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
       "href_verified": true,
       "file_bytes": 132693962,
+      "identity_declared": true,
       "transfer": "complete_jp2"
     },
     {
@@ -54,6 +59,7 @@
       "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
       "href_verified": true,
       "file_bytes": 1880746,
+      "identity_declared": true,
       "transfer": "complete_jp2"
     }
   ],
@@ -63,6 +69,7 @@
   "full_jp2_unknown_assets": 0,
   "full_jp2_ceiling_bytes": null,
   "size_rule": "official_stac_sum",
+  "identity_rule": "official_sha3_and_grid",
   "max_asset_bytes": 150000000,
   "aoi_pixels_envelope_estimate": 9085500,
   "block": 256,
@@ -73,7 +80,7 @@
   "max_transfer_bytes": 750000000,
   "max_memory_bytes": 536870912,
   "min_free_disk_bytes": 5368709120,
-  "disk_free_bytes": 268584837120,
+  "disk_free_bytes": 268307722240,
   "metadata": {
     "matches_official_l2a": true,
     "scale": 0.0001,

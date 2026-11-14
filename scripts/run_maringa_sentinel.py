@@ -31,6 +31,7 @@ from geoai.sentinel.budget import (  # noqa: E402
     acquisitions_authorized_for_measure,
     l2a_contract,
     plan_from_catalog,
+    transfer_allowance,
 )
 from geoai.sentinel.cdse_auth import (  # noqa: E402
     _token_from_environment as token_from_environment,
@@ -57,6 +58,11 @@ from geoai.sentinel.grid import (  # noqa: E402
     snap_aoi_grid,
     source_window_for_output,
     window_covering_bounds,
+)
+from geoai.sentinel.integrity import (  # noqa: E402
+    accept_used_jp2,
+    band_contract,
+    keep_or_drop_failed_download,
 )
 from geoai.sentinel.pilot import (  # noqa: E402
     CATALOG_NAME,
@@ -189,28 +195,44 @@ def _jp2_signature(path: Path) -> bool:
     return b"ftypjp2" in header or b"jP  " in header
 
 
+def _accept(destination: Path, contract: dict[str, Any]) -> None:
+    accept_used_jp2(
+        destination,
+        raster_info(destination),
+        expected_bytes=int(contract["expected_bytes"]),
+        checksum=str(contract["checksum"]),
+        shape=list(contract["shape"]),
+        transform=list(contract["transform"]),
+        epsg=int(contract["epsg"]),
+    )
+
+
 def _ensure_band(
     url: str,
     destination: Path,
     token: str,
+    contract: dict[str, Any],
     *,
     allow_download: bool,
+    remaining_bytes: int,
 ) -> dict[str, int]:
+    existed = destination.is_file()
     action = local_jp2_action(destination)
-    if action == "reuse":
-        return {"bytes_downloaded": 0, "bytes_on_disk": destination.stat().st_size}
     if action == "preserve":
         raise FileExistsError("jp2_existente_preservado")
+    if action == "reuse":
+        _accept(destination, contract)
+        return {"bytes_downloaded": 0, "bytes_on_disk": destination.stat().st_size}
     if not allow_download:
         raise RuntimeError("b04_reuso_recusado")
-    report = download_official_asset(url, destination, token)
-    if not _jp2_signature(destination):
-        destination.unlink(missing_ok=True)
-        raise PermissionError("asset_nao_jp2")
+    allowance = transfer_allowance(int(contract["expected_bytes"]), remaining_bytes)
     try:
-        raster_info(destination)
+        report = download_official_asset(url, destination, token, max_bytes=allowance)
+        if not _jp2_signature(destination):
+            raise PermissionError("asset_nao_jp2")
+        _accept(destination, contract)
     except Exception:
-        destination.unlink(missing_ok=True)
+        keep_or_drop_failed_download(destination, existed_before=existed)
         raise
     return {
         "bytes_downloaded": int(report["bytes_written"]),
@@ -235,11 +257,14 @@ def _measure(
         reuse_b04 = tile == "22KCV" and band == "B04_10m"
         external = configured_reuse_b04() if reuse_b04 else None
         destination = band_read_path(local, external)
+        contract = band_contract(catalog, tile, band)
         counts = _ensure_band(
             urls[tile][band],
             destination,
             token,
+            contract,
             allow_download=not reuse_b04,
+            remaining_bytes=MAX_TRANSFER_BYTES - downloaded,
         )
         if downloaded + counts["bytes_downloaded"] > MAX_TRANSFER_BYTES:
             raise RuntimeError("transferencia_acima_do_limite")

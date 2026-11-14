@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
 import sys
+import urllib.error
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -18,9 +20,11 @@ from geoai.sentinel.assets import (
     official_asset_url,
 )
 from geoai.sentinel.budget import (
+    MAX_TRANSFER_BYTES,
     acquisitions_authorized_for_measure,
     l2a_contract,
     plan_from_catalog,
+    transfer_allowance,
 )
 from geoai.sentinel.cdse_auth import (
     MAX_ASSET_BYTES,
@@ -29,6 +33,7 @@ from geoai.sentinel.cdse_auth import (
     _complete_download,
     abort_partial,
     assert_asset_size,
+    download_official_asset,
     local_jp2_action,
 )
 from geoai.sentinel.gdal_blocks import measure_blocks
@@ -44,6 +49,7 @@ from geoai.sentinel.grid import (
     snap_aoi_grid,
     source_window_for_output,
 )
+from geoai.sentinel.integrity import accept_used_jp2, keep_or_drop_failed_download
 from geoai.sentinel.pilot import REUSE_ENV, band_read_path, reuse_report
 from geoai.sentinel.publish import publication_allowed, publish_new_raster
 
@@ -303,6 +309,8 @@ def test_dry_run_plan_does_not_start_a_download() -> None:
     assert plan["ndvi_published"] is False
     assert plan["metadata_ok"] is True
     assert all(band["href_verified"] for band in plan["bands"])
+    assert all(band["identity_declared"] for band in plan["bands"])
+    assert plan["identity_rule"] == "official_sha3_and_grid"
     assert plan["download_allowed"] is True
     assert plan["block_working_bytes"] < plan["full_matrix_bytes"]
     assert plan["block_working_bytes"] < plan["max_memory_bytes"]
@@ -599,3 +607,148 @@ def test_measure_does_not_include_the_reserve_pass() -> None:
     assert acquisitions_authorized_for_measure(catalog) == (
         "S2B_20261112T133149_R081",
     )
+
+
+def _sha3_multihash(payload: bytes) -> str:
+    return "1620" + hashlib.sha3_256(payload).hexdigest()
+
+
+def _utm22() -> dict:
+    return {
+        "geotransform": (300000.0, 10.0, 0.0, 7500040.0, 0.0, -10.0),
+        "cols": 10980,
+        "rows": 10980,
+        "projection": 'PROJCS["UTM",AUTHORITY["EPSG","32722"]]',
+    }
+
+
+def test_missing_checksum_blocks_the_plan() -> None:
+    catalog = _pilot_catalog()
+    del catalog["access_probe_scene"]["official_band_checksums"]["22KDV"]["B08_10m"]
+    plan = plan_from_catalog(catalog, free_bytes=20_000_000_000)
+    assert plan["identity_rule"] == "blocked_unknown_identity"
+    assert plan["download_allowed"] is False
+
+
+def test_divergent_readable_jp2_is_preserved(tmp_path: Path) -> None:
+    payload = b"ftypjp2-divergente"
+    path = tmp_path / "B04_10m.jp2"
+    path.write_bytes(payload)
+    info = _utm22()
+    shape = [10980, 10980]
+    transform = [10, 0, 300000, 0, -10, 7500040]
+    checksum = _sha3_multihash(payload)
+    common = {
+        "checksum": checksum,
+        "shape": shape,
+        "transform": transform,
+        "epsg": 32722,
+    }
+    with pytest.raises(PermissionError, match="tamanho_oficial_divergente"):
+        accept_used_jp2(path, info, expected_bytes=len(payload) + 1, **common)
+    assert path.read_bytes() == payload
+    with pytest.raises(PermissionError, match="checksum_oficial_divergente"):
+        accept_used_jp2(
+            path,
+            info,
+            expected_bytes=len(payload),
+            checksum="1620" + ("ab" * 32),
+            shape=shape,
+            transform=transform,
+            epsg=32722,
+        )
+    assert path.read_bytes() == payload
+    shifted = dict(info)
+    shifted["geotransform"] = (300010.0, 10.0, 0.0, 7500040.0, 0.0, -10.0)
+    with pytest.raises(PermissionError, match="grade_oficial_divergente"):
+        accept_used_jp2(path, shifted, expected_bytes=len(payload), **common)
+    other_crs = dict(info)
+    other_crs["projection"] = 'GEOGCS["WGS 84",AUTHORITY["EPSG","4326"]]'
+    with pytest.raises(PermissionError, match="grade_oficial_divergente"):
+        accept_used_jp2(path, other_crs, expected_bytes=len(payload), **common)
+    accept_used_jp2(path, info, expected_bytes=len(payload), **common)
+    assert path.read_bytes() == payload
+
+
+def test_remaining_budget_blocks_before_the_connection() -> None:
+    with pytest.raises(PermissionError, match="transferencia_acima_do_limite"):
+        transfer_allowance(100_000_000, 90_000_000)
+    assert transfer_allowance(100_000_000, MAX_TRANSFER_BYTES) == 100_000_000
+
+
+class _FakeBody:
+    def __init__(self, payload: bytes, *, fail: bool) -> None:
+        self.payload = payload
+        self.fail = fail
+        self.status = 200
+        self.headers = {"Content-Length": str(len(payload))}
+
+    def read(self, _size: int) -> bytes:
+        if self.fail:
+            raise urllib.error.URLError("rede")
+        chunk = self.payload
+        self.payload = b""
+        return chunk
+
+    def __enter__(self) -> _FakeBody:
+        return self
+
+    def __exit__(self, *_args: object) -> bool:
+        return False
+
+
+class _FakeOpener:
+    def __init__(self, body: _FakeBody) -> None:
+        self.body = body
+
+    def open(self, _request: object, timeout: int = 180) -> _FakeBody:
+        return self.body
+
+
+def test_stream_stops_before_writing_past_the_cap(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    destination = tmp_path / "B08_10m.jp2"
+    destination.write_bytes(b"jp2-valido")
+    opener = _FakeOpener(_FakeBody(b"0123456789abcdef", fail=False))
+    monkeypatch.setattr(urllib.request, "build_opener", lambda *_a, **_k: opener)
+    with pytest.raises(PermissionError, match="asset_maior_que_o_limite"):
+        download_official_asset(
+            OFFICIAL,
+            destination,
+            "token-de-teste",
+            max_bytes=8,
+        )
+    assert destination.read_bytes() == b"jp2-valido"
+    assert not destination.with_name("B08_10m.jp2.partial").exists()
+
+
+def test_network_failure_keeps_the_existing_jp2(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    destination = tmp_path / "B08_10m.jp2"
+    destination.write_bytes(b"jp2-valido")
+    opener = _FakeOpener(_FakeBody(b"", fail=True))
+    monkeypatch.setattr(urllib.request, "build_opener", lambda *_a, **_k: opener)
+    with pytest.raises(urllib.error.URLError):
+        download_official_asset(
+            OFFICIAL,
+            destination,
+            "token-de-teste",
+            max_bytes=100,
+        )
+    assert destination.read_bytes() == b"jp2-valido"
+    assert not destination.with_name("B08_10m.jp2.partial").exists()
+
+
+def test_failed_attempt_drops_only_the_new_file(tmp_path: Path) -> None:
+    previous = tmp_path / "antigo.jp2"
+    previous.write_bytes(b"permanece")
+    keep_or_drop_failed_download(previous, existed_before=True)
+    assert previous.read_bytes() == b"permanece"
+    created = tmp_path / "novo.jp2"
+    created.write_bytes(b"tentativa")
+    keep_or_drop_failed_download(created, existed_before=False)
+    assert not created.exists()

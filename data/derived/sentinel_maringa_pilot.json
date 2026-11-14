@@ -322,6 +322,32 @@
         "SCL_20m": "/odata/v1/Products(d95a8674-3805-4ecf-9e79-06645595be14)/Nodes(S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116.SAFE)/Nodes(GRANULE)/Nodes(L2A_T22KDV_A050586_20261112T133449)/Nodes(IMG_DATA)/Nodes(R20m)/Nodes(T22KDV_20261112T133149_SCL_20m.jp2)/$value"
       }
     },
+    "official_band_checksums": {
+      "22KCV": {
+        "B04_10m": "1620fbe487f7cf3b0e04ed8ad8b76f51f801c3704b03e7fd667e431b12ce03e00d69",
+        "B08_10m": "1620e97efd806b952ec671acfe398ab083e96bdc39332f0d69f4ce359bcd8f45273f",
+        "SCL_20m": "16205a61419fdfd874f6dd8a776e7def05f365330dea3dee1f55471a18ad5a6812d6"
+      },
+      "22KDV": {
+        "B04_10m": "16205f6ed93ab85f4f7d9180f8643505e5ab88d110289ca77501f970701306a6212f",
+        "B08_10m": "1620cbdf5f0d018c79d27d17a14c696e22fb27610db1b2f799614c45dcda428c4d89",
+        "SCL_20m": "1620a648213efe7b20a477c112b7e3c5f501cd52723622343e628822b9f245c983b9"
+      }
+    },
+    "official_grids": {
+      "22KCV": {
+        "epsg": 32722,
+        "B04_10m": {"shape": [10980, 10980], "transform": [10, 0, 300000, 0, -10, 7500040]},
+        "B08_10m": {"shape": [10980, 10980], "transform": [10, 0, 300000, 0, -10, 7500040]},
+        "SCL_20m": {"shape": [5490, 5490], "transform": [20, 0, 300000, 0, -20, 7500040]}
+      },
+      "22KDV": {
+        "epsg": 32722,
+        "B04_10m": {"shape": [10980, 10980], "transform": [10, 0, 399960, 0, -10, 7500040]},
+        "B08_10m": {"shape": [10980, 10980], "transform": [10, 0, 399960, 0, -10, 7500040]},
+        "SCL_20m": {"shape": [5490, 5490], "transform": [20, 0, 399960, 0, -20, 7500040]}
+      }
+    },
     "downloaded_bytes": 0,
     "assets": {
       "B04_10m": {
