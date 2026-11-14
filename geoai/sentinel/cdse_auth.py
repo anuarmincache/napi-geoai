@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -18,6 +19,9 @@ DOWNLOAD_HOST = "download.dataspace.copernicus.eu"
 PRODUCT_PREFIX = "/odata/v1/Products("
 PROBE_BYTES = 1024
 MAX_REDIRECTS = 2
+REQUESTED_RANGE_START = 0
+REQUESTED_RANGE_END = PROBE_BYTES - 1
+_CONTENT_RANGE_RE = re.compile(r"bytes (\d+)-(\d+)/(\d+|\*)\Z")
 
 
 class RedirectRefused(Exception):
@@ -86,33 +90,73 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
         raise RedirectRefused(int(code))
 
 
+def content_range_matches_request(
+    content_range: str | None,
+    *,
+    content_length: str | None,
+    bytes_read: int,
+    requested_start: int = REQUESTED_RANGE_START,
+    requested_end: int = REQUESTED_RANGE_END,
+) -> bool:
+    """O intervalo devolvido precisa caber no pedido e bater com os bytes lidos."""
+
+    if content_range is None or requested_end < requested_start:
+        return False
+    if bytes_read <= 0 or bytes_read > PROBE_BYTES:
+        return False
+    match = _CONTENT_RANGE_RE.fullmatch(content_range.strip())
+    if match is None:
+        return False
+    start = int(match.group(1))
+    end = int(match.group(2))
+    complete_raw = match.group(3)
+    if start != requested_start or end < start or end > requested_end:
+        return False
+    span = end - start + 1
+    if span != bytes_read:
+        return False
+    if complete_raw == "*":
+        if end != requested_end:
+            return False
+    else:
+        complete = int(complete_raw)
+        if complete <= end:
+            return False
+        short_object = end != requested_end
+        if short_object and complete != end + 1:
+            return False
+    if content_length is None or content_length == "":
+        return True
+    if not content_length.isdigit() or int(content_length) != span:
+        return False
+    return True
+
+
 def classify_probe_response(
     *,
     http_status: int | None,
     content_range: str | None,
     content_length: str | None,
     bytes_read: int,
+    requested_start: int = REQUESTED_RANGE_START,
+    requested_end: int = REQUESTED_RANGE_END,
 ) -> dict[str, Any]:
-    """206 com Content-Range é leitura limitada. 200 longo não autoriza o piloto."""
+    """Só HTTP 206 com o intervalo pedido honra o Range. HTTP 200 nunca honra."""
 
-    if content_length and content_length.isdigit():
-        length = int(content_length)
-    else:
-        length = None
-    ranged = http_status == 206 and bool(content_range) and bytes_read <= PROBE_BYTES
-    short_ok = (
-        http_status == 200
-        and length is not None
-        and length <= PROBE_BYTES
-        and 0 < bytes_read <= PROBE_BYTES
+    ranged = http_status == 206 and content_range_matches_request(
+        content_range,
+        content_length=content_length,
+        bytes_read=bytes_read,
+        requested_start=requested_start,
+        requested_end=requested_end,
     )
-    if ranged or short_ok:
+    if ranged:
         access_status = "authorized"
         range_honored = True
     elif http_status in (401, 403):
         access_status = "blocked_auth"
         range_honored = False
-    elif http_status == 200 and bytes_read > 0:
+    elif http_status in (200, 206):
         access_status = "range_not_honored"
         range_honored = False
     else:
@@ -224,6 +268,8 @@ def authorized_probe(url: str) -> dict[str, Any]:
         content_range=content_range,
         content_length=content_length,
         bytes_read=len(chunk),
+        requested_start=REQUESTED_RANGE_START,
+        requested_end=REQUESTED_RANGE_END,
     )
     report["http_status"] = status
     report["bytes_read"] = classified["bytes_read"]

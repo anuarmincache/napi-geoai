@@ -14,12 +14,18 @@ from geoai.sentinel.access import describe_asset_response
 from geoai.sentinel.aoi import load_official_municipality, sirgas_utm_epsg
 from geoai.sentinel.catalog import load_pilot_catalog, show_ndvi
 from geoai.sentinel.cdse_auth import (
+    PROBE_BYTES,
     RedirectRefused,
     _GuardedRedirect,
+    _NoRedirect,
     authorized_probe,
     classify_probe_response,
 )
-from geoai.sentinel.gdal_blocks import compose_blocked, reflectance_block
+from geoai.sentinel.gdal_blocks import (
+    compose_blocked,
+    describe_future_gdal_windows,
+    reflectance_block,
+)
 from geoai.sentinel.mosaic_rule import compose_first_valid
 from geoai.sentinel.passes import minimal_covering_tiles, parse_product_id
 from geoai.sentinel.reflectance import ReflectanceMetadataError, reflectance_dn
@@ -317,20 +323,100 @@ def test_nodata_does_not_receive_offset_in_block() -> None:
     assert out[0, 1] == pytest.approx(0.1)
 
 
-def test_redirect_to_another_host_drops_authorization() -> None:
-    request = urllib.request.Request(
-        "https://download.dataspace.copernicus.eu/odata/v1/Products(a)/$value",
-        headers={"Authorization": "Bearer local-test", "Range": "bytes=0-1023"},
+OFFICIAL_VALUE = (
+    "https://download.dataspace.copernicus.eu/odata/v1/Products(a)/$value"
+)
+
+
+def _probe_request() -> urllib.request.Request:
+    return urllib.request.Request(
+        OFFICIAL_VALUE,
+        headers={
+            "Authorization": "Bearer local-test",
+            "Range": "bytes=0-1023",
+            "Cookie": "session=local",
+        },
     )
-    with pytest.raises(RedirectRefused):
+
+
+def test_redirect_to_another_host_drops_authorization() -> None:
+    with pytest.raises(RedirectRefused) as caught:
         _GuardedRedirect().redirect_request(
-            request,
+            _probe_request(),
             None,
             302,
             "found",
             {},
             "https://evil.example/odata/v1/Products(a)/$value",
         )
+    assert str(caught.value) == "redirect_recusado"
+    assert "local-test" not in str(caught.value)
+
+
+@pytest.mark.parametrize(
+    "code,destination",
+    [
+        (302, "https://evil.example/odata/v1/Products(a)/$value"),
+        (302, OFFICIAL_VALUE + "?token=local-test"),
+        (302, "http://download.dataspace.copernicus.eu/odata/v1/Products(a)/$value"),
+        (302, "https://download.dataspace.copernicus.eu/odata/v1/Products(a)"),
+        (302, OFFICIAL_VALUE + "#fragment"),
+        (
+            302,
+            "https://user:local-test@download.dataspace.copernicus.eu"
+            "/odata/v1/Products(a)/$value",
+        ),
+        (300, OFFICIAL_VALUE),
+        (304, OFFICIAL_VALUE),
+    ],
+)
+def test_unsafe_redirects_are_refused(code: int, destination: str) -> None:
+    with pytest.raises(RedirectRefused) as caught:
+        _GuardedRedirect().redirect_request(
+            _probe_request(),
+            None,
+            code,
+            "redirect",
+            {},
+            destination,
+        )
+    assert "local-test" not in str(caught.value)
+    assert "Authorization" not in str(caught.value)
+
+
+def test_official_redirect_forwards_only_authorization_and_range() -> None:
+    redirected = _GuardedRedirect().redirect_request(
+        _probe_request(),
+        None,
+        307,
+        "temporary",
+        {},
+        OFFICIAL_VALUE,
+    )
+    assert redirected is not None
+    assert redirected.full_url == OFFICIAL_VALUE
+    assert redirected.get_header("Authorization") == "Bearer local-test"
+    assert redirected.get_header("Range") == "bytes=0-1023"
+    assert redirected.get_header("Cookie") is None
+    assert redirected.get_method() == "GET"
+
+
+def test_token_endpoint_refuses_every_redirect() -> None:
+    with pytest.raises(RedirectRefused) as caught:
+        _NoRedirect().redirect_request(
+            urllib.request.Request(
+                "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/"
+                "protocol/openid-connect/token",
+                headers={"Authorization": "Bearer local-test"},
+                method="POST",
+            ),
+            None,
+            302,
+            "found",
+            {},
+            OFFICIAL_VALUE,
+        )
+    assert str(caught.value) == "redirect_recusado"
 
 
 def test_range_response_must_stay_small() -> None:
@@ -340,6 +426,18 @@ def test_range_response_must_stay_small() -> None:
         content_length="1024",
         bytes_read=1024,
     )
+    unknown_total = classify_probe_response(
+        http_status=206,
+        content_range="bytes 0-1023/*",
+        content_length=None,
+        bytes_read=PROBE_BYTES,
+    )
+    short_object = classify_probe_response(
+        http_status=206,
+        content_range="bytes 0-511/512",
+        content_length="512",
+        bytes_read=512,
+    )
     ignored = classify_probe_response(
         http_status=200,
         content_range=None,
@@ -348,8 +446,62 @@ def test_range_response_must_stay_small() -> None:
     )
     assert honored["access_status"] == "authorized"
     assert honored["range_honored"] is True
+    assert unknown_total["range_honored"] is True
+    assert short_object["range_honored"] is True
+    assert short_object["access_status"] == "authorized"
     assert ignored["access_status"] == "range_not_honored"
+    assert ignored["range_honored"] is False
     assert ignored["bytes_read"] == 1024
+
+
+@pytest.mark.parametrize(
+    ("status", "content_range", "content_length", "bytes_read", "access", "honored"),
+    [
+        (206, "bytes 0-1023/1024", "1024", 1024, "authorized", True),
+        (206, "bytes 0-1023/999999", "999999", 1024, "range_not_honored", False),
+        (206, "bytes 0-1023/999999", "1024", 100, "range_not_honored", False),
+        (206, "bytes 1-1024/999999", "1024", 1024, "range_not_honored", False),
+        (206, "bytes 0-2047/999999", "2048", 1024, "range_not_honored", False),
+        (206, "bytes 0-500/999999", "501", 501, "range_not_honored", False),
+        (206, "bytes 0-1023/100", "1024", 1024, "range_not_honored", False),
+        (206, "bytes 0-1023", "1024", 1024, "range_not_honored", False),
+        (206, None, "1024", 1024, "range_not_honored", False),
+        (206, "bytes 0-1023/999999", "1024abc", 1024, "range_not_honored", False),
+        (200, "bytes 0-1023/999999", "1024", 1024, "range_not_honored", False),
+        (200, None, "100", 100, "range_not_honored", False),
+        (200, None, "1024", 0, "range_not_honored", False),
+        (401, "bytes 0-1023/999999", "1024", 0, "blocked_auth", False),
+        (403, None, None, 0, "blocked_auth", False),
+        (416, "bytes */999999", None, 0, "blocked_auth", False),
+    ],
+)
+def test_content_range_must_match_the_requested_interval(
+    status: int,
+    content_range: str | None,
+    content_length: str | None,
+    bytes_read: int,
+    access: str,
+    honored: bool,
+) -> None:
+    report = classify_probe_response(
+        http_status=status,
+        content_range=content_range,
+        content_length=content_length,
+        bytes_read=bytes_read,
+    )
+    assert report["access_status"] == access
+    assert report["range_honored"] is honored
+    assert report["bytes_read"] == bytes_read
+
+
+def test_compose_blocked_still_holds_full_arrays() -> None:
+    plan = describe_future_gdal_windows()
+    assert plan["compose_blocked_memory"] == "full_arrays"
+    assert plan["future_read"].startswith("ReadAsArray")
+    assert plan["future_write"].startswith("WriteArray")
+    assert plan["download"] == "not_executed"
+    assert plan["ndvi_published"] == "false"
+    assert "arrays já inteiros" in (compose_blocked.__doc__ or "")
 
 
 def test_gdal_mosaic_evidence_is_not_a_sentinel_scene() -> None:

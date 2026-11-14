@@ -58,7 +58,7 @@ Na grade comum, cada pixel da AOI conta uma vez. A tile entra só se a SCL não 
 
 ## Pipeline em blocos
 
-`geoai/sentinel/gdal_blocks.py` calcula reflectância com escala e offset, alinha a decisão de SCL e percorre a grade em janelas. O teste sintético com GDAL 3.13.3, nearest e EPSG:32722, está em `docs/evidence/sentinel/gdal_mosaic_synthetic.json`. Durou 0,022 s, não gravou raster do piloto e manteve `ndvi_published` falso. A grade tinha 24 pixels: 23 válidos, 7 da primeira tile e 16 da segunda, soma 23. O `PeakWorkingSetSize` do processo QGIS foi 62,961 MB e inclui o processo inteiro, não só o mosaico. `sentinel_scene` é falso. COG do piloto só seria escrito depois da fração válida oficial. Isso ainda não ocorreu.
+`geoai/sentinel/gdal_blocks.py` calcula reflectância com escala e offset e aplica a máscara em janelas lógicas. `compose_blocked()` hoje recebe as bandas inteiras e aloca `valid` e `values` para a grade toda; o parâmetro `block` só recorta essas matrizes. A etapa seguinte deve ler e gravar com `ReadAsArray(xoff, yoff, xsize, ysize)` e `WriteArray(array, xoff, yoff)` em datasets GDAL, sem materializar a cena. Esse contrato está em `describe_future_gdal_windows()` e não foi executado: não houve download completo nem escrita de COG. O teste sintético com GDAL 3.13.3, nearest e EPSG:32722, está em `docs/evidence/sentinel/gdal_mosaic_synthetic.json`. Durou 0,022 s, não gravou raster do piloto e manteve `ndvi_published` falso. A grade tinha 24 pixels: 23 válidos, 7 da primeira tile e 16 da segunda, soma 23. O `PeakWorkingSetSize` do processo QGIS foi 62,961 MB e inclui o processo inteiro, não só o mosaico. `sentinel_scene` é falso. COG do piloto só seria escrito depois da fração válida oficial. Isso ainda não ocorreu.
 
 ## Acesso
 
@@ -71,7 +71,7 @@ O método preparado é OIDC/OData, fora do Streamlit, em `geoai/sentinel/cdse_au
 
 Nenhuma dessas variáveis está definida. A requisição autorizada não foi enviada e nenhum valor fictício foi usado. `authorized_attempted` é falso e `bytes_read` é 0. Nenhum segredo foi gravado.
 
-O cliente só aceita HTTPS em `download.dataspace.copernicus.eu`, caminho `/odata/v1/Products(...)/$value`, sem usuário, senha ou query na URL. Redirecionamento para outro host é recusado antes de reenviar `Authorization`. A sonda lê no máximo 1024 bytes e trata HTTP 206 com `Content-Range` como leitura limitada. HTTP 200 de um objeto longo não autoriza o piloto.
+O cliente só aceita HTTPS em `download.dataspace.copernicus.eu`, caminho `/odata/v1/Products(...)/$value`, sem usuário, senha ou query na URL. Redirecionamento para outro host é recusado antes de reenviar `Authorization`. A sonda pede `Range: bytes=0-1023` e lê no máximo 1024 bytes. `range_honored` só fica verdadeiro com HTTP 206, `Content-Range` começando em 0 e terminando no máximo em 1023, tamanho igual aos bytes lidos e, se `Content-Length` vier, igual a esse tamanho. Um objeto menor só vale se o total declarado for exatamente `fim + 1`. HTTP 200 deixa `range_honored` falso, mesmo com corpo curto ou com `Content-Range`.
 
 Para o B04 da tile 22KCV desta passagem, um GET sem `Authorization` e com `Range: bytes=0-0` respondeu HTTP 401. `WWW-Authenticate` veio vazio. O corpo não foi armazenado. `access_status` é `blocked_auth`.
 

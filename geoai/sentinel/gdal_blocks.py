@@ -46,6 +46,18 @@ def scl_is_valid(scl: np.ndarray) -> np.ndarray:
     return ~invalid & np.isfinite(data.astype(np.float64))
 
 
+def describe_future_gdal_windows() -> dict[str, str]:
+    """Contrato da etapa seguinte. Não abre dataset, rede nem COG."""
+
+    return {
+        "compose_blocked_memory": "full_arrays",
+        "future_read": "ReadAsArray(xoff, yoff, xsize, ysize)",
+        "future_write": "WriteArray(array, xoff, yoff)",
+        "download": "not_executed",
+        "ndvi_published": "false",
+    }
+
+
 def compose_blocked(
     tile_red: list[np.ndarray],
     tile_nir: list[np.ndarray],
@@ -54,7 +66,12 @@ def compose_blocked(
     *,
     block: int = 256,
 ) -> dict[str, Any]:
-    """Percorre a grade em janelas e aplica a regra da primeira tile válida."""
+    """Aplica a regra por janela sobre arrays já inteiros na memória.
+
+    `valid` e `values` têm o tamanho da grade. O laço só recorta essas
+    matrizes. A leitura e a escrita reais do GDAL, por `ReadAsArray` e
+    `WriteArray`, ainda não rodam aqui.
+    """
 
     if block < 1:
         raise ValueError("bloco inválido")
