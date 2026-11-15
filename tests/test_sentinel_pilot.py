@@ -86,17 +86,21 @@ def test_catalog_is_maringa_and_does_not_publish_ndvi() -> None:
     assert catalog["aoi"]["cd_mun"] == "4115200"
     assert catalog["aoi"]["name"] == "Maringá"
     assert catalog["aoi"]["geometry_source"] == "data/raw/ibge/PR_Municipios_2025.zip"
-    assert catalog["downloaded_bytes"] == 0
-    assert catalog["processing_status"] == "not_evaluated"
+    assert catalog["downloaded_bytes"] == 308160853
+    assert catalog["processing_status"] == "measured"
     assert catalog["candidate"] is None
     selected = catalog["selected_acquisition"]
     assert selected["dates_combined"] is False
     assert selected["composition"] == "single_acquisition"
     assert selected["covers_threshold"] is True
-    assert catalog["quality_approved"] is False
-    assert catalog["geometric_candidate_only"] is True
-    assert catalog["quality_status"] == "not_evaluated"
-    assert catalog["valid_pixel_fraction"] is None
+    assert catalog["quality_approved"] is True
+    assert catalog["geometric_candidate_only"] is False
+    assert catalog["quality_status"] == "approved"
+    assert catalog["valid_pixel_fraction"] == 0.7311414776754075
+    probe = catalog["access_probe_scene"]
+    assert probe["downloaded_bytes"] == 0
+    assert probe["valid_pixel_fraction"] is None
+    assert "sonda não autenticada" in catalog["probe_history_pt"]
     assert selected["acquisition_id"] == "S2B_20261112T133149_R081"
     assert catalog["fallback_acquisition_id"] == "S2A_20261109T133231_R081"
     assert catalog["overlap_rule"] == "first_valid_tile_in_declared_order"
@@ -118,6 +122,27 @@ def test_catalog_is_maringa_and_does_not_publish_ndvi() -> None:
     assert "Pinhais" not in text
     assert "C:/" not in text
     assert "access_token" not in text
+
+
+def test_measured_contributions_sum_without_subtracting_overlap() -> None:
+    catalog = load_pilot_catalog(REPO)
+    measured = catalog["aoi_measurements"][0]
+    first, second = measured["pixels_per_tile"]
+    assert first + second == measured["n_valid"] == 3565350
+    assert measured["n_valid"] / measured["n_aoi"] == measured["valid_fraction"]
+    assert first + second - measured["overlap_both_valid"] != measured["n_valid"]
+    assert measured["overlap_inside_first_tile"] is True
+    assert measured["peak_rss_mb"] is None
+    assert measured["peak_rss_status"] == "not_measured"
+    evidence = json.loads(
+        (
+            REPO / "docs" / "evidence" / "sentinel" / "maringa_aoi_measurement.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert evidence["peak_rss_mb"] is None
+    assert evidence["pixel_equation"] == "3086107 + 479243 = 3565350"
+    assert evidence["results"][0]["acquisition_id"] == "S2B_20261112T133149_R081"
+    assert "S2A" not in evidence["results"][0]["acquisition_id"]
 
 
 def test_missing_catalog_is_not_zero_ndvi(tmp_path: Path) -> None:
@@ -167,6 +192,7 @@ def test_streamlit_pilot_page_reads_the_repository_catalog() -> None:
         [
             title,
             warning,
+            *(str(item.value) for item in rendered.subheader),
             *(str(item.value) for item in rendered.markdown),
         ]
     )
@@ -178,7 +204,15 @@ def test_streamlit_pilot_page_reads_the_repository_catalog() -> None:
     assert "22KCV" in body
     assert "22KDV" in body
     assert "Cobertura conjunta: 1.0" in body
-    assert "Nenhum NDVI foi publicado" in warning
+    assert "Medição sem publicação de COG" in warning
+    assert "Estado do processamento: measured" in body
+    assert "Fração válida na AOI: 0.7311414776754075" in body
+    assert "Qualidade aprovada: True" in body
+    assert "NDVI publicado: False" in body
+    assert "22KCV 3086107 + 22KDV 479243 = 3565350" in body
+    assert "não é subtraída" in body
+    assert "Sonda histórica, sem autenticação" in body
+    assert "Pico de memória: não medido." in body
 
 
 def test_gdal_nearest_evidence_is_not_a_sentinel_scene() -> None:

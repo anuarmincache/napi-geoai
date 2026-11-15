@@ -56,6 +56,7 @@ else:
     st.write(f"Sobreposição: {selected.get('overlap_coverage')}")
     st.write("Composição: uma única aquisição. Datas diferentes não foram misturadas.")
     fraction = catalog.get("valid_pixel_fraction")
+    st.write(f"Estado do processamento: {catalog.get('processing_status')}")
     if fraction is None:
         st.write(
             "Qualidade municipal: não avaliada. "
@@ -65,6 +66,22 @@ else:
         st.write(f"Fração válida na AOI: {fraction}")
         st.write(f"Qualidade aprovada: {catalog.get('quality_approved') is True}")
         st.write(f"NDVI publicado: {catalog.get('ndvi_published') is True}")
+        measured = (catalog.get("aoi_measurements") or [None])[0] or {}
+        counts = measured.get("pixels_per_tile") or []
+        tiles = selected.get("selected_tiles") or []
+        if len(counts) == len(tiles) == 2:
+            st.write(
+                f"Contribuições: {tiles[0]} {counts[0]} + {tiles[1]} {counts[1]} "
+                f"= {int(counts[0]) + int(counts[1])}."
+            )
+            st.write(
+                "Os pixels em que as duas tiles são válidas já estão na primeira "
+                "contribuição. Essa sobreposição não é subtraída da soma."
+            )
+        if "bytes_downloaded" in measured:
+            st.write(f"Bytes transferidos: {measured['bytes_downloaded']}")
+        if measured.get("peak_rss_mb") is None:
+            st.write("Pico de memória: não medido.")
     st.write(f"Regra de sobreposição: {catalog.get('overlap_rule', 'n/d')}")
     fallback = catalog.get("fallback_acquisition_id")
     if fallback:
@@ -83,7 +100,11 @@ access = catalog.get("asset_access") or {}
 authorized = access.get("authorized") or {}
 anonymous = access.get("anonymous_probe") or {}
 if access:
-    st.subheader("Acesso às bandas")
+    st.subheader("Sonda histórica, sem autenticação")
+    st.write(
+        "Este bloco é a sonda anterior. "
+        "authorized_attempted falso e o HTTP 401 não descrevem a medição concluída."
+    )
     st.write(f"Host OData: {access.get('https_host') or 'n/d'}")
     st.write(
         "Requisição autorizada enviada: "

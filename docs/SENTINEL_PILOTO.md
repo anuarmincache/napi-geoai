@@ -48,7 +48,7 @@ Tiles da mesma passagem S2B, processamento `20261112T184116`:
 | 22KCU | 0,090778 | 44,88% | não |
 | 22KDU | 0,003316 | 9,91% | não |
 
-O menor conjunto é 22KCV + 22KDV. União 1,0, lacuna 0,0 e sobreposição geométrica 0,447949, na sexta casa decimal. Essa sobreposição é área do footprint, não pixel válido e não entra duas vezes na fração municipal. `mosaic_required` é verdadeiro. `dates_combined` é falso. A nuvem do item não mede pixel válido na AOI. `valid_pixel_fraction` permanece nulo. `selection_status` é `mosaic_candidate`. `quality_approved` é falso: a S2B é candidata geométrica, não aprovação de qualidade.
+O menor conjunto é 22KCV + 22KDV. União 1,0, lacuna 0,0 e sobreposição geométrica 0,447949, na sexta casa decimal. Essa sobreposição é área do footprint, não pixel válido e não entra duas vezes na fração municipal. `mosaic_required` é verdadeiro. `dates_combined` é falso. A nuvem do item não mede pixel válido na AOI. Na seleção, `valid_pixel_fraction` estava nulo e `quality_approved` era falso. A medição posterior da mesma S2B registrou fração 0,7311414776754075. A qualidade ficou aprovada e `ndvi_published` permanece falso.
 
 Se a fração válida dessa passagem, depois da leitura de B04, B08 e SCL, ficar abaixo de 0,70, a reserva continua sendo a passagem `S2A_20261109T133231_R081`. Ela não entra na mesma medição. Exige autorização nova. As duas datas não se misturam.
 
@@ -56,7 +56,7 @@ Se a fração válida dessa passagem, depois da leitura de B04, B08 e SCL, ficar
 
 `first_valid_tile_in_declared_order`, em `geoai/sentinel/mosaic_rule.py`.
 
-Na grade comum, cada pixel da AOI conta uma vez. A tile entra só se a SCL não está nas classes inválidas, o DN não é nodata e o NDVI tem denominador utilizável. Se as duas tiles são válidas no mesmo pixel, fica o valor da primeira na ordem declarada (22KCV, depois 22KDV). Não há média. A origem fica num raster de proveniência. A fração válida é o número de pixels escolhidos dividido pelo número de pixels da AOI.
+Na grade comum, cada pixel da AOI conta uma vez. A tile entra só se a SCL não está nas classes inválidas, o DN não é nodata e o NDVI tem denominador utilizável. Se as duas tiles são válidas no mesmo pixel, fica o valor da primeira na ordem declarada (22KCV, depois 22KDV). Não há média. A fração válida é o número de pixels escolhidos dividido pelo número de pixels da AOI. Na medição, 3.086.107 + 479.243 = 3.565.350. Os 2.034.052 pixels de sobreposição já estão nos 3.086.107 da 22KCV e não são subtraídos. O pico de memória dessa execução não foi medido: `peak_rss_mb` permanece nulo. Uma recontagem independente dos pixels não foi executada.
 
 ## Pipeline em blocos
 
@@ -79,7 +79,7 @@ O método preparado é OIDC/OData, fora do Streamlit, em `geoai/sentinel/cdse_au
 - Variáveis locais, se existirem: `CDSE_USERNAME` e `CDSE_PASSWORD`, ou `CDSE_ACCESS_TOKEN`
 - Host do asset: `download.dataspace.copernicus.eu`
 
-O catálogo gravado na busca ainda tem `authorized_attempted` falso. Uma sessão local posterior informou sonda autorizada com HTTP 206, 1024 bytes e `range_honored` verdadeiro. Neste processo, os escopos Process e User não contêm `CDSE_USERNAME`, `CDSE_PASSWORD` nem `CDSE_ACCESS_TOKEN`. O comando das bandas parou antes da rede. A fração válida na AOI não foi medida e nenhum COG foi escrito. Nenhum segredo foi gravado.
+O catálogo gravado na busca ainda tem `authorized_attempted` falso. Uma sessão local posterior informou sonda autorizada com HTTP 206, 1024 bytes e `range_honored` verdadeiro. Esse registro da sonda não foi alterado. A medição `--measure-only` da S2B é outro evento: transferiu 308.160.853 bytes, calculou a fração e não escreveu COG. Nenhum segredo foi gravado.
 
 O cliente só aceita HTTPS em `download.dataspace.copernicus.eu`, caminho `/odata/v1/Products(...)/$value`, sem usuário, senha ou query na URL. Redirecionamento para outro host é recusado antes de reenviar `Authorization`. A sonda pede `Range: bytes=0-1023` e lê no máximo 1024 bytes. `range_honored` só fica verdadeiro com HTTP 206, `Content-Range` começando em 0 e terminando no máximo em 1023, tamanho igual aos bytes lidos e, se `Content-Length` vier, igual a esse tamanho. Um objeto menor só vale se o total declarado for exatamente `fim + 1`. HTTP 200 deixa `range_honored` falso, mesmo com corpo curto ou com `Content-Range`.
 
@@ -89,11 +89,11 @@ S3 em `https://eodata.dataspace.copernicus.eu` continua declarado na coleção e
 
 ## Processamento
 
-`processing_status` é `not_evaluated`. Sem leitura autorizada de B04, B08 e SCL, não houve recorte, alinhamento, reflectância, máscara nem NDVI. `scripts/prepare_sentinel_pilot.py` continua terminando com código 2 e não publica raster, mesmo se três arquivos locais existirem. `ndvi_published` é falso.
+`processing_status` é `measured`. A fração válida é 0,7311414776754075, acima de 0,70, e `quality_approved` é verdadeiro. `ndvi_published` é falso e não há COG. `scripts/prepare_sentinel_pilot.py` continua terminando com código 2 e não publica raster. A sonda em `access_probe_scene` permanece não autenticada: `downloaded_bytes` 0, HTTP 401 e `authorized_attempted` falso. Esse histórico não foi reescrito. A transferência da medição, 308.160.853 bytes, está em `aoi_measurements`.
 
 ## Interface
 
-`app/pages/8_Sentinel_Piloto.py` lê `data/derived/sentinel_maringa_pilot.json`. O arquivo da página fica em `app/pages`, então a raiz do repositório é `parents[2]`. Mostra a passagem, as tiles, a lacuna, a sobreposição e o bloqueio de acesso. Não baixa cena nem calcula NDVI.
+`app/pages/8_Sentinel_Piloto.py` lê `data/derived/sentinel_maringa_pilot.json`. O arquivo da página fica em `app/pages`, então a raiz do repositório é `parents[2]`. Mostra a passagem, as tiles, a fração, a soma das contribuições, o estado `measured` e a sonda histórica em separado. Não baixa cena nem calcula NDVI.
 
 ## GDAL
 

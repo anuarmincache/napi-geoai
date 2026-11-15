@@ -1,8 +1,8 @@
 {
-  "status": "blocked_auth",
+  "status": "measured",
   "selection_status": "mosaic_candidate",
   "access_status": "blocked_auth",
-  "processing_status": "not_evaluated",
+  "processing_status": "measured",
   "ndvi_published": false,
   "pilot_aoi": true,
   "pipeline_repository": "napi-geoai-mvp04",
@@ -15,7 +15,7 @@
     "reuse_env": "NAPI_VALIDATED_B04",
     "copied": false
   },
-  "public_message_pt": "Maringá: passagem S2B_20261112T133149_R081 (2026-11-12T13:31:49Z, órbita R081) cobre 1.0 do polígono com as tiles 22KCV, 22KDV. Lacuna 0.0. Sobreposição 0.447949. É uma única aquisição, não uma composição de datas. O ambiente local não tem credencial OIDC do CDSE. A requisição autorizada não foi enviada. Uma requisição sem Authorization ao B04 de uma tile selecionada respondeu HTTP 401. A fração de pixels válidos não foi medida. O processamento raster não foi executado. Nenhum NDVI foi publicado.",
+  "public_message_pt": "Maringá: passagem S2B_20261112T133149_R081 com fração válida 0.731141 na AOI. Medição sem publicação de COG.",
   "as_of_utc": "2026-11-14T17:56:56Z",
   "queried_at_utc": "2026-11-14T18:14:53Z",
   "stac_search_seconds": 9.197,
@@ -337,15 +337,93 @@
     "official_grids": {
       "22KCV": {
         "epsg": 32722,
-        "B04_10m": {"shape": [10980, 10980], "transform": [10, 0, 300000, 0, -10, 7500040]},
-        "B08_10m": {"shape": [10980, 10980], "transform": [10, 0, 300000, 0, -10, 7500040]},
-        "SCL_20m": {"shape": [5490, 5490], "transform": [20, 0, 300000, 0, -20, 7500040]}
+        "B04_10m": {
+          "shape": [
+            10980,
+            10980
+          ],
+          "transform": [
+            10,
+            0,
+            300000,
+            0,
+            -10,
+            7500040
+          ]
+        },
+        "B08_10m": {
+          "shape": [
+            10980,
+            10980
+          ],
+          "transform": [
+            10,
+            0,
+            300000,
+            0,
+            -10,
+            7500040
+          ]
+        },
+        "SCL_20m": {
+          "shape": [
+            5490,
+            5490
+          ],
+          "transform": [
+            20,
+            0,
+            300000,
+            0,
+            -20,
+            7500040
+          ]
+        }
       },
       "22KDV": {
         "epsg": 32722,
-        "B04_10m": {"shape": [10980, 10980], "transform": [10, 0, 399960, 0, -10, 7500040]},
-        "B08_10m": {"shape": [10980, 10980], "transform": [10, 0, 399960, 0, -10, 7500040]},
-        "SCL_20m": {"shape": [5490, 5490], "transform": [20, 0, 399960, 0, -20, 7500040]}
+        "B04_10m": {
+          "shape": [
+            10980,
+            10980
+          ],
+          "transform": [
+            10,
+            0,
+            399960,
+            0,
+            -10,
+            7500040
+          ]
+        },
+        "B08_10m": {
+          "shape": [
+            10980,
+            10980
+          ],
+          "transform": [
+            10,
+            0,
+            399960,
+            0,
+            -10,
+            7500040
+          ]
+        },
+        "SCL_20m": {
+          "shape": [
+            5490,
+            5490
+          ],
+          "transform": [
+            20,
+            0,
+            399960,
+            0,
+            -20,
+            7500040
+          ]
+        }
       }
     },
     "downloaded_bytes": 0,
@@ -401,7 +479,7 @@
   "n_features_7d": 12,
   "n_acquisitions_7d": 3,
   "n_adequate_acquisitions_7d": 2,
-  "downloaded_bytes": 0,
+  "downloaded_bytes": 308160853,
   "asset_access": {
     "probed_asset": "B04_10m",
     "https_host": "download.dataspace.copernicus.eu",
@@ -453,13 +531,50 @@
     "openid_token_endpoint": "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token",
     "s3_credentials_loaded": false
   },
+  "probe_history_pt": "access_probe_scene e asset_access.authorized registram a sonda não autenticada. authorized_attempted falso, HTTP 401 e downloaded_bytes 0 desse bloco são históricos. A medição S2B concluída está em aoi_measurements.",
   "source": "Copernicus Data Space STAC sentinel-2-l2a",
   "source_url": "https://stac.dataspace.copernicus.eu/v1/search",
-  "quality_status": "not_evaluated",
-  "quality_approved": false,
-  "geometric_candidate_only": true,
+  "quality_status": "approved",
+  "quality_approved": true,
+  "geometric_candidate_only": false,
   "overlap_rule": "first_valid_tile_in_declared_order",
   "fallback_if_valid_fraction_below": 0.7,
   "fallback_acquisition_id": "S2A_20261109T133231_R081",
-  "valid_pixel_fraction": null
+  "valid_pixel_fraction": 0.7311414776754075,
+  "measured_acquisition_id": "S2B_20261112T133149_R081",
+  "dates_combined": false,
+  "aoi_measurements": [
+    {
+      "acquisition_id": "S2B_20261112T133149_R081",
+      "official_pixels": true,
+      "dates_combined": false,
+      "rows": 3373,
+      "cols": 2686,
+      "n_aoi": 4876416,
+      "n_valid": 3565350,
+      "valid_fraction": 0.7311414776754075,
+      "pixels_per_tile": [
+        3086107,
+        479243
+      ],
+      "overlap_both_valid": 2034052,
+      "quality_approved": true,
+      "rule": "first_valid_tile_in_declared_order",
+      "bytes_downloaded": 308160853,
+      "bytes_on_disk": 357870297,
+      "ndvi_published": false,
+      "cog": null,
+      "scale": 0.0001,
+      "offset": -0.1,
+      "nodata_dn": 0,
+      "published_nodata": -9999.0,
+      "would_publish": true,
+      "pixel_equation": "3086107 + 479243 = 3565350",
+      "overlap_inside_first_tile": true,
+      "peak_rss_mb": null,
+      "peak_rss_status": "not_measured"
+    }
+  ],
+  "measurement_seconds": 231.657,
+  "cog": null
 }
