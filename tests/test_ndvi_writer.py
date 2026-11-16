@@ -19,6 +19,8 @@ from geoai.sentinel.gdal_blocks import (
 from geoai.sentinel.mosaic_rule import compose_first_valid
 from geoai.sentinel.ndvi_writer import (
     ALGORITHM,
+    IncrementalDiskWriter,
+    _sha256,
     assert_window_array_budget,
     place_immutable,
     reject_invalid_inputs,
@@ -171,6 +173,48 @@ def test_place_immutable_does_not_replace_an_existing_file(tmp_path: Path) -> No
     assert place_immutable(arriving, fresh) is True
     assert fresh.read_bytes() == b"dados"
     assert not arriving.exists()
+
+
+def test_checksum_failure_removes_the_new_product_only(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    products = tmp_path / "products"
+    products.mkdir()
+    previous = products / "ndvi-anterior.tif"
+    previous.write_bytes(b"anterior")
+    writer = IncrementalDiskWriter(
+        products,
+        rows=2,
+        cols=2,
+        geotransform=GT,
+        projection="LOCAL",
+        epsg=32722,
+        manifest_path=tmp_path / "ndvi_local_manifest.json",
+        block=2,
+    )
+    partial = products / "parcial.tif"
+    partial.write_bytes(b"novo-produto")
+    new_name = f"ndvi-{_sha256(partial)}.tif"
+    calls = {"n": 0}
+    real = _sha256
+
+    def diverge_on_confirmation(path: Path) -> str:
+        calls["n"] += 1
+        if calls["n"] >= 2:
+            return "f" * 64
+        return real(path)
+
+    monkeypatch.setattr(
+        "geoai.sentinel.ndvi_writer._sha256",
+        diverge_on_confirmation,
+    )
+    with pytest.raises(RuntimeError, match="produto_imutavel_divergente"):
+        writer._seal(partial, "ndvi")
+    writer.abort()
+    assert previous.read_bytes() == b"anterior"
+    assert not (products / new_name).exists()
+    assert not (tmp_path / "ndvi_local_manifest.json").exists()
 
 
 def test_missing_or_empty_input_is_rejected(tmp_path: Path) -> None:

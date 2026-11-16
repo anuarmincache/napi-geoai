@@ -269,10 +269,10 @@ class IncrementalDiskWriter:
         digest = _sha256(partial)
         target = self.destination / f"{prefix}-{digest}.tif"
         created = place_immutable(partial, target)
-        if not target.is_file() or _sha256(target) != digest:
-            raise RuntimeError("produto_imutavel_divergente")
         if created:
             self._created.append(target)
+        if not target.is_file() or _sha256(target) != digest:
+            raise RuntimeError("produto_imutavel_divergente")
         return target.name, digest, target.stat().st_size
 
     def finalize(self, counts: dict[str, Any]) -> dict[str, Any]:
