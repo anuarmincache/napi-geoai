@@ -119,3 +119,6 @@ qgis_crash_reports/
 scratch/
 tmp/
 temp/
+
+# Caminhos desta máquina para o visualizador local de NDVI
+config/viewer.local.json
