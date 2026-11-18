@@ -21,6 +21,8 @@ PAGES = (
     REPO / "app" / "pages" / "5_Explorador_Territorial.py",
     REPO / "app" / "pages" / "6_Energia_SIGA.py",
     REPO / "app" / "pages" / "7_Ficha_Municipal.py",
+    REPO / "app" / "pages" / "9_Meio_Ambiente.py",
+    REPO / "app" / "pages" / "10_Agricultura.py",
 )
 
 
@@ -184,3 +186,100 @@ def test_energy_kpis_follow_technology_filter(_streamlit_paths: None) -> None:
     assert "não associados no escopo" in captions.lower() or "não associados" in (
         "\n".join(str(w.value) for w in at.warning).lower()
     )
+
+def test_home_lists_energy_page(_streamlit_paths: None) -> None:
+    at = AppTest.from_file(str(HOME), default_timeout=60)
+    at.run()
+    assert not at.exception, at.exception
+    info = "\n".join(str(item.value) for item in at.info)
+    assert "Energia" in info
+    assert "Meio Ambiente" in info
+    assert "Agricultura" in info
+
+
+def test_energy_page_searches_any_municipality(_streamlit_paths: None) -> None:
+    from geoai.portal.energy_panel import load_energy_panel_bundle
+
+    if not load_energy_panel_bundle(REPO).available:
+        pytest.skip("painel energético ausente")
+
+    page = REPO / "app" / "pages" / "6_Energia_SIGA.py"
+    at = AppTest.from_file(str(page), default_timeout=120)
+    at.run()
+    assert not at.exception, at.exception
+    assert at.text_input
+    labels = [str(metric.label) for metric in at.metric]
+    assert "Usinas associadas" in labels
+    assert "Potência fiscalizada (MW)" in labels
+    assert "Potência outorgada (MW)" in labels
+    warnings = "\n".join(str(item.value) for item in at.warning)
+    captions = "\n".join(str(item.value) for item in at.caption)
+    assert "34" in warnings
+    assert "MWh" in warnings
+    assert "ANEEL/SIGA" in captions
+    assert "IBGE" in captions
+    assert any(len(list(box.options)) == 399 for box in at.selectbox)
+    at.text_input[0].set_value("Virmond")
+    at.run()
+    assert not at.exception, at.exception
+    city = next(
+        box
+        for box in at.selectbox
+        if any(str(option).startswith("Virmond") for option in box.options)
+        and len(list(box.options)) < 10
+    )
+    choice = next(
+        option for option in city.options if str(option).startswith("Virmond")
+    )
+    city.set_value(choice)
+    at.run()
+    assert not at.exception, at.exception
+    focus = "\n".join(str(item.value) for item in at.markdown)
+    assert "Virmond" in focus
+
+def test_environment_page_withholds_invented_indicators(
+    _streamlit_paths: None,
+) -> None:
+    page = REPO / "app" / "pages" / "9_Meio_Ambiente.py"
+    at = AppTest.from_file(str(page), default_timeout=120)
+    at.run()
+    assert not at.exception, at.exception
+    text = "\n".join(
+        [
+            *(str(item.value) for item in at.markdown),
+            *(str(item.value) for item in at.caption),
+            *(str(item.value) for item in at.warning),
+        ]
+    )
+    assert "MapBiomas" in text
+    assert "não catalogada" in text
+    assert "indisponíveis" in text
+    assert "percentual de vegetação" in text.lower() or "vegetação" in text.lower()
+    assert "desmatamento" in text.lower()
+
+def test_agriculture_page_withholds_invented_indicators(
+    _streamlit_paths: None,
+) -> None:
+    page = REPO / "app" / "pages" / "10_Agricultura.py"
+    at = AppTest.from_file(str(page), default_timeout=120)
+    at.run()
+    assert not at.exception, at.exception
+    text = "\n".join(
+        [
+            *(str(item.value) for item in at.markdown),
+            *(str(item.value) for item in at.caption),
+            *(str(item.value) for item in at.warning),
+            *(str(item.value) for item in at.metric),
+        ]
+    )
+    assert "PAM" in text
+    assert "CONAB" in text
+    assert "IPARDES" in text
+    assert "indisponível" in text.lower()
+    assert "não catalogada" in text
+    metrics = {str(item.label): str(item.value) for item in at.metric}
+    assert metrics["Produção agrícola"] == "indisponível"
+    assert metrics["Área plantada"] == "indisponível"
+    assert metrics["Rendimento"] == "indisponível"
+    assert metrics["Pecuária"] == "indisponível"
+

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 
+import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
@@ -12,9 +13,12 @@ from geoai.portal import (
     compare_municipal_energy,
     energy_attribution_lines,
     energy_map_html,
+    energy_public_notice,
     list_municipalities,
     municipalities_ranked,
+    municipality_generation_mix,
     municipality_label,
+    search_municipalities,
 )
 from geoai.portal.energy_panel import (
     energy_scope_totals,
@@ -128,7 +132,16 @@ else:
         f"(`{scope['metric_scope']}`)."
     )
 
-st.warning(scope["nao_associados_limitation_pt"])
+notice = energy_public_notice(energy)
+st.warning(notice["notice_pt"])
+st.caption(
+    "Fonte: ANEEL/SIGA e malha municipal IBGE municipio_2025. "
+    f"Conjunto de dados: {notice['dat_conjunto']}. "
+    f"Arquivo recuperado em {notice['retrieved_at']}. "
+    f"Painel preparado em {notice['prepared_at']}."
+)
+if tipo_filter:
+    st.warning(scope["nao_associados_limitation_pt"])
 
 c1, c2, c3, c4 = st.columns(4)
 _scope_label = (
@@ -173,8 +186,11 @@ label_to_code = {municipality_label(r): r.code for r in all_recs}
 code_to_label = {c: lab for lab, c in label_to_code.items()}
 labels_all = list(label_to_code.keys())
 
+default_code = ranked[0]["CD_MUN"] if ranked else all_recs[0].code
 if "energy_code" not in st.session_state:
-    st.session_state.energy_code = ranked[0]["CD_MUN"] if ranked else None
+    st.session_state.energy_code = default_code
+if "energy_query" not in st.session_state:
+    st.session_state.energy_query = ""
 
 rank_labels = [
     f"{r['NM_MUN']} ({r['CD_MUN']}) — {float(r['display_mw']):.2f} MW"
@@ -182,57 +198,85 @@ rank_labels = [
 ]
 rank_codes = [r["CD_MUN"] for r in ranked]
 
+
+def _select_municipality(code: str) -> None:
+    st.session_state.energy_code = code
+    label = code_to_label.get(code)
+    if label:
+        st.session_state.energy_city = label
+
+
+def _on_city_change() -> None:
+    label = st.session_state.get("energy_city")
+    if label in label_to_code:
+        st.session_state.energy_code = label_to_code[label]
+
+
+def _on_rank_change() -> None:
+    label = st.session_state.get("energy_rank")
+    if label in rank_labels:
+        _select_municipality(rank_codes[rank_labels.index(label)])
+
+
+def _clear_energy_search() -> None:
+    st.session_state.energy_query = ""
+
+
+def _format_mw(value: object) -> str:
+    if value is None:
+        return "não informada"
+    return f"{float(value):,.3f} MW"
+
+
+query = str(st.session_state.energy_query or "")
+hits = search_municipalities(mun, query, limit=None)
+hit_labels = [municipality_label(rec) for rec in hits]
+current_label = code_to_label.get(str(st.session_state.energy_code))
+if current_label and current_label not in hit_labels:
+    city_options = [current_label, *hit_labels]
+else:
+    city_options = hit_labels or labels_all
+if "energy_city" not in st.session_state or (
+    st.session_state.energy_city not in city_options and current_label
+):
+    st.session_state.energy_city = current_label or city_options[0]
+if st.session_state.energy_city in label_to_code:
+    st.session_state.energy_code = label_to_code[st.session_state.energy_city]
+
 left, right = st.columns([2.2, 1], gap="medium")
 with right:
+    st.markdown("#### Buscar município")
+    st.caption(
+        f"Os **{EXPECTED_PR_MUNICIPALITY_COUNT}** municípios do Paraná "
+        "podem ser escolhidos. O ranking abaixo só destaca os 20 maiores."
+    )
+    st.text_input(
+        "Nome ou código IBGE",
+        key="energy_query",
+        placeholder="Ex.: Maringá ou 4115200",
+    )
+    st.button("Limpar busca", on_click=_clear_energy_search)
+    st.markdown(f"**{len(hits)} de {EXPECTED_PR_MUNICIPALITY_COUNT}** municípios")
+    if query.strip() and not hits:
+        st.warning("Nenhum município encontrado para esta busca.")
+    st.selectbox(
+        "Município no mapa",
+        options=city_options,
+        key="energy_city",
+        on_change=_on_city_change,
+    )
+
     st.markdown("#### Ranking (MW fiscalizada no escopo)")
     if not rank_labels:
         st.warning("Nenhum município com empreendimentos no filtro.")
     else:
-        choice = st.selectbox(
-            "Municípios com usinas (top 20)",
+        st.selectbox(
+            "20 maiores (atalho)",
             options=rank_labels,
-            help="Atalho para foco no mapa. Catálogo completo = 399.",
+            key="energy_rank",
+            on_change=_on_rank_change,
+            help="Atalho. A busca acima alcança qualquer município.",
         )
-        st.session_state.energy_code = rank_codes[rank_labels.index(choice)]
-
-    st.markdown("#### Município em foco")
-    code = st.session_state.energy_code
-    by_code = {
-        str(m["CD_MUN"]): m for m in (energy.panel.get("municipalities") or [])
-    }
-    raw = by_code.get(str(code)) if code else None
-    row = project_municipality_metrics(raw, tipo=tipo_filter) if raw else None
-    if row:
-        st.metric("Nome", row["NM_MUN"])
-        st.metric("Código IBGE", row["CD_MUN"])
-        st.metric("Status (escopo)", row["status_dados"])
-        st.metric("Nº empreendimentos (escopo)", int(row["display_n"]))
-        st.metric(
-            "MW fiscalizada conhecida (escopo)",
-            f"{float(row['display_mw']):,.3f}",
-        )
-        if row.get("display_ausente"):
-            st.caption(
-                f"{row['display_ausente']} registro(s) sem potência "
-                "fiscalizada válida neste escopo."
-            )
-        st.caption(f"Escopo métrica: `{row.get('metric_scope')}`")
-        if row.get("zero_semantics") and not tipo_filter:
-            st.caption(row["zero_semantics"])
-        if row.get("por_tipo"):
-            st.write("Por tipo (n / MW conhecida):")
-            for t_name, t_val in (row.get("por_tipo") or {}).items():
-                if isinstance(t_val, dict):
-                    st.write(
-                        f"- {t_name}: n={t_val.get('n', 0)} · "
-                        f"MW={float(t_val.get('potencia_fiscalizada_mw') or 0):.3f}"
-                    )
-                else:
-                    st.write(f"- {t_name}: n={t_val}")
-
-    with st.expander("Fonte e metodologia", expanded=False):
-        for line in energy_attribution_lines(energy):
-            st.markdown(f'<p class="napi-meta">{line}</p>', unsafe_allow_html=True)
 
 with left:
     st.markdown(
@@ -256,6 +300,62 @@ with left:
             components.html(html, height=620, scrolling=False)
         except Exception as exc:  # noqa: BLE001
             st.error(f"Falha no mapa: {exc}")
+
+st.subheader("Município em foco")
+code = st.session_state.energy_code
+by_code = {
+    str(item["CD_MUN"]): item
+    for item in (energy.panel.get("municipalities") or [])
+}
+raw = by_code.get(str(code)) if code else None
+row = project_municipality_metrics(raw, tipo=tipo_filter) if raw else None
+mix = municipality_generation_mix(raw, tipo=tipo_filter) if raw else ()
+if row:
+    st.markdown(f"**{row['NM_MUN']}** · código IBGE `{row['CD_MUN']}`")
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Usinas associadas", int(row["display_n"]))
+    m2.metric("Potência fiscalizada (MW)", _format_mw(row["display_mw"]))
+    m3.metric("Potência outorgada (MW)", _format_mw(row.get("display_outorgada_mw")))
+    st.caption(
+        "Fiscalizada e outorgada são potências distintas, em MW. "
+        "Nenhuma das duas é energia gerada em MWh."
+    )
+    if row.get("display_ausente"):
+        st.caption(
+            f"{row['display_ausente']} registro(s) sem potência "
+            "fiscalizada válida neste escopo."
+        )
+    st.caption(f"Escopo métrica: `{row.get('metric_scope')}`")
+    if int(row["display_n"]) == 0:
+        st.caption(
+            "Nenhuma usina associada a este município no escopo. "
+            "Isso não prova ausência absoluta de usinas."
+        )
+    elif row.get("zero_semantics") and not tipo_filter:
+        st.caption(row["zero_semantics"])
+
+    st.markdown("##### Composição por tipo de geração")
+    if not mix:
+        st.caption("Nenhuma usina associada neste escopo.")
+    else:
+        chart = pd.DataFrame(mix).set_index("tipo")
+        st.bar_chart(chart[["potencia_fiscalizada_mw"]])
+        st.caption(
+            "A barra mostra só a potência fiscalizada (MW) das usinas "
+            "associadas a este município."
+        )
+        for item in mix:
+            st.write(
+                f"- {item['tipo']}: {item['n']} usina(s) · "
+                "fiscalizada "
+                f"{_format_mw(item['potencia_fiscalizada_mw'])} · "
+                "outorgada "
+                f"{_format_mw(item['potencia_outorgada_mw'])}"
+            )
+
+with st.expander("Fonte e metodologia", expanded=True):
+    for line in energy_attribution_lines(energy):
+        st.markdown(f'<p class="napi-meta">{line}</p>', unsafe_allow_html=True)
 
 st.subheader("Comparação municipal (capacidade fiscalizada no escopo)")
 if st.session_state.energy_code and st.session_state.energy_code in code_to_label:
@@ -292,13 +392,15 @@ else:
     with x:
         st.markdown(f"**{cmp['a']['NM_MUN']}** (`{cmp['a']['CD_MUN']}`)")
         st.write(
-            f"MW conhecida: **{float(cmp['a']['display_mw']):.3f}** · "
+            f"Fiscalizada: **{_format_mw(cmp['a']['display_mw'])}** · "
+            f"Outorgada: **{_format_mw(cmp['a'].get('display_outorgada_mw'))}** · "
             f"n={cmp['a']['display_n']} · {cmp['a']['status_dados']}"
         )
     with y:
         st.markdown(f"**{cmp['b']['NM_MUN']}** (`{cmp['b']['CD_MUN']}`)")
         st.write(
-            f"MW conhecida: **{float(cmp['b']['display_mw']):.3f}** · "
+            f"Fiscalizada: **{_format_mw(cmp['b']['display_mw'])}** · "
+            f"Outorgada: **{_format_mw(cmp['b'].get('display_outorgada_mw'))}** · "
             f"n={cmp['b']['display_n']} · {cmp['b']['status_dados']}"
         )
     st.write(

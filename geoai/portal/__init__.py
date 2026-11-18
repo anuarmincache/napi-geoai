@@ -1,5 +1,9 @@
 """Serviços portáveis para interfaces (Streamlit agora; portal/API depois)."""
 
+from geoai.portal.agriculture_panel import (
+    AgricultureSourceStatus,
+    agriculture_source_inventory,
+)
 from geoai.portal.connection_policy import (
     DEFAULT_DEMO_POLICY,
     ConnectionPolicy,
@@ -18,10 +22,16 @@ from geoai.portal.energy_panel import (
     compare_municipal_energy,
     energy_attribution_lines,
     energy_map_html,
+    energy_public_notice,
     energy_scope_totals,
     load_energy_panel_bundle,
     municipalities_ranked,
+    municipality_generation_mix,
     project_municipality_metrics,
+)
+from geoai.portal.environment_panel import (
+    EnvironmentSourceStatus,
+    environment_source_inventory,
 )
 from geoai.portal.municipal_explorer import (
     POLO_CITIES,
@@ -54,26 +64,32 @@ from geoai.portal.parana_layer import (
 )
 
 __all__ = [
+    "AgricultureSourceStatus",
     "ConnectionPolicy",
     "DEFAULT_DEMO_POLICY",
     "DataBackendMode",
     "DomainAvailability",
     "DomainCard",
+    "EnvironmentSourceStatus",
     "MunicipalityLayerBundle",
     "MunicipalityRecord",
     "POLO_CITIES",
     "ParanaLayerBundle",
+    "agriculture_source_inventory",
     "attribution_lines",
     "build_domain_card",
     "compare_municipalities",
     "compare_municipal_energy",
     "compare_municipal_profiles",
+    "environment_source_inventory",
     "energy_attribution_lines",
     "energy_map_html",
+    "energy_public_notice",
     "energy_scope_totals",
     "load_energy_panel_bundle",
     "load_population_panel_bundle",
     "municipalities_ranked",
+    "municipality_generation_mix",
     "population_attribution_lines",
     "population_map_html",
     "profile_for_code",

@@ -100,9 +100,13 @@ Preparação Community Cloud (MVP 08): [docs/MVP08_DEPLOY.md](docs/MVP08_DEPLOY.
 
 Explorador territorial (MVP 09): [docs/MVP09_EXPLORADOR.md](docs/MVP09_EXPLORADOR.md) — 399 municípios IBGE, busca, cidades-polo e comparação sem indicadores inventados.
 
-Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERGIA.md) — capacidade fiscalizada (MW) por município, fase Operação, join QGIS, MMGD fora do escopo.
+Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERGIA.md) — busca nos 399 municípios, usinas associadas, potências fiscalizada e outorgada separadas, composição por tipo (UTE/CGH/PCH/UFV/UHE/EOL), aviso dos 34 empreendimentos não associados; MMGD fora do escopo.
 
 População IBGE 2026 e ficha municipal (MVP 11): [docs/MVP11_POPULACAO.md](docs/MVP11_POPULACAO.md) — estimativa 01/07/2026, densidade, kW/hab SIGA, 399 municípios.
+
+Meio Ambiente (MVP 12): [docs/MVP12_MEIO_AMBIENTE.md](docs/MVP12_MEIO_AMBIENTE.md) — malha IBGE 2025 como moldura; MapBiomas Coleção 11 só em contrato ([docs/MAPBIOMAS_COLECAO11.md](docs/MAPBIOMAS_COLECAO11.md)), sem arquivo local nem percentual.
+
+Agricultura (MVP 13): [docs/MVP13_AGRICULTURA.md](docs/MVP13_AGRICULTURA.md) — malha IBGE 2025; PAM, PPM, CONAB e IPARDES ausentes; produção e rendimento indisponíveis.
 
 Fundação de jobs geoespaciais (Issue #40, sem visualização Sentinel): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). O Streamlit continua lendo artefatos prontos. Jobs locais (`vector_bbox_metrics`, janela NDVI sintética) ficam em `scripts/run_geo_job.py`, com publicação atômica, lock local por chave e `data/jobs/` fora do Git. Não há download Sentinel-2 nem mapa de imagem nesta etapa. Medição pequena: `docs/evidence/processing/benchmark_small.json`.
 
