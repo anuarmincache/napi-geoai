@@ -21,6 +21,7 @@ PAGES = (
     REPO / "app" / "pages" / "5_Explorador_Territorial.py",
     REPO / "app" / "pages" / "6_Energia_SIGA.py",
     REPO / "app" / "pages" / "7_Ficha_Municipal.py",
+    REPO / "app" / "pages" / "9_Meio_Ambiente.py",
 )
 
 
@@ -191,6 +192,7 @@ def test_home_lists_energy_page(_streamlit_paths: None) -> None:
     assert not at.exception, at.exception
     info = "\n".join(str(item.value) for item in at.info)
     assert "Energia" in info
+    assert "Meio Ambiente" in info
 
 
 def test_energy_page_searches_any_municipality(_streamlit_paths: None) -> None:
@@ -232,4 +234,24 @@ def test_energy_page_searches_any_municipality(_streamlit_paths: None) -> None:
     assert not at.exception, at.exception
     focus = "\n".join(str(item.value) for item in at.markdown)
     assert "Virmond" in focus
+
+def test_environment_page_withholds_invented_indicators(
+    _streamlit_paths: None,
+) -> None:
+    page = REPO / "app" / "pages" / "9_Meio_Ambiente.py"
+    at = AppTest.from_file(str(page), default_timeout=120)
+    at.run()
+    assert not at.exception, at.exception
+    text = "\n".join(
+        [
+            *(str(item.value) for item in at.markdown),
+            *(str(item.value) for item in at.caption),
+            *(str(item.value) for item in at.warning),
+        ]
+    )
+    assert "MapBiomas" in text
+    assert "não catalogada" in text
+    assert "indisponíveis" in text
+    assert "percentual de vegetação" in text.lower() or "vegetação" in text.lower()
+    assert "desmatamento" in text.lower()
 

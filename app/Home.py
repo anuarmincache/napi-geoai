@@ -84,8 +84,8 @@ for idx, card in enumerate(cards):
 
 st.info(
     "Navegação: **Domínios**, **Mapa Paraná**, **Explorador territorial**, "
-    "**Fontes e qualidade**, **Sobre e deploy**, **Energia — SIGA/ANEEL** e "
-    "**Ficha municipal**. "
+    "**Fontes e qualidade**, **Sobre e deploy**, **Energia — SIGA/ANEEL**, "
+    "**Ficha municipal** e **Meio Ambiente**. "
     "Em telas estreitas, abra o "
     "menu lateral (☰)."
 )

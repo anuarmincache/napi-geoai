@@ -25,6 +25,10 @@ from geoai.portal.energy_panel import (
     municipality_generation_mix,
     project_municipality_metrics,
 )
+from geoai.portal.environment_panel import (
+    EnvironmentSourceStatus,
+    environment_source_inventory,
+)
 from geoai.portal.municipal_explorer import (
     POLO_CITIES,
     MunicipalityLayerBundle,
@@ -61,6 +65,7 @@ __all__ = [
     "DataBackendMode",
     "DomainAvailability",
     "DomainCard",
+    "EnvironmentSourceStatus",
     "MunicipalityLayerBundle",
     "MunicipalityRecord",
     "POLO_CITIES",
@@ -70,6 +75,7 @@ __all__ = [
     "compare_municipalities",
     "compare_municipal_energy",
     "compare_municipal_profiles",
+    "environment_source_inventory",
     "energy_attribution_lines",
     "energy_map_html",
     "energy_public_notice",

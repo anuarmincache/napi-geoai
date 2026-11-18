@@ -53,6 +53,7 @@ _AVAILABILITY: dict[DomainId, DomainAvailability] = {
         status="planned",
         available_now_pt=(
             "Registro de domínio e hooks MapBiomas (catalogado).",
+            "Aba Meio Ambiente: malha IBGE 2025 e aviso de fontes ausentes.",
         ),
         planned_pt=(
             "Camadas de uso/cobertura e máscaras ambientais.",
