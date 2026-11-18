@@ -106,6 +106,8 @@ População IBGE 2026 e ficha municipal (MVP 11): [docs/MVP11_POPULACAO.md](docs
 
 Meio Ambiente (MVP 12): [docs/MVP12_MEIO_AMBIENTE.md](docs/MVP12_MEIO_AMBIENTE.md) — malha IBGE 2025 como moldura; MapBiomas Coleção 11 só em contrato ([docs/MAPBIOMAS_COLECAO11.md](docs/MAPBIOMAS_COLECAO11.md)), sem arquivo local nem percentual.
 
+Agricultura (MVP 13): [docs/MVP13_AGRICULTURA.md](docs/MVP13_AGRICULTURA.md) — malha IBGE 2025; PAM, PPM, CONAB e IPARDES ausentes; produção e rendimento indisponíveis.
+
 Fundação de jobs geoespaciais (Issue #40, sem visualização Sentinel): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). O Streamlit continua lendo artefatos prontos. Jobs locais (`vector_bbox_metrics`, janela NDVI sintética) ficam em `scripts/run_geo_job.py`, com publicação atômica, lock local por chave e `data/jobs/` fora do Git. Não há download Sentinel-2 nem mapa de imagem nesta etapa. Medição pequena: `docs/evidence/processing/benchmark_small.json`.
 
 ```powershell

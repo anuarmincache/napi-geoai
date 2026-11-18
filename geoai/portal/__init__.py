@@ -1,5 +1,9 @@
 """Serviços portáveis para interfaces (Streamlit agora; portal/API depois)."""
 
+from geoai.portal.agriculture_panel import (
+    AgricultureSourceStatus,
+    agriculture_source_inventory,
+)
 from geoai.portal.connection_policy import (
     DEFAULT_DEMO_POLICY,
     ConnectionPolicy,
@@ -60,6 +64,7 @@ from geoai.portal.parana_layer import (
 )
 
 __all__ = [
+    "AgricultureSourceStatus",
     "ConnectionPolicy",
     "DEFAULT_DEMO_POLICY",
     "DataBackendMode",
@@ -70,6 +75,7 @@ __all__ = [
     "MunicipalityRecord",
     "POLO_CITIES",
     "ParanaLayerBundle",
+    "agriculture_source_inventory",
     "attribution_lines",
     "build_domain_card",
     "compare_municipalities",

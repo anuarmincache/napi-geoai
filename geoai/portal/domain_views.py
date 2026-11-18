@@ -63,8 +63,14 @@ _AVAILABILITY: dict[DomainId, DomainAvailability] = {
     DomainId.AGRICULTURE: DomainAvailability(
         domain_id=DomainId.AGRICULTURE,
         status="planned",
-        available_now_pt=("Registro de domínio e reuso futuro de LULC.",),
-        planned_pt=("Indicadores agrícolas territoriais.",),
+        available_now_pt=(
+            "Aba Agricultura: malha IBGE 2025, busca e comparação de área oficial.",
+            "PAM, PPM, CONAB e IPARDES ausentes; MapBiomas só em contrato.",
+        ),
+        planned_pt=(
+            "Produção, área plantada, rendimento e pecuária após tabela oficial.",
+            "Série temporal só com anos presentes e validados no arquivo.",
+        ),
     ),
     DomainId.ENTREPRENEURSHIP: DomainAvailability(
         domain_id=DomainId.ENTREPRENEURSHIP,
