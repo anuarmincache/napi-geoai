@@ -21,12 +21,16 @@ __all__ = [
     "compare_municipal_energy",
     "energy_attribution_lines",
     "energy_map_html",
+    "energy_public_notice",
     "energy_scope_totals",
     "load_energy_panel_bundle",
     "municipalities_ranked",
+    "municipality_generation_mix",
     "plants_table_path",
     "project_municipality_metrics",
 ]
+
+_TYPE_ORDER = ("UTE", "CGH", "PCH", "UFV", "UHE", "EOL")
 
 
 def energy_attribution_lines(bundle: EnergyPanelBundle) -> tuple[str, ...]:
@@ -84,6 +88,12 @@ def _tipo_metrics(row: dict[str, Any], tipo: str) -> dict[str, Any] | None:
     }
 
 
+def _known_mw(metrics: dict[str, Any], key: str) -> float | None:
+    if key not in metrics or metrics.get(key) is None:
+        return None
+    return float(metrics[key])
+
+
 def project_municipality_metrics(
     row: dict[str, Any],
     *,
@@ -96,6 +106,7 @@ def project_municipality_metrics(
         out["metric_scope"] = "todas_tecnologias"
         out["display_n"] = int(row.get("n_empreendimentos") or 0)
         out["display_mw"] = float(row.get("potencia_fiscalizada_mw") or 0.0)
+        out["display_outorgada_mw"] = _known_mw(row, "potencia_outorgada_mw")
         out["display_ausente"] = int(row.get("n_potencia_fiscalizada_ausente") or 0)
         out["display_completa"] = bool(row.get("potencia_fiscalizada_completa", True))
         return out
@@ -104,6 +115,7 @@ def project_municipality_metrics(
         out["metric_scope"] = f"tipo:{tipo}"
         out["display_n"] = 0
         out["display_mw"] = 0.0
+        out["display_outorgada_mw"] = 0.0
         out["display_ausente"] = 0
         out["display_completa"] = True
         out["status_dados"] = "sem_empreendimento"
@@ -114,6 +126,7 @@ def project_municipality_metrics(
     out["metric_scope"] = f"tipo:{tipo}"
     out["display_n"] = n
     out["display_mw"] = float(mw or 0.0)
+    out["display_outorgada_mw"] = _known_mw(metrics, "potencia_outorgada_mw")
     out["display_ausente"] = aus
     out["display_completa"] = aus == 0
     out["n_empreendimentos"] = n
@@ -125,6 +138,73 @@ def project_municipality_metrics(
     else:
         out["status_dados"] = "agregado"
     return out
+
+
+def municipality_generation_mix(
+    row: dict[str, Any],
+    *,
+    tipo: str | None = None,
+) -> tuple[dict[str, Any], ...]:
+    """Composição das usinas já associadas ao município.
+
+    A potência fiscalizada e a outorgada permanecem em campos distintos.
+    Usina sem CD_MUN não entra nesta conta.
+    """
+
+    por = row.get("por_tipo") or {}
+    if tipo:
+        keys = (tipo,)
+    else:
+        keys = tuple(k for k in _TYPE_ORDER if k in por) + tuple(
+            sorted(k for k in por if k not in _TYPE_ORDER)
+        )
+    items: list[dict[str, Any]] = []
+    for key in keys:
+        metrics = _tipo_metrics(row, key)
+        if metrics is None:
+            continue
+        count = int(metrics.get("n") or 0)
+        if count <= 0:
+            continue
+        items.append(
+            {
+                "tipo": key,
+                "n": count,
+                "potencia_fiscalizada_mw": _known_mw(
+                    metrics, "potencia_fiscalizada_mw"
+                ),
+                "potencia_outorgada_mw": _known_mw(
+                    metrics, "potencia_outorgada_mw"
+                ),
+            }
+        )
+    return tuple(items)
+
+
+def energy_public_notice(bundle: EnergyPanelBundle) -> dict[str, Any]:
+    """Datas e a ressalva estadual. Não depende do filtro de tecnologia."""
+
+    totals = bundle.panel.get("totals") or {}
+    provenance = bundle.provenance
+    quality = bundle.quality
+    unassigned = int(totals.get("n_empreendimentos_nao_associados") or 0)
+    unassigned_mw = float(totals.get("potencia_fiscalizada_mw_nao_associados") or 0.0)
+    dataset_date = str(quality.get("dat_conjunto_sample") or "indisponível")
+    retrieved = str(provenance.get("retrieved_at") or "indisponível")[:10]
+    prepared = str(provenance.get("prepared_at") or "indisponível")[:10]
+    return {
+        "n_nao_associados_operacao": unassigned,
+        "mw_fiscalizada_nao_associados": unassigned_mw,
+        "dat_conjunto": dataset_date,
+        "retrieved_at": retrieved,
+        "prepared_at": prepared,
+        "notice_pt": (
+            f"{unassigned} usinas em Operação não estão associadas ao mapa "
+            f"municipal ({unassigned_mw:.3f} MW fiscalizados). Elas entram no "
+            "total da fase e não no município. Potência em MW não é energia "
+            "gerada em MWh."
+        ),
+    }
 
 
 def energy_scope_totals(

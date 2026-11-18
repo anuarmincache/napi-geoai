@@ -28,8 +28,10 @@ from geoai.energy.siga_reconcile import (
 )
 from geoai.portal.energy_panel import (
     compare_municipal_energy,
+    energy_public_notice,
     energy_scope_totals,
     municipalities_ranked,
+    municipality_generation_mix,
     project_municipality_metrics,
 )
 from shapely.geometry import Point
@@ -293,6 +295,86 @@ def test_compare_energy_disclaimer() -> None:
     assert "MWh" in cmp["disclaimer_pt"]
     assert "MMGD" in cmp["disclaimer_pt"]
     assert "Ausência" in cmp["disclaimer_pt"] or "ausência" in cmp["disclaimer_pt"]
+
+
+def test_generation_mix_keeps_fiscalizada_and_outorgada_apart() -> None:
+    row = {
+        "CD_MUN": "4100000",
+        "NM_MUN": "Teste",
+        "n_empreendimentos": 3,
+        "potencia_fiscalizada_mw": 10.0,
+        "potencia_outorgada_mw": 12.5,
+        "n_potencia_fiscalizada_ausente": 0,
+        "status_dados": "agregado",
+        "por_tipo": {
+            "UFV": {
+                "n": 2,
+                "potencia_fiscalizada_mw": 4.0,
+                "potencia_outorgada_mw": 5.0,
+                "n_potencia_fiscalizada_ausente": 0,
+                "n_potencia_outorgada_ausente": 0,
+            },
+            "UTE": {
+                "n": 1,
+                "potencia_fiscalizada_mw": 6.0,
+                "potencia_outorgada_mw": 7.5,
+                "n_potencia_fiscalizada_ausente": 0,
+                "n_potencia_outorgada_ausente": 0,
+            },
+        },
+    }
+    mix = municipality_generation_mix(row)
+    assert [item["tipo"] for item in mix] == ["UTE", "UFV"]
+    assert sum(item["n"] for item in mix) == 3
+    projected = project_municipality_metrics(row)
+    assert sum(item["potencia_fiscalizada_mw"] for item in mix) == pytest.approx(
+        projected["display_mw"]
+    )
+    assert sum(item["potencia_outorgada_mw"] for item in mix) == pytest.approx(
+        projected["display_outorgada_mw"]
+    )
+    assert projected["display_mw"] != projected["display_outorgada_mw"]
+    only = municipality_generation_mix(row, tipo="UFV")
+    assert [item["tipo"] for item in only] == ["UFV"]
+    scoped = project_municipality_metrics(row, tipo="UFV")
+    assert scoped["display_n"] == 2
+    assert scoped["display_mw"] == pytest.approx(4.0)
+    assert scoped["display_outorgada_mw"] == pytest.approx(5.0)
+
+
+def test_real_panel_mix_uses_only_associated_plants() -> None:
+    bundle = load_energy_panel_bundle(REPO)
+    if not bundle.available:
+        pytest.skip("painel ausente")
+    notice = energy_public_notice(bundle)
+    assert notice["n_nao_associados_operacao"] == 34
+    assert "MWh" in notice["notice_pt"]
+    assert "2026-11-01" in notice["dat_conjunto"]
+    fiscal = 0.0
+    granted = 0.0
+    count = 0
+    for row in bundle.panel["municipalities"]:
+        projected = project_municipality_metrics(row)
+        mix = municipality_generation_mix(row)
+        assert sum(item["n"] for item in mix) == projected["display_n"]
+        assert sum(
+            float(item["potencia_fiscalizada_mw"] or 0.0) for item in mix
+        ) == pytest.approx(projected["display_mw"])
+        assert projected["display_outorgada_mw"] is not None
+        assert sum(
+            float(item["potencia_outorgada_mw"] or 0.0) for item in mix
+        ) == pytest.approx(projected["display_outorgada_mw"])
+        count += int(projected["display_n"])
+        fiscal += float(projected["display_mw"])
+        granted += float(projected["display_outorgada_mw"])
+    totals = bundle.panel["totals"]
+    assert count == totals["n_empreendimentos_municipios"]
+    assert count == 276
+    assert fiscal == pytest.approx(totals["potencia_fiscalizada_mw_municipios"])
+    assert granted != pytest.approx(fiscal)
+    assert count + notice["n_nao_associados_operacao"] == totals[
+        "n_empreendimentos_fase"
+    ]
 
 
 def test_qgis_join_report_assignments_contract() -> None:
