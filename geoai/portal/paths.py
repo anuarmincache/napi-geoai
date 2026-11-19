@@ -83,3 +83,15 @@ def mmgd_provenance_path(repo_root: Path | None = None) -> Path:
 def mmgd_quality_path(repo_root: Path | None = None) -> Path:
     return derived_dir(repo_root) / "mmgd_pr.quality.json"
 
+
+
+def agro_panel_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "agro_pr_panel.json"
+
+
+def agro_provenance_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "agro_pr.provenance.json"
+
+
+def agro_quality_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "agro_pr.quality.json"

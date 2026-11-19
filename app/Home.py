@@ -11,6 +11,7 @@ from geoai.portal import (
 )
 
 from _bootstrap import (
+    cached_agro_panel,
     cached_energy_panel,
     cached_mmgd_panel,
     cached_municipality_layer,
@@ -59,6 +60,7 @@ mun = cached_municipality_layer()
 pop = cached_population_panel()
 siga = cached_energy_panel()
 mmgd = cached_mmgd_panel()
+agro = cached_agro_panel()
 
 # ---------------------------------------------------------------- Hero
 st.markdown(
@@ -307,14 +309,23 @@ with s1:
             if mmgd.available
             else ""
         )
+        + (
+            "- Lavouras e pecuária por município (IBGE PAM e PPM)\n"
+            if agro.available
+            else ""
+        )
         + "- Ficha municipal integrada\n"
         "- Calculadoras de consumo e fotovoltaico preliminar"
     )
 with s2:
     st.markdown("##### 🚧 Estrutura pronta, aguardando dados")
     st.markdown(
-        "- Agricultura: pecuária e produção municipal (IBGE PPM/PAM)\n"
-        "- Meio ambiente: cobertura e uso da terra (MapBiomas)\n"
+        (
+            ""
+            if agro.available
+            else "- Agricultura: pecuária e produção municipal (IBGE PPM/PAM)\n"
+        )
+        + "- Meio ambiente: cobertura e uso da terra (MapBiomas)\n"
         "- Sensoriamento remoto: piloto Sentinel-2/NDVI em Maringá"
     )
     st.caption("Nessas páginas, indicador sem fonte aparece como indisponível.")

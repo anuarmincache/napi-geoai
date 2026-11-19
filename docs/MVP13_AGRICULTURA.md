@@ -38,3 +38,24 @@ aparecem como indisponíveis.
    origem de cada número não for lida.
 6. O contrato MapBiomas continua sem download. Hectare de cobertura não é
    produção nem rendimento.
+
+## Atualização 2026-11-19 — PAM e PPM via SIDRA
+
+Conector `geoai/connectors/sidra.py`, agregação `geoai/agriculture/build.py`,
+serviço `geoai/portal/agro_panel.py` e script `scripts/prepare_agro_parana.py`.
+
+- Tabelas: PAM 5457 (área plantada, área colhida, quantidade produzida,
+  rendimento), PPM 3939 (bovinos, suínos, galináceos) e PPM 74 (leite).
+- Códigos de variável e categoria não são fixados no código: são resolvidos
+  pelo nome nos metadados oficiais. Nome ausente ou ambíguo interrompe a carga.
+- Recorte: municípios do Paraná, último ano publicado. Sem série temporal.
+- `-` do IBGE é zero verdadeiro. `..`, `...` e `X` ficam sem valor. Município
+  sem linha fica "sem registro". Nada é imputado.
+- O painel guarda as 12 culturas com maior soma municipal publicada de área
+  plantada. Somas estaduais contam só valores publicados. Rendimento não é
+  somado.
+- A página só mostra valores se `data/derived/agro_pr_panel.json` existir e
+  passar na validação. Sem ele, continua em "indisponível".
+- Bruto em `data/raw/ibge/sidra/` (fora do Git).
+
+Gerar: `python scripts/prepare_agro_parana.py`

@@ -322,11 +322,16 @@ def test_agriculture_page_withholds_invented_indicators(
     assert "PAM" in text
     assert "CONAB" in text
     assert "IPARDES" in text
-    assert "indisponível" in text.lower()
+    assert "indisponíve" in text.lower()
     assert "não catalogada" in text
     metrics = {str(item.label): str(item.value) for item in at.metric}
-    assert metrics["Produção agrícola"] == "indisponível"
-    assert metrics["Área plantada"] == "indisponível"
-    assert metrics["Rendimento"] == "indisponível"
-    assert metrics["Pecuária"] == "indisponível"
+    labels = ("Produção agrícola", "Área plantada", "Rendimento", "Pecuária")
+    from geoai.portal.agro_panel import load_agro_panel_bundle
 
+    if load_agro_panel_bundle(REPO).available:
+        # Com artefato IBGE validado: valores vêm do painel, com fonte citada.
+        assert all(metrics[label] != "indisponível" for label in labels)
+        assert "IBGE" in text
+        assert "biogás" in text
+    else:
+        assert all(metrics[label] == "indisponível" for label in labels)

@@ -69,7 +69,8 @@ _AVAILABILITY: dict[DomainId, DomainAvailability] = {
         status="planned",
         available_now_pt=(
             "Aba Agricultura: malha IBGE 2025, busca e comparação de área oficial.",
-            "PAM, PPM, CONAB e IPARDES ausentes; MapBiomas só em contrato.",
+            "PAM e PPM (IBGE/SIDRA) quando o artefato derivado existe; "
+            "CONAB e IPARDES ausentes; MapBiomas só em contrato.",
         ),
         planned_pt=(
             "Produção, área plantada, rendimento e pecuária após tabela oficial.",

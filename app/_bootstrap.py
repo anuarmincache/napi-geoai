@@ -363,6 +363,13 @@ def cached_mmgd_panel():
     return load_mmgd_panel_bundle(REPO_ROOT)
 
 
+@st.cache_resource(show_spinner="Carregando painel agropecuário…")
+def cached_agro_panel():
+    from geoai.portal.agro_panel import load_agro_panel_bundle
+
+    return load_agro_panel_bundle(REPO_ROOT)
+
+
 @st.cache_resource(show_spinner="Carregando população IBGE 2026…")
 def cached_population_panel():
     return load_population_panel_bundle(REPO_ROOT)

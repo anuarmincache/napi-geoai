@@ -1,0 +1,220 @@
+{
+  "prepared_at": "2026-11-19T17:41:12.153689+00:00",
+  "organization": "IBGE",
+  "api": "SIDRA",
+  "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+  "territory": "municípios do Paraná (n6 em n3 41)",
+  "period_requested": "último ano publicado (last 1)",
+  "resolved_identifiers": {
+    "pam": {
+      "table": 5457,
+      "table_name": "Área plantada ou destinada à colheita, área colhida, quantidade produzida, rendimento médio e valor da produção das lavouras temporárias e permanentes",
+      "classification": {
+        "id": 782,
+        "name": "Produto das lavouras temporárias e permanentes"
+      },
+      "variables": {
+        "area_plantada": {
+          "id": 8331,
+          "name": "Área plantada ou destinada à colheita"
+        },
+        "area_colhida": {
+          "id": 216,
+          "name": "Área colhida"
+        },
+        "producao": {
+          "id": 214,
+          "name": "Quantidade produzida"
+        },
+        "rendimento": {
+          "id": 112,
+          "name": "Rendimento médio da produção"
+        }
+      }
+    },
+    "ppm": {
+      "rebanho": {
+        "table": 3939,
+        "table_name": "Efetivo dos rebanhos, por tipo de rebanho",
+        "variable": {
+          "id": 105,
+          "name": "Efetivo dos rebanhos"
+        },
+        "classification": {
+          "id": 79,
+          "name": "Tipo de rebanho"
+        },
+        "categories": [
+          {
+            "id": 2670,
+            "name": "Bovino"
+          },
+          {
+            "id": 32794,
+            "name": "Suíno - total"
+          },
+          {
+            "id": 32796,
+            "name": "Galináceos - total"
+          }
+        ]
+      },
+      "produto": {
+        "table": 74,
+        "table_name": "Produção de origem animal, por tipo de produto",
+        "variable": {
+          "id": 106,
+          "name": "Produção de origem animal"
+        },
+        "classification": {
+          "id": 80,
+          "name": "Tipo de produto de origem animal"
+        },
+        "categories": [
+          {
+            "id": 2682,
+            "name": "Leite"
+          }
+        ]
+      }
+    }
+  },
+  "downloads": [
+    {
+      "source_id": "ibge.sidra.pam.tabela_5457",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/5457/metadados",
+      "retrieved_at": "2026-11-19T17:41:02.442069+00:00",
+      "content_sha256": "58d031b2fa01e034a121d51e9e42037ce09f1a6600c565593525dedbf4455855",
+      "content_length": 6866,
+      "http_etag": null,
+      "http_last_modified": null,
+      "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+      "local_path": "data/raw/ibge/sidra/metadados_5457.json",
+      "last_checked_at": "2026-11-19T17:41:02.442069+00:00",
+      "cache_hit": false,
+      "not_modified": false,
+      "extra": {}
+    },
+    {
+      "source_id": "ibge.sidra.pam.tabela_5457",
+      "url": "https://apisidra.ibge.gov.br/values/t/5457/n6/in%20n3%2041/v/8331/p/last%201/c782/all",
+      "retrieved_at": "2026-11-19T17:41:04.033571+00:00",
+      "content_sha256": "8011f252a3c0eb3f3cd66c030009659b38e55bbd05e435cce16306b34d6eaf27",
+      "content_length": 11313310,
+      "http_etag": null,
+      "http_last_modified": null,
+      "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+      "local_path": "data/raw/ibge/sidra/pam_5457_area_plantada.json",
+      "last_checked_at": "2026-11-19T17:41:04.033571+00:00",
+      "cache_hit": false,
+      "not_modified": false,
+      "extra": {}
+    },
+    {
+      "source_id": "ibge.sidra.pam.tabela_5457",
+      "url": "https://apisidra.ibge.gov.br/values/t/5457/n6/in%20n3%2041/v/216/p/last%201/c782/all",
+      "retrieved_at": "2026-11-19T17:41:06.395075+00:00",
+      "content_sha256": "99b86051770f732776731655f0da2b929adfdaf194cca51f2a24adea1f23af74",
+      "content_length": 10386823,
+      "http_etag": null,
+      "http_last_modified": null,
+      "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+      "local_path": "data/raw/ibge/sidra/pam_5457_area_colhida.json",
+      "last_checked_at": "2026-11-19T17:41:06.395075+00:00",
+      "cache_hit": false,
+      "not_modified": false,
+      "extra": {}
+    },
+    {
+      "source_id": "ibge.sidra.pam.tabela_5457",
+      "url": "https://apisidra.ibge.gov.br/values/t/5457/n6/in%20n3%2041/v/214/p/last%201/c782/all",
+      "retrieved_at": "2026-11-19T17:41:08.225152+00:00",
+      "content_sha256": "6be58e401ade4c60e4742f2939e5c5c85e15ebef2aa991754565bbc106891eba",
+      "content_length": 10667984,
+      "http_etag": null,
+      "http_last_modified": null,
+      "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+      "local_path": "data/raw/ibge/sidra/pam_5457_producao.json",
+      "last_checked_at": "2026-11-19T17:41:08.225152+00:00",
+      "cache_hit": false,
+      "not_modified": false,
+      "extra": {}
+    },
+    {
+      "source_id": "ibge.sidra.pam.tabela_5457",
+      "url": "https://apisidra.ibge.gov.br/values/t/5457/n6/in%20n3%2041/v/112/p/last%201/c782/all",
+      "retrieved_at": "2026-11-19T17:41:10.194963+00:00",
+      "content_sha256": "10d953699ed2883751694c8c28859769255c920d58062a0ff78f4c1ef870d236",
+      "content_length": 11472924,
+      "http_etag": null,
+      "http_last_modified": null,
+      "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+      "local_path": "data/raw/ibge/sidra/pam_5457_rendimento.json",
+      "last_checked_at": "2026-11-19T17:41:10.194963+00:00",
+      "cache_hit": false,
+      "not_modified": false,
+      "extra": {}
+    },
+    {
+      "source_id": "ibge.sidra.ppm.tabela_3939",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/3939/metadados",
+      "retrieved_at": "2026-11-19T17:41:10.516562+00:00",
+      "content_sha256": "31235a5c71fe8d3a8ef7979c04b2a22b4f9e4a9886bc620b86c79170ef0be6b9",
+      "content_length": 1154,
+      "http_etag": null,
+      "http_last_modified": null,
+      "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+      "local_path": "data/raw/ibge/sidra/metadados_3939.json",
+      "last_checked_at": "2026-11-19T17:41:10.516562+00:00",
+      "cache_hit": false,
+      "not_modified": false,
+      "extra": {}
+    },
+    {
+      "source_id": "ibge.sidra.ppm.tabela_3939",
+      "url": "https://apisidra.ibge.gov.br/values/t/3939/n6/in%20n3%2041/v/105/p/last%201/c79/2670,32794,32796",
+      "retrieved_at": "2026-11-19T17:41:10.952731+00:00",
+      "content_sha256": "0e6c87912ac6bc8968775e8bfb69b176a2046020bcd4f3bc5dafe3f000fc6b8c",
+      "content_length": 372620,
+      "http_etag": null,
+      "http_last_modified": null,
+      "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+      "local_path": "data/raw/ibge/sidra/ppm_3939_rebanho.json",
+      "last_checked_at": "2026-11-19T17:41:10.952731+00:00",
+      "cache_hit": false,
+      "not_modified": false,
+      "extra": {}
+    },
+    {
+      "source_id": "ibge.sidra.ppm.tabela_74",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/74/metadados",
+      "retrieved_at": "2026-11-19T17:41:11.128540+00:00",
+      "content_sha256": "495aaf13d9eeb7b1fcfe1d7887bd149409cf18fd02fd90bee327589c134021d3",
+      "content_length": 1409,
+      "http_etag": null,
+      "http_last_modified": null,
+      "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+      "local_path": "data/raw/ibge/sidra/metadados_74.json",
+      "last_checked_at": "2026-11-19T17:41:11.128540+00:00",
+      "cache_hit": false,
+      "not_modified": false,
+      "extra": {}
+    },
+    {
+      "source_id": "ibge.sidra.ppm.tabela_74",
+      "url": "https://apisidra.ibge.gov.br/values/t/74/n6/in%20n3%2041/v/106/p/last%201/c80/2682",
+      "retrieved_at": "2026-11-19T17:41:11.686727+00:00",
+      "content_sha256": "70952b22f7649b4c6f5c2f1888c95ac34b12dc635f70e17ab8c3bfb331e0798a",
+      "content_length": 124358,
+      "http_etag": null,
+      "http_last_modified": null,
+      "license_note": "IBGE — SIDRA. Uso livre com citação da fonte (IBGE, pesquisa, tabela e ano de referência).",
+      "local_path": "data/raw/ibge/sidra/ppm_74_produto.json",
+      "last_checked_at": "2026-11-19T17:41:11.686727+00:00",
+      "cache_hit": false,
+      "not_modified": false,
+      "extra": {}
+    }
+  ],
+  "municipios_validation": "data/derived/parana_municipios_2025.validation.json"
+}
