@@ -82,15 +82,16 @@ level = st.radio(
 )
 if level is AudienceLevel.BASIC:
     st.info(
-        "Escolha um município entre os 399. Veja habitantes estimados, "
-        "densidade (hab/km²) e, quando houver usinas SIGA associadas, "
-        "capacidade por habitante (kW/hab)."
+        "Escolha um município entre os 399. A ficha reúne população, "
+        "usinas, geração distribuída, lavouras e pecuária, cada dado com a "
+        "sua fonte e o seu ano."
     )
 elif level is AudienceLevel.INTERMEDIATE:
     st.info(
-        "Densidade mistura população 2026 e área 2025. kW/hab usa MW "
-        "fiscalizada conhecida ÷ população — geração centralizada em "
-        "Operação; há usinas SIGA sem associação municipal."
+        "A densidade combina população de 2026 com área de 2025. Os "
+        "indicadores por habitante dividem a potência pela população "
+        "estimada. Há usinas da ANEEL que não puderam ser associadas a um "
+        "município."
     )
 else:
     st.info(

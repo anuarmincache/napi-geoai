@@ -15,7 +15,7 @@ gatherUsageStats = false
 [client]
 toolbarMode = "minimal"
 showSidebarNavigation = false
-showErrorDetails = true
+showErrorDetails = false
 
 [theme]
 base = "light"

@@ -10,7 +10,6 @@ from pathlib import Path
 
 import streamlit as st
 from geoai.portal import (
-    demo_connection_policy,
     list_domain_cards,
     load_energy_panel_bundle,
     load_mmgd_panel_bundle,
@@ -172,14 +171,12 @@ def sidebar_brand() -> None:
             for path, label, icon in items:
                 page_link(path, label, icon)
     sb.divider()
-    policy = demo_connection_policy()
     with sb.expander("Sobre os dados desta versão"):
         st.caption(
             "Dados oficiais em retratos datados (não é tempo real). Cada "
             "número traz a fonte e a data. Quando um dado não existe, a "
             "página diz que não existe."
         )
-        st.caption(policy.description_pt)
 
 
 def render_footer() -> None:

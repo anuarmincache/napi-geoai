@@ -63,9 +63,8 @@ if not mun.validated_for_map:
 if not mmgd.available:
     st.error(mmgd.missing_reason_pt or "Painel MMGD indisponível.")
     st.info(
-        "Artefatos esperados: `data/derived/mmgd_pr_panel.json`, "
-        "`mmgd_pr.quality.json`, `mmgd_pr.provenance.json` "
-        "(gerados offline por `scripts/prepare_mmgd_parana.py`)."
+        "Os dados de geração distribuída desta versão não estão disponíveis. "
+        "Nenhum número é exibido no lugar deles."
     )
     render_footer()
     st.stop()
@@ -91,7 +90,7 @@ none = "(todas)"
 f1, f2, f3 = st.columns(3)
 with f1:
     tipo_sel = st.selectbox(
-        "Tecnologia (SigTipoGeracao)",
+        "Tecnologia de geração",
         options=[none, *opts["tipo"]],
         help="Um filtro categórico por vez. Redefine contagens e mapa.",
     )

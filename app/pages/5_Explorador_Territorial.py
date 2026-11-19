@@ -49,7 +49,7 @@ bundle = cached_municipality_layer()
 if not bundle.validated_for_map:
     st.error(
         bundle.missing_reason_pt
-        or "Camada municipal não validada (fail-closed)."
+        or "A malha municipal não passou na validação e não será exibida."
     )
     render_footer()
     st.stop()
@@ -77,8 +77,8 @@ if level is AudienceLevel.BASIC:
     )
 elif level is AudienceLevel.INTERMEDIATE:
     st.info(
-        "Geometrias de apresentação são simplificadas (tolerância documentada). "
-        "Área vem do campo oficial `AREA_KM2` da malha — não recalculada em graus."
+        "Os contornos do mapa são simplificados para carregar rápido. A área "
+        "exibida é a oficial do IBGE, não uma medida feita sobre o desenho."
     )
 else:
     st.info(
