@@ -29,6 +29,7 @@ from _bootstrap import (
     cached_mmgd_panel,
     cached_municipality_layer,
     configure_page,
+    page_header,
     render_footer,
     render_html_map,
     sidebar_brand,
@@ -37,7 +38,12 @@ from _bootstrap import (
 configure_page("Energia — MMGD/ANEEL")
 sidebar_brand()
 
-st.title("Energia — mini e microgeração distribuída (MMGD/ANEEL)")
+page_header(
+    "Solar e geração distribuída",
+    "Instalações de micro e minigeração por município, segundo a ANEEL.",
+    art_kind="solar",
+    eyebrow="Energia",
+)
 st.caption(
     "Potência **instalada conhecida** (kW→MW) de empreendimentos MMGD no "
     "Paraná. Contagem primária = **empreendimentos**. "
@@ -125,9 +131,22 @@ if level != AudienceLevel.BASIC:
         "Detalhes em Fonte e metodologia."
     )
 
-st.warning(notice["notice_pt"])
-st.warning(
-    str(notice.get("temporal_note_pt") or "")
+if level == AudienceLevel.BASIC:
+    st.warning(
+        "MMGD é a geração distribuída: sistemas pequenos, quase todos solares, "
+        "instalados em casas, comércios e propriedades rurais. Os números são "
+        "de potência instalada (MW), não de energia gerada (MWh), e não se "
+        "somam aos das usinas da página de geração centralizada."
+    )
+    st.caption(
+        "O retrato é de um mês específico. A data de atualização do cadastro "
+        "não é a data em que a instalação foi ligada, então esta página não "
+        "mostra crescimento ao longo do tempo."
+    )
+else:
+    st.warning(notice["notice_pt"])
+    st.warning(
+        str(notice.get("temporal_note_pt") or "")
     + " Anos em `by_cadastral_update_year` **não** são apresentados como "
     "crescimento de conexões."
 )

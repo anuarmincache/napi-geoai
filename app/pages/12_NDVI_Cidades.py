@@ -19,6 +19,7 @@ from _bootstrap import (
     cached_municipality_layer,
     configure_page,
     date_br,
+    page_header,
     page_link,
     render_footer,
     render_html_map,
@@ -28,7 +29,13 @@ from _bootstrap import (
 configure_page("NDVI por satélite", icon="🛰️")
 sidebar_brand()
 
-st.title("NDVI por satélite")
+page_header(
+    "Vegetação por satélite",
+    "Índice de vegetação (NDVI) a partir de imagens Sentinel-2, para os "
+    "municípios acima de 20 mil habitantes.",
+    art_kind="satellite",
+    eyebrow="Território",
+)
 st.caption(
     "Índice de vegetação (NDVI) a partir de imagens Sentinel-2 L2A do "
     "programa Copernicus, para os municípios do Paraná acima de 20 mil "

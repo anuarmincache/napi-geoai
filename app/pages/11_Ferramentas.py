@@ -11,7 +11,7 @@ from geoai.tools import (
     pv_preliminary_sizing,
 )
 
-from _bootstrap import configure_page, render_footer, sidebar_brand
+from _bootstrap import configure_page, page_header, render_footer, sidebar_brand
 
 configure_page("Ferramentas de cálculo", icon="🧮")
 sidebar_brand()
@@ -22,7 +22,12 @@ def _br(value: float, digits: int = 2) -> str:
     return text.replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-st.title("Ferramentas de cálculo")
+page_header(
+    "Calculadoras de energia",
+    "Quanto seus equipamentos consomem e que potência solar compensaria esse consumo.",
+    art_kind="tools",
+    eyebrow="Energia",
+)
 st.caption(
     "Cálculos determinísticos com as **suas** entradas. Nenhum parâmetro é "
     "estimado por inteligência artificial. O resultado é uma simulação "

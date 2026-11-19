@@ -22,6 +22,7 @@ from _bootstrap import (
     br_num,
     cached_municipality_layer,
     configure_page,
+    page_header,
     render_footer,
     render_html_map,
     sidebar_brand,
@@ -32,7 +33,12 @@ NONE_SELECTION = "— Mapa geral do Paraná (sem destaque) —"
 configure_page("Explorador territorial")
 sidebar_brand()
 
-st.title("Explorador territorial do Paraná")
+page_header(
+    "Explorar o mapa do Paraná",
+    "Os 399 municípios em um mapa, com busca por nome ou código IBGE.",
+    art_kind="map",
+    eyebrow="Comece aqui",
+)
 st.caption(
     "Malha municipal oficial IBGE (`municipio_2025`) — **todos os "
     f"{EXPECTED_PR_MUNICIPALITY_COUNT} municípios** disponíveis. "

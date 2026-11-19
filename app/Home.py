@@ -23,6 +23,7 @@ from _bootstrap import (
     render_html_map,
     sidebar_brand,
 )
+from ui import art
 
 configure_page("Início")
 sidebar_brand()
@@ -66,18 +67,23 @@ landcover = cached_landcover_panel()
 
 # ---------------------------------------------------------------- Hero
 st.markdown(
-    """
+    f"""
 <div class="napi-hero-xl" role="banner">
-  <p class="eyebrow">NAPI Energia Zero Carbono · Paraná</p>
-  <h1>NAPI GeoAI: onde investigar <em>energia sustentável</em> no Paraná</h1>
-  <p class="lead">
-    Dados oficiais de território, população e energia dos 399 municípios,
-    reunidos em um só lugar. Explore, compare e descubra quais regiões
-    merecem um estudo mais profundo, com a fonte e o limite de cada número
-    sempre à vista.
-  </p>
-  <span class="pill">Plataforma em desenvolvimento · snapshots oficiais
-  versionados, não tempo real</span>
+  <div class="copy">
+    <p class="eyebrow">NAPI Energia Zero-Carbono · Paraná</p>
+    <h1>NAPI GeoAI: onde investigar <em>energia limpa</em> no Paraná</h1>
+    <p class="lead">
+      Território, população, energia, lavouras e cobertura da terra dos 399
+      municípios, reunidos em um só lugar. Explore, compare e descubra quais
+      regiões merecem um estudo mais profundo, com a fonte e o limite de cada
+      número sempre à vista.
+    </p>
+    <span class="pill">Em desenvolvimento · dados oficiais em retratos
+    datados, não tempo real</span>
+  </div>
+  <div class="scene" role="img"
+       aria-label="Paisagem ilustrada com energia solar e eólica"
+       style="background-image:url('{art.data_uri(art.hero_landscape())}')"></div>
 </div>
 """,
     unsafe_allow_html=True,
@@ -102,7 +108,7 @@ if mun.validated_for_map:
             _int_br(n_mun),
             "municípios com malha validada",
             "IBGE · Malha Municipal 2025",
-            "#1f4e79",
+            "#455b40",
         )
     )
 else:
@@ -119,7 +125,7 @@ if pop.available:
             "habitantes (estimativa, não Censo)",
             "IBGE · Estimativas · referência "
             f"{_date_br(panel.get('population_reference_date'))}",
-            "#0f766e",
+            "#73a535",
         )
     )
 else:
@@ -137,7 +143,7 @@ if mmgd.available:
             "ANEEL · MMGD · snapshot "
             f"{mmgd.panel.get('periodo_referencia') or 'n/d'} · potência "
             "instalada conhecida",
-            "#d97706",
+            "#fcc817",
         )
     )
 else:
@@ -156,7 +162,7 @@ if siga.available:
             "ANEEL · SIGA · coleta "
             f"{_date_br(siga.provenance.get('retrieved_at'))} · potência "
             "fiscalizada conhecida",
-            "#7c3aed",
+            "#2f4a33",
         )
     )
 else:
@@ -245,7 +251,9 @@ st.markdown(
 aud = st.columns(3)
 with aud[0]:
     st.markdown(
-        '<div class="napi-card"><span class="icon">💼</span>'
+        '<div class="napi-card">'
+        f'<img class="art" alt="" src="{art.data_uri(art.spot('solar'))}"/>'
+        ''
         "<h4>Empreendedores e empresas</h4>"
         "<p>Veja onde a geração solar distribuída já está presente, em quais "
         "classes de consumo, e selecione municípios para pesquisa comercial."
@@ -256,7 +264,9 @@ with aud[0]:
     page_link("pages/11_Ferramentas.py", "Simular consumo e sistema FV", "🧮")
 with aud[1]:
     st.markdown(
-        '<div class="napi-card"><span class="icon">🔬</span>'
+        '<div class="napi-card">'
+        f'<img class="art" alt="" src="{art.data_uri(art.spot('docs'))}"/>'
+        ''
         "<h4>Pesquisadores e universidades</h4>"
         "<p>Consulte proveniência, hashes, cobertura e limitações de cada "
         "fonte. Compare municípios com indicadores reprodutíveis.</p></div>",
@@ -266,7 +276,9 @@ with aud[1]:
     page_link("pages/6_Energia_SIGA.py", "Usinas por tecnologia (SIGA)", "⚡")
 with aud[2]:
     st.markdown(
-        '<div class="napi-card"><span class="icon">🏛️</span>'
+        '<div class="napi-card">'
+        f'<img class="art" alt="" src="{art.data_uri(art.spot('map'))}"/>'
+        ''
         "<h4>Gestores públicos e cooperativas</h4>"
         "<p>Abra o perfil do seu município, compare com vizinhos e "
         "identifique lacunas de dados antes de planejar projetos.</p></div>",
@@ -367,9 +379,10 @@ with st.expander("Como classificamos cada número"):
 
 st.info(
     "Todas as áreas ficam no menu lateral (☰ em telas estreitas): "
-    "**Ficha municipal**, **Explorador territorial**, **Energia — MMGD/ANEEL**, "
-    "**Energia — SIGA/ANEEL**, **Ferramentas de cálculo**, **Agricultura**, "
-    "**Meio Ambiente**, **Mapa Paraná**, **Domínios**, **Fontes e qualidade** "
-    "e **Sobre**."
+    "**Ficha do município**, **Explorar o mapa**, **Solar e geração "
+    "distribuída** (Energia, MMGD), **Usinas e geração centralizada** "
+    "(Energia, SIGA), **Calculadoras**, **Agricultura e pecuária**, "
+    "**Cobertura da terra** (Meio Ambiente), **Vegetação por satélite**, "
+    "**Fontes e qualidade** e **Sobre o projeto**."
 )
 render_footer()

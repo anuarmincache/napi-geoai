@@ -60,7 +60,7 @@ def test_streamlit_config_cors_xsrf() -> None:
     text = cfg.read_text(encoding="utf-8")
     assert "primaryColor" in text
     assert "gatherUsageStats = false" in text
-    assert "1f4e79" in text
+    assert "4a7a26" in text  # verde do logotipo NAPI EZC
     assert "enableXsrfProtection = true" in text
     # enableCORS=false removido: default true é mais compatível com a Cloud.
     assert "enableCORS = false" not in text

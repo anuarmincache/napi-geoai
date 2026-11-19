@@ -83,3 +83,18 @@ Smoke CI: `tests/test_streamlit_app.py` + `tests/test_cloud_ready.py`.
   Funções puras e testadas (`tests/test_energy_calc.py`). Tarifa e
   irradiação (HSP) não têm valor padrão: são entradas obrigatórias do
   usuário. PR e potência do módulo são hipóteses declaradas.
+
+## Identidade visual NAPI Energia Zero-Carbono (2026-11-19)
+
+- `assets/napi-ezc-logo.png`: logotipo cedido pelo projeto. Fundo transparente
+  e traços brancos: usar só sobre fundo claro (barra lateral e rodapé).
+- `app/ui/theme.py`: folha de estilo. Paleta tirada do logotipo: verde-floresta
+  `#2f4a33`, verde `#455b40`, verde-folha `#73a535`, amarelo-sol `#fcc817`.
+  Títulos em Montserrat, texto em Source Sans 3.
+- `app/ui/art.py`: ilustrações próprias em SVG (paisagem da Home e uma por
+  tema). Não reproduzem marca de terceiros.
+- `page_header()` em `app/_bootstrap.py`: faixa de título de todas as páginas.
+- Menu: Domínios, Mapa do Paraná e o piloto Sentinel saíram do menu principal
+  e continuam acessíveis por "Sobre o projeto".
+- UEM e Fundação Araucária aparecem por nome no rodapé. Os logotipos delas não
+  estão no repositório.

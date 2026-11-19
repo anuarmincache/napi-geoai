@@ -9,6 +9,7 @@ from geoai.presentation import AudienceLevel
 from _bootstrap import (
     cached_parana_layer,
     configure_page,
+    page_header,
     render_footer,
     render_html_map,
     sidebar_brand,
@@ -17,10 +18,15 @@ from _bootstrap import (
 configure_page("Mapa Paraná")
 sidebar_brand()
 
-st.title("Mapa do Paraná")
+page_header(
+    "Mapa do Paraná",
+    "Contorno oficial do estado, segundo o IBGE.",
+    art_kind="map",
+    eyebrow="Território",
+)
 st.caption(
-    "Geometria real versionada em `data/derived/parana_uf_2025.geojson`. "
-    "Sem camada de aptidão solar fictícia."
+    "Limite estadual oficial do IBGE (malha 2025). Não há camada de aptidão "
+    "solar nesta versão."
 )
 
 bundle = cached_parana_layer()

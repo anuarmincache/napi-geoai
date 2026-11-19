@@ -6,15 +6,26 @@ import streamlit as st
 from geoai.connectors.catalog import list_sources
 from geoai.portal import quality_snapshot_for_demo
 
-from _bootstrap import cached_parana_layer, configure_page, render_footer, sidebar_brand
+from _bootstrap import (
+    cached_parana_layer,
+    configure_page,
+    page_header,
+    render_footer,
+    sidebar_brand,
+)
 
 configure_page("Fontes e qualidade")
 sidebar_brand()
 
-st.title("Fontes oficiais e qualidade")
+page_header(
+    "Fontes e qualidade dos dados",
+    "De onde vem cada dado, quando foi coletado e como foi conferido.",
+    art_kind="docs",
+    eyebrow="Transparência",
+)
 st.caption(
-    "Catálogo MVP 03 (`geoai.connectors.catalog`) + snapshot tabular MVP 06. "
-    "Sem novos downloads neste rerun."
+    "Catálogo das fontes oficiais usadas ou previstas, com licença, "
+    "periodicidade e situação de cada uma. Esta página não baixa dados."
 )
 
 sources = list_sources()

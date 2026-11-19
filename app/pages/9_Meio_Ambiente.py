@@ -28,6 +28,7 @@ from _bootstrap import (
     cached_landcover_panel,
     cached_municipality_layer,
     configure_page,
+    page_header,
     render_footer,
     render_html_map,
     sidebar_brand,
@@ -36,7 +37,12 @@ from _bootstrap import (
 configure_page("Meio Ambiente")
 sidebar_brand()
 
-st.title("Meio Ambiente")
+page_header(
+    "Cobertura e uso da terra",
+    "Floresta, agricultura, pastagem e área urbana nos 399 municípios, de 1985 a 2025.",
+    art_kind="forest",
+    eyebrow="Território",
+)
 lc = cached_landcover_panel()
 if lc.available:
     st.caption(
