@@ -42,16 +42,17 @@ rows = [
 ]
 st.dataframe(rows, width="stretch", hide_index=True)
 
-st.subheader("Qualidade — piloto territorial PR")
-bundle = cached_parana_layer()
-snap = quality_snapshot_for_demo(bundle)
-st.json(snap)
-st.markdown(
+with st.expander("Detalhes técnicos: verificação de qualidade do contorno estadual"):
+    bundle = cached_parana_layer()
+    snap = quality_snapshot_for_demo(bundle)
+    st.json(snap)
+    st.markdown(
+        """
+    **Escopo:** `validate_tabular_record` avalia atributos do registro, não a
+    geometria PostGIS. A validação geométrica já está no artefato
+    `parana_uf_2025.validation.json` (MVP 02). Metadados ausentes aparecem como
+    qualidade **não determinada** — a UI não inventa datas nem atributos.
     """
-**Escopo:** `validate_tabular_record` avalia atributos do registro, não a
-geometria PostGIS. A validação geométrica já está no artefato
-`parana_uf_2025.validation.json` (MVP 02). Metadados ausentes aparecem como
-qualidade **não determinada** — a UI não inventa datas nem atributos.
-"""
-)
+    )
+
 render_footer()

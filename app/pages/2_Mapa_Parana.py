@@ -33,11 +33,11 @@ bundle = cached_parana_layer()
 if not bundle.validated_for_map:
     st.error(
         bundle.missing_reason_pt
-        or "Camada não validada — mapa bloqueado (fail-closed)."
+        or "O contorno não passou na validação e não será exibido."
     )
     st.warning(
-        "A interface não apresenta geometria não verificada "
-        "(SHA, CRS ou validação)."
+        "O portal só mostra mapas cujo arquivo foi conferido contra a "
+        "fonte oficial."
     )
     render_footer()
     st.stop()
@@ -99,7 +99,7 @@ with c2:
     lim = bundle.validation.get("map_crs_limitation")
     if lim:
         st.caption(lim)
-    st.success("Camada validada para exibição (SHA + CRS + geometria).")
+    st.success("Contorno conferido contra o arquivo oficial do IBGE.")
 
 with c1:
     try:

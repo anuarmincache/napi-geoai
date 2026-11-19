@@ -158,7 +158,7 @@ if plan is None:
     st.info(
         "O plano do ciclo ainda não foi gerado. Ele consulta o catálogo oficial "
         "do Copernicus e informa, sem baixar imagem, quantas cenas o ciclo exige "
-        "e quanto elas somam. Comando: `python scripts/plan_ndvi_targets.py`."
+        "e quanto elas somam."
     )
 else:
     summary = plan["summary"]

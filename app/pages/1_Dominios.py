@@ -32,7 +32,7 @@ labels = {c.spec.title_pt: c for c in cards}
 choice = st.selectbox(
     "Escolha o domínio",
     list(labels.keys()),
-    help="Contratos temáticos já registrados no motor científico.",
+    help="Áreas temáticas do projeto.",
 )
 card = labels[choice]
 
@@ -58,9 +58,9 @@ with c2:
     for item in card.spec.out_of_scope_now:
         st.markdown(f"- _{item}_")
 
-st.markdown("#### Indicadores (contratos — não calculados)")
+st.markdown("#### Indicadores previstos")
 if not card.indicators:
-    st.warning("Nenhum IndicatorSpec cadastrado para este domínio ainda.")
+    st.warning("Ainda não há indicador previsto para este domínio.")
 else:
     for ind in card.indicators:
         with st.expander(ind.indicator_id):

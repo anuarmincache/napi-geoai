@@ -200,7 +200,7 @@ with map_col:
             + (
                 mun.missing_reason_pt
                 or mmgd.missing_reason_pt
-                or "artefatos derivados ausentes."
+                or "os dados necessários não estão disponíveis."
             )
         )
 

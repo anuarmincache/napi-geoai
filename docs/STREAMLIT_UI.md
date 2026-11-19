@@ -98,3 +98,23 @@ Smoke CI: `tests/test_streamlit_app.py` + `tests/test_cloud_ready.py`.
   e continuam acessíveis por "Sobre o projeto".
 - UEM e Fundação Araucária aparecem por nome no rodapé. Os logotipos delas não
   estão no repositório.
+
+## Preparação para publicação (2026-11-19)
+
+Antes de publicar na Streamlit Community Cloud:
+
+- `.streamlit/config.toml`: `showErrorDetails = false`. Um erro inesperado não
+  expõe caminho de arquivo nem traceback ao visitante. Em desenvolvimento, o
+  traceback continua no terminal.
+- Linguagem interna retirada do texto visível: nomes de artefato, de script e
+  de coluna de origem, "fail-closed", numeração de MVP, porta do banco local e
+  o estado do Supabase. O detalhe técnico permanece no nível "Técnico" do
+  seletor de público e dentro de blocos recolhidos.
+- A barra lateral não descreve mais a infraestrutura da demonstração.
+- "Sobre o projeto" fala do que a plataforma é, do que ela não faz e de como os
+  dados são tratados. O checklist de publicação saiu da interface e continua em
+  `docs/MVP08_DEPLOY.md`.
+
+Pendente antes de divulgar: aval da coordenação do NAPI EZC para o uso dos
+nomes institucionais, revisão dos números pelos colaboradores científicos e um
+primeiro teste real na nuvem.

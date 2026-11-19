@@ -86,18 +86,18 @@ tipos = sorted(
 f1, f2 = st.columns([2, 1])
 with f1:
     tipo = st.selectbox(
-        "Tecnologia (SigTipoGeracao) — redefine KPIs, ranking e mapa",
+        "Tecnologia de geração",
         options=["(todas)", *tipos],
         help=(
-            "Os cards superiores e o mapa usam MW/contagens **desta** "
-            "tecnologia. Catálogo municipal permanece 399."
+            "Os indicadores, a lista e o mapa passam a considerar só a "
+            "tecnologia escolhida. A lista de municípios continua com os 399."
         ),
     )
 with f2:
     st.selectbox(
         "Fase",
         options=[PHASE_OPERACAO],
-        help="Demais fases existem na qualidade; UI default = Operação.",
+        help="Esta página mostra só usinas em operação.",
         disabled=True,
     )
 
@@ -107,18 +107,19 @@ n_un = int(scope["n_empreendimentos_nao_associados"])
 
 if level is AudienceLevel.BASIC:
     st.info(
-        "O mapa mostra capacidade fiscalizada **conhecida** (MW) por município "
-        "nas usinas SIGA em operação, no filtro de tecnologia escolhido. "
-        "Cinza claro = nenhuma usina **georreferenciada e associada** ao "
-        "polígono nesse escopo — não é prova de ausência absoluta "
-        f"({n_un} usina(s) do escopo sem associação municipal)."
+        "O mapa mostra a potência das usinas em operação em cada município, "
+        "segundo a ANEEL. Cinza claro significa que nenhuma usina com "
+        "localização conhecida foi associada ao município. Isso não prova que "
+        f"não exista usina ali: {n_un} usina(s) não puderam ser localizadas "
+        "em um município."
     )
 elif level is AudienceLevel.INTERMEDIATE:
     st.info(
-        "Potência fiscalizada ≠ outorgada ≠ energia gerada. "
-        f"Fase padrão: {PHASE_OPERACAO}. Join espacial de referência: QGIS; "
-        "GeoPandas reconcilia CodCEG→CD_MUN (fail-closed). "
-        "O filtro de tecnologia redefine KPIs, ranking e mapa."
+        "Potência fiscalizada, potência outorgada e energia gerada são "
+        f"coisas diferentes. Fase considerada: {PHASE_OPERACAO}. Cada usina "
+        "é associada ao município pelas coordenadas, com conferência por dois "
+        "métodos independentes. O filtro de tecnologia vale para indicadores, "
+        "lista e mapa."
     )
 else:
     st.info(
@@ -131,7 +132,7 @@ if tipo_filter:
     st.info(
         f"Escopo ativo: tecnologia **{tipo_filter}** "
         f"(`{scope['metric_scope']}`). "
-        "KPIs superiores, ranking, comparação e mapa referem-se só a este tipo."
+        "Indicadores, lista, comparação e mapa referem-se só a este tipo."
     )
 else:
     st.caption(
