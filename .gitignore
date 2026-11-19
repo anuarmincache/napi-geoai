@@ -117,3 +117,6 @@ qgis_crash_reports/
 scratch/
 tmp/
 temp/
+
+# Auditorias e evidências locais (não versionar sem autorização)
+reports/

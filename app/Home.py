@@ -1,4 +1,4 @@
-"""Entrada Streamlit — NAPI GeoAI (MVP 08)."""
+"""Entrada Streamlit — NAPI GeoAI."""
 
 from __future__ import annotations
 
@@ -47,9 +47,12 @@ col_a.metric(
     help="Artefato versionado em data/derived — fail-closed se inválido.",
 )
 col_b.metric(
-    "Feições no mapa",
+    "Feições (contorno UF)",
     bundle.feature_count,
-    help="Contagem apenas se a camada passou na validação.",
+    help=(
+        "Contorno estadual IBGE — 1 polígono da UF neste artefato. "
+        "Os 399 municípios estão no Explorador territorial."
+    ),
 )
 col_c.metric(
     "SHA GeoJSON",
@@ -85,7 +88,7 @@ for idx, card in enumerate(cards):
 st.info(
     "Navegação: **Domínios**, **Mapa Paraná**, **Explorador territorial**, "
     "**Fontes e qualidade**, **Sobre e deploy**, **Energia — SIGA/ANEEL**, "
-    "**Ficha municipal**, **Meio Ambiente** e "
+    "**Energia — MMGD/ANEEL**, **Ficha municipal**, **Meio Ambiente** e "
     "**Agricultura**. "
     "Em telas estreitas, abra o "
     "menu lateral (☰)."

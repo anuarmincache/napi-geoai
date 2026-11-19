@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import tempfile
 from pathlib import Path
 
 import streamlit as st
@@ -9,12 +11,14 @@ from geoai.portal import (
     demo_connection_policy,
     list_domain_cards,
     load_energy_panel_bundle,
+    load_mmgd_panel_bundle,
     load_municipality_layer,
     load_parana_layer,
     load_population_panel_bundle,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+_MAP_HTML_CACHE = Path(tempfile.gettempdir()) / "napi_geoai_streamlit_maps"
 
 _CUSTOM_CSS = """
 <style>
@@ -161,6 +165,20 @@ def configure_page(title: str, *, icon: str = "🗺️") -> None:
     st.markdown(_CUSTOM_CSS, unsafe_allow_html=True)
 
 
+def render_html_map(html: str, *, height: int) -> None:
+    """Exibe HTML Folium/Leaflet via ``st.iframe`` (API atual do Streamlit).
+
+    Grava o HTML em cache local efêmero (fora do Git) e embute por caminho.
+    """
+
+    digest = hashlib.sha1(html.encode("utf-8")).hexdigest()[:20]
+    _MAP_HTML_CACHE.mkdir(parents=True, exist_ok=True)
+    path = _MAP_HTML_CACHE / f"{digest}.html"
+    if not path.is_file():
+        path.write_text(html, encoding="utf-8")
+    st.iframe(path, height=int(height), width="stretch")
+
+
 def sidebar_brand() -> None:
     st.sidebar.markdown(
         '<p class="napi-side-brand">NAPI GeoAI</p>',
@@ -168,7 +186,7 @@ def sidebar_brand() -> None:
     )
     st.sidebar.caption(
         "Inteligência geoespacial para empreendedorismo sustentável. "
-        "Interface demonstrativa (MVP 08) — motor científico em `geoai/`, "
+        "Interface demonstrativa — motor científico em `geoai/`, "
         "serviços portáveis em `geoai.portal`."
     )
     policy = demo_connection_policy()
@@ -207,6 +225,11 @@ def cached_municipality_layer():
 @st.cache_resource(show_spinner="Carregando painel energético SIGA…")
 def cached_energy_panel():
     return load_energy_panel_bundle(REPO_ROOT)
+
+
+@st.cache_resource(show_spinner="Carregando painel MMGD…")
+def cached_mmgd_panel():
+    return load_mmgd_panel_bundle(REPO_ROOT)
 
 
 @st.cache_resource(show_spinner="Carregando população IBGE 2026…")

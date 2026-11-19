@@ -47,6 +47,7 @@ SHA divergente / CRS ausente → erro claro, **sem** exibir mapa como validado.
 - Badges com texto (não só cor); `help=` em controles principais
 - Altura do mapa ajustável; layout wide + sidebar em mobile (☰)
 - Footer com limites da demonstração
+- Mapas Folium via `render_html_map` (`st.iframe` + HTML em cache temp); não usar `st.components.v1.html`
 
 ## Deploy Community Cloud
 

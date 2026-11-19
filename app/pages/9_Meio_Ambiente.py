@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import streamlit as st
-import streamlit.components.v1 as components
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
 from geoai.portal import (
     compare_municipalities,
@@ -19,6 +18,7 @@ from _bootstrap import (
     cached_municipality_layer,
     configure_page,
     render_footer,
+    render_html_map,
     sidebar_brand,
 )
 
@@ -132,7 +132,7 @@ with left:
                 bundle,
                 selected_code=st.session_state.env_code,
             )
-            components.html(html, height=560, scrolling=False)
+            render_html_map(html, height=560)
         except Exception as exc:  # noqa: BLE001
             st.error(f"Falha no mapa: {exc}")
 

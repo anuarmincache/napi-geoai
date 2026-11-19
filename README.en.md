@@ -49,7 +49,9 @@ pytest -q
 
 Delivered MVP status is documented in the [Portuguese README](README.md). This English page does not repeat that history.
 
-Energy panel (MVP 10): municipal search across all 399 IBGE codes, associated plants only, separate fiscalizada/outorgada MW, generation-type mix, and an explicit notice for 34 unmatched Operação plants. MMGD remains out of scope. MW is not MWh.
+Energy panel (MVP 10): municipal search across all 399 IBGE codes, associated plants only, separate fiscalizada/outorgada MW, generation-type mix, and an explicit notice for 34 unmatched Operação plants. MW is not MWh.
+
+MMGD/ANEEL (MVP 14): Streamlit page **Energia — MMGD/ANEEL** — plants and known installed capacity (MW) for all 399 PR municipalities; credit UCs are secondary; ODbL; do not mix with SIGA.
 
 Environment shell (MVP 12): IBGE municipal mesh only; MapBiomas Collection 11 remains a contract without local statistics or percentages.
 

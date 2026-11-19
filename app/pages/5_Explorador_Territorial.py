@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 
 import streamlit as st
-import streamlit.components.v1 as components
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
 from geoai.portal import (
     compare_municipalities,
@@ -23,6 +22,7 @@ from _bootstrap import (
     cached_municipality_layer,
     configure_page,
     render_footer,
+    render_html_map,
     sidebar_brand,
 )
 
@@ -145,7 +145,7 @@ with c_search:
         st.button(
             "Limpar busca",
             on_click=_clear_search,
-            use_container_width=True,
+            width="stretch",
             help="Remove o filtro e volta a listar os 399 municípios.",
         )
 
@@ -268,7 +268,7 @@ with map_col:
                 fill_opacity=float(fill_opacity),
                 line_weight=float(line_weight),
             )
-            components.html(html, height=int(map_height), scrolling=False)
+            render_html_map(html, height=int(map_height))
         except Exception as exc:  # noqa: BLE001
             st.error(f"Falha ao renderizar mapa: {exc}")
 

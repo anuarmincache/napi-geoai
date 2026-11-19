@@ -41,11 +41,15 @@ _AVAILABILITY: dict[DomainId, DomainAvailability] = {
             "População IBGE 2026 + densidade e kW/hab (ficha municipal).",
             "Join espacial QGIS + agregados dos 399 municípios IBGE.",
             "Mapa do contorno oficial do Paraná (base territorial).",
-            "Catálogo ANEEL/INPE/ONS (MMGD e aptidão solar ainda fora).",
+            "Catálogo ANEEL/INPE/ONS.",
+            "Painel MMGD/ANEEL: empreendimentos e potência instalada "
+            "conhecida (MW) por município (separado do SIGA).",
         ),
         planned_pt=(
             "Aptidão solar com pesos e restrições explícitos.",
-            "Geração efetiva (MWh) e MMGD em MVP separados.",
+            "Geração efetiva (MWh) com fonte oficial dedicada.",
+            "MW MMGD desagregado por tecnologia no artefato municipal "
+            "(hoje o filtro categórico usa contagem).",
         ),
     ),
     DomainId.ENVIRONMENT: DomainAvailability(

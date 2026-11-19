@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 
 import streamlit as st
-import streamlit.components.v1 as components
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
 from geoai.portal import (
     list_municipalities,
@@ -21,10 +20,12 @@ from geoai.portal.municipal_profile import (
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
+    cached_mmgd_panel,
     cached_municipality_layer,
     cached_population_panel,
     configure_page,
     render_footer,
+    render_html_map,
     sidebar_brand,
 )
 
@@ -173,6 +174,35 @@ with right:
             )
         st.caption(profile.get("energy_scope_pt") or "")
         st.caption(profile.get("unassociated_plants_limitation_pt") or "")
+        mmgd = cached_mmgd_panel()
+        st.markdown("##### MMGD (separado do SIGA)")
+        if not mmgd.available:
+            st.caption(mmgd.missing_reason_pt or "Painel MMGD indisponível.")
+        else:
+            mmgd_row = next(
+                (
+                    r
+                    for r in (mmgd.panel.get("municipalities") or [])
+                    if str(r.get("CD_MUN")) == str(profile["CD_MUN"])
+                ),
+                None,
+            )
+            if mmgd_row is None:
+                st.caption("Município ausente no painel MMGD.")
+            else:
+                st.metric(
+                    "Empreendimentos MMGD",
+                    f"{int(mmgd_row.get('n_empreendimentos') or 0)}",
+                )
+                mmgd_mw = mmgd_row.get("potencia_instalada_mw_conhecida")
+                st.metric(
+                    "MW instalada conhecida (MMGD)",
+                    f"{float(mmgd_mw):,.3f}" if mmgd_mw is not None else "n/d",
+                )
+                st.caption(
+                    "MMGD ≠ SIGA. Contagem = empreendimentos; "
+                    "UCs crédito não substituem essa contagem."
+                )
     with st.expander("Fonte e metodologia", expanded=False):
         for line in population_attribution_lines(pop):
             st.markdown(f'<p class="napi-meta">{line}</p>', unsafe_allow_html=True)
@@ -186,7 +216,7 @@ with left:
                 metric=metric_choice,
                 selected_code=code,
             )
-            components.html(html, height=620, scrolling=False)
+            render_html_map(html, height=620)
         except Exception as exc:  # noqa: BLE001
             st.error(f"Falha no mapa: {exc}")
 

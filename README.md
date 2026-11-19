@@ -100,7 +100,9 @@ Preparação Community Cloud (MVP 08): [docs/MVP08_DEPLOY.md](docs/MVP08_DEPLOY.
 
 Explorador territorial (MVP 09): [docs/MVP09_EXPLORADOR.md](docs/MVP09_EXPLORADOR.md) — 399 municípios IBGE, busca, cidades-polo e comparação sem indicadores inventados.
 
-Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERGIA.md) — busca nos 399 municípios, usinas associadas, potências fiscalizada e outorgada separadas, composição por tipo (UTE/CGH/PCH/UFV/UHE/EOL), aviso dos 34 empreendimentos não associados; MMGD fora do escopo.
+Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERGIA.md) — busca nos 399 municípios, usinas associadas, potências fiscalizada e outorgada separadas, composição por tipo (UTE/CGH/PCH/UFV/UHE/EOL), aviso dos 34 empreendimentos não associados.
+
+MMGD/ANEEL (MVP 14): [docs/MVP14_FASE2_RELATORIO.md](docs/MVP14_FASE2_RELATORIO.md), página Streamlit **Energia — MMGD/ANEEL** (`app/pages/8_Energia_MMGD.py`) — empreendimentos e potência instalada conhecida (MW) nos 399 municípios; UCs crédito secundárias; ODbL; **não** misturar com SIGA.
 
 População IBGE 2026 e ficha municipal (MVP 11): [docs/MVP11_POPULACAO.md](docs/MVP11_POPULACAO.md) — estimativa 01/07/2026, densidade, kW/hab SIGA, 399 municípios.
 

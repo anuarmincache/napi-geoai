@@ -160,15 +160,22 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
             "Atualização periódica no CKAN; houve suspensão 23/09/2025–13/11/2025 "
             "(migração SISGD→MMGD). Confirmar data do recurso antes de usar."
         ),
-        verification_policy="Apenas catalogado; sem conector automático neste MVP",
+        verification_policy=(
+            "Conector prototype: ZIP via HTTP, validação de cabeçalho, "
+            "streaming PR; bruto fora do Git. Confirmar last_modified CKAN."
+        ),
         catalogued_at=CATALOGUED_AT,
-        spatial_coverage="Brasil (município/UF)",
+        spatial_coverage="Brasil (município/UF; CodMunicipioIbge)",
         crs_or_coords="atributos municipais (sem geometria nativa no CSV principal)",
-        granularity="empreendimento MMGD",
+        granularity="empreendimento MMGD (CodEmpreendimento)",
         auth_required=False,
-        status=SourceStatus.CATALOGUED,
-        notes="Arquivo grande (~100+ MiB). Não versionar bruto.",
-        connector_module=None,
+        status=SourceStatus.PROTOTYPE,
+        notes=(
+            "ZIP ~108 MiB; CSV interno ~1,5 GiB. Não versionar bruto. "
+            "Potência em kW. Campos pessoais (CPF/nome/CEP) "
+            "não vão a artefatos públicos."
+        ),
+        connector_module="geoai.connectors.aneel_mmgd",
     ),
     SourceSpec(
         source_id="inpe.labren.atlas_solar_2017",

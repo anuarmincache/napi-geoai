@@ -1,0 +1,15 @@
+{
+  "source_id": "aneel.mmgd.empreendimentos",
+  "url": "https://dadosabertos.aneel.gov.br/dataset/5e0fafd2-21b9-4d5b-b622-40438d40aba2/resource/b1bd71e7-d0ad-4214-9053-cbd58e9564a7/download/empreendimento-geracao-distribuida.zip",
+  "license_note": "ODbL — Open Data Commons Open Database License (ANEEL Dados Abertos). Redistribuição/derivação sujeitas aos termos ODbL.",
+  "retrieved_at": "2026-11-18T14:16:42.622011+00:00",
+  "prepared_at": "2026-11-18T14:29:33.640900+00:00",
+  "content_sha256": "b6bf91d1cf6f50657730ed3990d3f3b8628afdf90a55a1b951433679986ef45f",
+  "content_length": 113212595,
+  "http_etag": "\"1794980278.7521179-113212595-2148733619\"",
+  "http_last_modified": "Wed, 18 Nov 2026 05:37:58 GMT",
+  "local_zip": "data/raw/aneel/empreendimento-geracao-distribuida.zip",
+  "dat_conjunto": "2026-11-18",
+  "periodo_referencia": "11/2026",
+  "municipios_validation_sha256": "e51d3dc930656cffb15304fabf864a5a9700140ff04c78f521214b2d826130f1"
+}

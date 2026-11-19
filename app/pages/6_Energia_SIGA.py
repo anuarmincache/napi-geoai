@@ -6,7 +6,6 @@ import json
 
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
 from geoai.energy.siga_aggregate import PHASE_OPERACAO
 from geoai.portal import (
@@ -31,6 +30,7 @@ from _bootstrap import (
     cached_municipality_layer,
     configure_page,
     render_footer,
+    render_html_map,
     sidebar_brand,
 )
 
@@ -117,7 +117,7 @@ else:
     st.info(
         "Artefatos: `siga_pr_energy_panel.json`, proveniência/qualidade, "
         "`siga_pr_qgis_join_report.json` (assignments). "
-        "MMGD catalogado, fora deste MVP."
+        "MMGD: pipeline derivado separado — não misturar com SIGA."
     )
 
 if tipo_filter:
@@ -297,7 +297,7 @@ with left:
                 selected_code=st.session_state.energy_code,
                 tipo=tipo_filter,
             )
-            components.html(html, height=620, scrolling=False)
+            render_html_map(html, height=620)
         except Exception as exc:  # noqa: BLE001
             st.error(f"Falha no mapa: {exc}")
 

@@ -1,0 +1,54 @@
+{
+  "source_id": "aneel.mmgd.empreendimentos",
+  "prepared_at": "2026-11-18T14:29:33.640900+00:00",
+  "rows_national": 4745133,
+  "rows_pr_streamed": 335905,
+  "n_valid": 335899,
+  "n_rejected": 6,
+  "duplicate_cod_empreendimento": 0,
+  "municipios_com_registros": 399,
+  "municipios_zero_confirmado": 0,
+  "ibge_expected": 399,
+  "potencia_instalada_kw_conhecida": 6901846.589999,
+  "potencia_instalada_mw_conhecida": 6901.84659,
+  "qtd_uc_recebe_credito_total": 621012,
+  "by_tipo": {
+    "(vazio)": 2,
+    "CGH": 8,
+    "EOL": 2,
+    "UFV": 335781,
+    "UTE": 106
+  },
+  "by_classe": {
+    "Comercial": 35795,
+    "Consumo Próprio": 8,
+    "Iluminação pública": 20,
+    "Industrial": 8685,
+    "Poder Público": 1117,
+    "REBR": 4654,
+    "Residencial": 234600,
+    "Rural": 50994,
+    "Serviço Público": 26
+  },
+  "reject_reasons": {
+    "MdaPotenciaInstaladaKW inválida": 6
+  },
+  "reconcile_ok": true,
+  "unit_primary": "empreendimento (CodEmpreendimento)",
+  "unit_secondary_uc_credito": "QtdUCRecebeCredito — unidades consumidoras que recebem créditos; não confundir com número de empreendimentos",
+  "temporal_note_pt": "DthAtualizaCadastralEmpreend é atualização cadastral, não data de conexão. AnmPeriodoReferencia é o período do snapshot. Não interpretar anos cadastrais como crescimento histórico de conexões.",
+  "personal_fields_excluded": [
+    "NumCPFCNPJ",
+    "NomTitularEmpreendimento",
+    "CodCEP",
+    "NumCoordESub",
+    "NumCoordNSub"
+  ],
+  "benchmark": {
+    "download_elapsed_s": 0.218,
+    "aggregate_elapsed_s": 133.215,
+    "peak_tracemalloc_mb": 44.49,
+    "zip_bytes": 113212595,
+    "zip_sha256": "b6bf91d1cf6f50657730ed3990d3f3b8628afdf90a55a1b951433679986ef45f"
+  }
+}

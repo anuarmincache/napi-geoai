@@ -71,3 +71,15 @@ def population_provenance_path(repo_root: Path | None = None) -> Path:
 def population_quality_path(repo_root: Path | None = None) -> Path:
     return derived_dir(repo_root) / "ibge_pr_population_2026.quality.json"
 
+
+def mmgd_panel_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "mmgd_pr_panel.json"
+
+
+def mmgd_provenance_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "mmgd_pr.provenance.json"
+
+
+def mmgd_quality_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "mmgd_pr.quality.json"
+
