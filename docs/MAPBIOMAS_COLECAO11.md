@@ -95,3 +95,37 @@ A página atual continua sem percentual. Quando a carga passar:
   de desmatamento.
 
 Aba Energia, NDVI, rasters e cálculos Sentinel-2 permanecem fora desta etapa.
+
+## Aquisição e carga — 2026-11-19
+
+O arquivo foi obtido pelo botão "Baixar" da página oficial de estatísticas.
+
+| Item | Valor |
+|---|---|
+| Link | `https://drive.google.com/uc?id=1otOqymHuixvkRGVl65zTTNyfaHo46Gqk&export=download` |
+| Entrega | `.zip` com um único membro, o `.xlsx` de mesmo nome |
+| `.zip` | 78.296.450 bytes, SHA-256 `c223fd84dcdd21e49d651788ff5a726a7e3aa04d2eab730e99407dd80a8d3e30` |
+| `.xlsx` | 78.354.101 bytes, SHA-256 `8de70a35fdd35f943e059763d128825ee08c0978948311ac03c769e0f178abfe` |
+| Versão declarada | Versão 11, agosto de 2026 (aba `READ_ME`) |
+| Abas | `READ_ME`, `COVERAGE_11`, `PIVOT_COVERAGE`, `METADATA`, `LEGEND_CODE` |
+
+Estrutura confirmada em `COVERAGE_11`: layout largo, uma linha por bioma ×
+município × classe folha. Colunas: `ID`, `country`, `biome`, `region`,
+`state` (nome por extenso), `geocode`, `municipality`, `municipality-state`,
+`class`, `class_level_0` a `class_level_4`, `y1985` a `y2025`.
+
+Recorte Paraná: 5.008 linhas de 77.606, 399 geocódigos, biomas Mata Atlântica
+(4.892 linhas) e Cerrado (116). Dez municípios têm os dois biomas. Só classes
+folha, todas na legenda do contrato. Nenhuma célula vazia. O ano 2025 está
+presente.
+
+Diferença entre área mapeada (2025) e `AREA_KM2`: mediana 0,22%, máxima 4,82%,
+31 municípios acima de 1%. Acima do que o FAQ indica (0,5%). Os hectares não
+foram reescalados; a diferença aparece na página por município.
+
+Carga: `geoai/landcover/mapbiomas_load.py` e
+`scripts/prepare_mapbiomas_parana.py`. O painel guarda os anos múltiplos de 5
+e o último (1985, 1990, …, 2020, 2025), em nove grupos de exibição. A aba
+mostra percentual sobre a área mapeada, composição, diferença de estoque entre
+1985 e 2025 e CSV. Não há módulo de desmatamento. Unidades de conservação e
+recursos hídricos continuam ausentes.

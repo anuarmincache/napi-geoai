@@ -1,0 +1,132 @@
+{
+ "prepared_at": "2026-11-19T18:37:36.194526+00:00",
+ "sheet": "COVERAGE_11",
+ "rows_national": 77606,
+ "rows_parana": 5008,
+ "years_in_file": [
+  1985,
+  1986,
+  1987,
+  1988,
+  1989,
+  1990,
+  1991,
+  1992,
+  1993,
+  1994,
+  1995,
+  1996,
+  1997,
+  1998,
+  1999,
+  2000,
+  2001,
+  2002,
+  2003,
+  2004,
+  2005,
+  2006,
+  2007,
+  2008,
+  2009,
+  2010,
+  2011,
+  2012,
+  2013,
+  2014,
+  2015,
+  2016,
+  2017,
+  2018,
+  2019,
+  2020,
+  2021,
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "geocode_count": 399,
+ "biomes": [
+  "Cerrado",
+  "Mata Atlântica"
+ ],
+ "record_count": 205328,
+ "classes_present": [
+  3,
+  4,
+  5,
+  9,
+  11,
+  12,
+  15,
+  20,
+  21,
+  23,
+  24,
+  25,
+  29,
+  30,
+  31,
+  32,
+  33,
+  39,
+  40,
+  41,
+  46,
+  47,
+  48,
+  49,
+  50,
+  62
+ ],
+ "area_delta_vs_ibge": {
+  "median_abs": 0.002208,
+  "max_abs": 0.048237,
+  "municipalities_above_0_5_percent": 91,
+  "municipalities_above_1_percent": 31,
+  "largest": [
+   {
+    "cd_mun": "4117214",
+    "relative_delta": -0.048237
+   },
+   {
+    "cd_mun": "4113759",
+    "relative_delta": 0.042636
+   },
+   {
+    "cd_mun": "4108551",
+    "relative_delta": 0.031886
+   },
+   {
+    "cd_mun": "4112504",
+    "relative_delta": -0.028199
+   },
+   {
+    "cd_mun": "4124301",
+    "relative_delta": 0.026828
+   },
+   {
+    "cd_mun": "4106555",
+    "relative_delta": -0.021246
+   },
+   {
+    "cd_mun": "4107405",
+    "relative_delta": -0.020547
+   },
+   {
+    "cd_mun": "4106852",
+    "relative_delta": 0.019878
+   },
+   {
+    "cd_mun": "4115739",
+    "relative_delta": -0.01987
+   },
+   {
+    "cd_mun": "4103107",
+    "relative_delta": 0.019696
+   }
+  ]
+ },
+ "reconcile_ok": true
+}

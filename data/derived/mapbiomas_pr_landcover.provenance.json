@@ -1,0 +1,21 @@
+{
+ "prepared_at": "2026-11-19T18:37:36.194526+00:00",
+ "source_id": "mapbiomas.brazil.lulc",
+ "organization": "MapBiomas",
+ "product": "Biomas, Estados e Municípios | Cobertura 30m - Coleção 11",
+ "release": "Versão 11, agosto de 2026 (aba READ_ME)",
+ "statistics_page": "https://brasil.mapbiomas.org/downloads/estatisticas/",
+ "official_link": "https://drive.google.com/uc?id=1otOqymHuixvkRGVl65zTTNyfaHo46Gqk&export=download",
+ "file_name": "MAPBIOMAS_BRAZIL-COL.11-BIOME_STATE_MUNICIPALITY.xlsx",
+ "content_bytes": 78354101,
+ "content_sha256": "8de70a35fdd35f943e059763d128825ee08c0978948311ac03c769e0f178abfe",
+ "zip_bytes": 78296450,
+ "zip_sha256": "c223fd84dcdd21e49d651788ff5a726a7e3aa04d2eab730e99407dd80a8d3e30",
+ "sheet": "COVERAGE_11",
+ "filter": "state == 'Paraná'",
+ "sensor": "Landsat",
+ "resolution_m": 30,
+ "license_note": "MapBiomas: uso público com citação obrigatória (termos de uso declaram Creative Commons CC-BY).",
+ "citation_pt": "Projeto MapBiomas – Coleção 11 da Série Anual de Mapas de Cobertura e Uso da Terra do Brasil, acessado em 19/11/2026 através do link: https://brasil.mapbiomas.org/downloads/estatisticas/",
+ "ibge_area_reference": "AREA_KM2, malha municipal IBGE 2025"
+}

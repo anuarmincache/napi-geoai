@@ -13,6 +13,7 @@ from geoai.portal import (
 from _bootstrap import (
     cached_agro_panel,
     cached_energy_panel,
+    cached_landcover_panel,
     cached_mmgd_panel,
     cached_municipality_layer,
     cached_population_panel,
@@ -61,6 +62,7 @@ pop = cached_population_panel()
 siga = cached_energy_panel()
 mmgd = cached_mmgd_panel()
 agro = cached_agro_panel()
+landcover = cached_landcover_panel()
 
 # ---------------------------------------------------------------- Hero
 st.markdown(
@@ -314,6 +316,11 @@ with s1:
             if agro.available
             else ""
         )
+        + (
+            "- Cobertura e uso da terra, 1985 a 2025 (MapBiomas)\n"
+            if landcover.available
+            else ""
+        )
         + "- Ficha municipal integrada\n"
         "- Calculadoras de consumo e fotovoltaico preliminar"
     )
@@ -325,7 +332,12 @@ with s2:
             if agro.available
             else "- Agricultura: pecuária e produção municipal (IBGE PPM/PAM)\n"
         )
-        + "- Meio ambiente: cobertura e uso da terra (MapBiomas)\n"
+        + (
+            "- Meio ambiente: unidades de conservação e recursos hídricos\n"
+            if landcover.available
+            else "- Meio ambiente: cobertura e uso da terra (MapBiomas)\n"
+        )
+        +
         "- NDVI por satélite: 97 municípios listados, Maringá medida, "
         "nenhum mapa publicado"
     )

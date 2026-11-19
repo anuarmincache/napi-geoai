@@ -6,6 +6,7 @@ from pathlib import Path
 
 from geoai.portal.agriculture_panel import agriculture_source_inventory
 from geoai.portal.agro_panel import load_agro_panel_bundle
+from geoai.portal.landcover_panel import load_landcover_bundle
 
 REPO = Path(__file__).resolve().parents[1]
 AGRO_READY = load_agro_panel_bundle(REPO).available
@@ -50,7 +51,9 @@ def test_agriculture_inventory_keeps_statistics_closed() -> None:
     land = rows["Uso agrícola do solo"]
     assert land.source_id == "mapbiomas.brazil.lulc"
     assert land.catalogued is True
-    assert land.local_file is False
+    # O painel MapBiomas existe para a aba Meio Ambiente; aqui segue sem
+    # virar indicador agrícola (cobertura não é área plantada da PAM).
+    assert land.local_file is load_landcover_bundle(REPO).available
     assert land.supports_agricultural_indicator is False
 
 

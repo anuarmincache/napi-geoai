@@ -383,6 +383,13 @@ def cached_mmgd_panel():
     return load_mmgd_panel_bundle(REPO_ROOT)
 
 
+@st.cache_resource(show_spinner="Carregando cobertura e uso da terra…")
+def cached_landcover_panel():
+    from geoai.portal.landcover_panel import load_landcover_bundle
+
+    return load_landcover_bundle(REPO_ROOT)
+
+
 @st.cache_resource(show_spinner="Carregando painel agropecuário…")
 def cached_agro_panel():
     from geoai.portal.agro_panel import load_agro_panel_bundle

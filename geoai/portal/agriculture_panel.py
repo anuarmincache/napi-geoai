@@ -178,7 +178,7 @@ def agriculture_source_inventory(
             integrated=False,
             supports_agricultural_indicator=False,
             note_pt=(
-                "Coleção 11 permanece em contrato, sem arquivo. Hectare de "
+                "A Coleção 11 alimenta a aba Meio Ambiente. Hectare de "
                 "cobertura não é produção, rendimento nem área plantada PAM."
             ),
         ),

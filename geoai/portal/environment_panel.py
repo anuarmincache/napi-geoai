@@ -81,6 +81,11 @@ def environment_source_inventory(
     root = repo_root or repo_root_from_here()
     mesh_file, mesh_ok = _municipal_mesh(root)
     mapbiomas_id = "mapbiomas.brazil.lulc"
+    from geoai.portal.landcover_panel import load_landcover_bundle
+    from geoai.portal.paths import landcover_panel_path
+
+    lc_file = landcover_panel_path(root).is_file()
+    lc_ok = load_landcover_bundle(root).available
     return (
         EnvironmentSourceStatus(
             theme_pt="Limites municipais",
@@ -104,12 +109,16 @@ def environment_source_inventory(
             source_id=mapbiomas_id,
             organization="MapBiomas",
             catalogued=_is_catalogued(mapbiomas_id),
-            local_file=_has_named_file(root, ("mapbiomas",)),
-            validated=False,
-            integrated=False,
-            supports_environmental_indicator=False,
+            local_file=lc_file or _has_named_file(root, ("mapbiomas",)),
+            validated=lc_ok,
+            integrated=lc_ok,
+            supports_environmental_indicator=lc_ok,
             note_pt=(
-                "Coleção 11 identificada na página oficial de estatísticas "
+                "Coleção 11 integrada: hectares por classe de cobertura e uso "
+                "da terra, 399 municípios, 1985 a 2025. Percentual sobre a "
+                "área mapeada. Não é área protegida nem taxa de desmatamento."
+                if lc_ok
+                else "Coleção 11 identificada na página oficial de estatísticas "
                 "(1985–2025, hectares). Arquivo, SHA-256 e indicador ausentes. "
                 "Percentual de vegetação não pode ser exibido."
             ),
