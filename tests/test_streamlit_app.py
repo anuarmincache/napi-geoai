@@ -24,6 +24,7 @@ PAGES = (
     REPO / "app" / "pages" / "8_Energia_MMGD.py",
     REPO / "app" / "pages" / "9_Meio_Ambiente.py",
     REPO / "app" / "pages" / "10_Agricultura.py",
+    REPO / "app" / "pages" / "11_Ferramentas.py",
 )
 
 

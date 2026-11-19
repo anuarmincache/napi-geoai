@@ -67,3 +67,19 @@ Guia operacional: [MVP08_DEPLOY.md](MVP08_DEPLOY.md). Plano Supabase futuro:
 | Publicação | **manual**, após aprovação do responsável |
 
 Smoke CI: `tests/test_streamlit_app.py` + `tests/test_cloud_ready.py`.
+
+## Portal — Home de impacto, navegação agrupada e ferramentas
+
+- `app/Home.py`: hero, quatro KPIs lidos dos artefatos derivados em tempo de
+  execução (malha IBGE, população IBGE, MMGD e SIGA/ANEEL), mapa MMGD,
+  busca de município com salto para a Ficha municipal, caminhos por público
+  e quadro disponível / aguardando dados / planejado. Nenhum número é fixo
+  no código: artefato ausente aparece como "indisponível".
+- `app/_bootstrap.py`: menu lateral agrupado (`NAV_GROUPS`) com
+  `st.page_link`; a navegação automática foi desligada em
+  `.streamlit/config.toml` (`showSidebarNavigation = false`).
+- `app/pages/11_Ferramentas.py` + `geoai/tools/energy_calc.py` (Issue #38):
+  consumo/custo de equipamentos e dimensionamento fotovoltaico preliminar.
+  Funções puras e testadas (`tests/test_energy_calc.py`). Tarifa e
+  irradiação (HSP) não têm valor padrão: são entradas obrigatórias do
+  usuário. PR e potência do módulo são hipóteses declaradas.
