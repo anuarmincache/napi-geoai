@@ -109,3 +109,25 @@ sem imagem na janela e não gera download.
 
 O estágio 1 (download da SCL e medição por município) ainda não está
 implementado: depende de credencial do Copernicus e de GDAL no computador.
+
+### Plano otimizado medido (catálogo real, 19/11/2026)
+
+Janela de 15 dias, 97 consultas em 607 s, sem falha.
+
+| Limite de nuvem | Municípios | Cenas | SCL | B04+B08 (máx.) | Cenas com nuvem > 50% |
+|---|---:|---:|---:|---:|---:|
+| regra antiga | 95 | 39 | 58 MB | 8,03 GB | 19 acima de 60% |
+| 20% | 62 | 28 | 49 MB | 6,35 GB | 0 |
+| 30% | 75 | 33 | 59 MB | 7,52 GB | 1 |
+| **40% (adotado)** | **83** | **34** | **60 MB** | **7,60 GB** | **0** |
+| 50% | 92 | 38 | 69 MB | 8,59 GB | 3 |
+| 60% | 93 | 40 | 75 MB | 9,07 GB | 4 |
+
+- Com 40%, a nuvem ponderada das passagens escolhidas tem mediana 9,5% e
+  máximo 37,7%. Datas usadas: 10, 12 e 14/11.
+- O volume quase não cai. O ganho é de qualidade: a regra antiga baixaria
+  metade das cenas para reprovar depois.
+- 14 municípios ficam sem imagem na janela: 12 por nuvem (região de Curitiba,
+  Campos Gerais e sul) e 2 sem passagem única que cubra (Ponta Grossa e
+  Piraí do Sul).
+- 8 das 34 cenas servem um único município cada.
