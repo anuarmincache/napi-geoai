@@ -25,6 +25,7 @@ PAGES = (
     REPO / "app" / "pages" / "9_Meio_Ambiente.py",
     REPO / "app" / "pages" / "10_Agricultura.py",
     REPO / "app" / "pages" / "11_Ferramentas.py",
+    REPO / "app" / "pages" / "12_NDVI_Cidades.py",
 )
 
 
@@ -335,3 +336,26 @@ def test_agriculture_page_withholds_invented_indicators(
         assert "biogás" in text
     else:
         assert all(metrics[label] == "indisponível" for label in labels)
+
+
+def test_ndvi_page_reports_progress_without_inventing(_streamlit_paths: None) -> None:
+    page = REPO / "app" / "pages" / "12_NDVI_Cidades.py"
+    at = AppTest.from_file(str(page), default_timeout=120)
+    at.run()
+    assert not at.exception, at.exception
+    metrics = {str(item.label): str(item.value) for item in at.metric}
+    assert metrics["Municípios na lista"] == "97"
+    from geoai.portal.ndvi_panel import load_ndvi_overview
+
+    counts = load_ndvi_overview(REPO)["counts"]
+    assert metrics["Com NDVI publicado"] == str(counts["publicado"])
+    text = "\n".join(
+        [
+            *(str(item.value) for item in at.caption),
+            *(str(item.value) for item in at.warning),
+            *(str(item.value) for item in at.markdown),
+        ]
+    )
+    assert "não é biomassa" in text
+    if counts["publicado"] == 0:
+        assert "Nenhum mapa de NDVI está publicado" in text

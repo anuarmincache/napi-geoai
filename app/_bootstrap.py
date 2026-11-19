@@ -298,6 +298,7 @@ NAV_GROUPS: tuple[tuple[str, tuple[tuple[str, str, str], ...]], ...] = (
         (
             ("pages/10_Agricultura.py", "Agricultura", "🌾"),
             ("pages/9_Meio_Ambiente.py", "Meio ambiente", "🌳"),
+            ("pages/12_NDVI_Cidades.py", "NDVI por satélite", "🛰️"),
             ("pages/2_Mapa_Parana.py", "Mapa do Paraná", "🗺️"),
         ),
     ),

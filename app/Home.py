@@ -326,7 +326,8 @@ with s2:
             else "- Agricultura: pecuária e produção municipal (IBGE PPM/PAM)\n"
         )
         + "- Meio ambiente: cobertura e uso da terra (MapBiomas)\n"
-        "- Sensoriamento remoto: piloto Sentinel-2/NDVI em Maringá"
+        "- NDVI por satélite: 97 municípios listados, Maringá medida, "
+        "nenhum mapa publicado"
     )
     st.caption("Nessas páginas, indicador sem fonte aparece como indisponível.")
 with s3:
