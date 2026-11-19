@@ -26,6 +26,7 @@ from geoai.portal.energy_panel import (
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
+    br_num,
     cached_energy_panel,
     cached_municipality_layer,
     configure_page,
@@ -153,7 +154,7 @@ c1.metric(
 )
 c2.metric(
     f"MW fiscalizada conhecida ({_scope_label})",
-    f"{float(scope['potencia_fiscalizada_mw_conhecida_fase']):,.1f}",
+    br_num(scope["potencia_fiscalizada_mw_conhecida_fase"], 1),
 )
 c3.metric(
     f"Municípios com usinas ({_scope_label})",
@@ -193,7 +194,7 @@ if "energy_query" not in st.session_state:
     st.session_state.energy_query = ""
 
 rank_labels = [
-    f"{r['NM_MUN']} ({r['CD_MUN']}) — {float(r['display_mw']):.2f} MW"
+    f"{r['NM_MUN']} ({r['CD_MUN']}) — {br_num(r['display_mw'], 1)} MW"
     for r in ranked
 ]
 rank_codes = [r["CD_MUN"] for r in ranked]
@@ -225,7 +226,7 @@ def _clear_energy_search() -> None:
 def _format_mw(value: object) -> str:
     if value is None:
         return "não informada"
-    return f"{float(value):,.3f} MW"
+    return f"{br_num(value, 1)} MW"
 
 
 query = str(st.session_state.energy_query or "")
@@ -325,7 +326,8 @@ if row:
             f"{row['display_ausente']} registro(s) sem potência "
             "fiscalizada válida neste escopo."
         )
-    st.caption(f"Escopo métrica: `{row.get('metric_scope')}`")
+    if level == AudienceLevel.TECHNICAL:
+        st.caption(f"Escopo métrica: `{row.get('metric_scope')}`")
     if int(row["display_n"]) == 0:
         st.caption(
             "Nenhuma usina associada a este município no escopo. "
@@ -404,7 +406,7 @@ else:
             f"n={cmp['b']['display_n']} · {cmp['b']['status_dados']}"
         )
     st.write(
-        f"Δ MW (A−B): **{cmp['delta_fiscalizada_mw_a_minus_b']:.3f}** · "
+        f"Δ MW (A−B): **{br_num(cmp['delta_fiscalizada_mw_a_minus_b'], 1)}** · "
         f"Δ n: **{cmp['delta_n_a_minus_b']}** · escopo `{cmp['metric_scope']}`"
     )
     st.warning(cmp["disclaimer_pt"])

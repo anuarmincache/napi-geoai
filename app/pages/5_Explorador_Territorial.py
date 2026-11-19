@@ -19,6 +19,7 @@ from geoai.portal import (
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
+    br_num,
     cached_municipality_layer,
     configure_page,
     render_footer,
@@ -245,7 +246,7 @@ with meta_col:
     if rec:
         st.metric("Nome", rec.name)
         st.metric("Código IBGE", rec.code)
-        st.metric("Área oficial (km²)", f"{rec.area_km2:.3f}")
+        st.metric("Área oficial (km²)", f"{br_num(rec.area_km2, 1)}")
     else:
         st.info(
             f"Mapa geral: {EXPECTED_PR_MUNICIPALITY_COUNT} municípios. "
@@ -326,14 +327,14 @@ else:
     ca, cb = st.columns(2)
     with ca:
         st.markdown(f"**{cmp['a']['name']}** (`{cmp['a']['code']}`)")
-        st.write(f"Área IBGE: **{cmp['a']['area_km2']:.3f} km²**")
+        st.write(f"Área IBGE: **{br_num(cmp['a']['area_km2'], 1)} km²**")
     with cb:
         st.markdown(f"**{cmp['b']['name']}** (`{cmp['b']['code']}`)")
-        st.write(f"Área IBGE: **{cmp['b']['area_km2']:.3f} km²**")
+        st.write(f"Área IBGE: **{br_num(cmp['b']['area_km2'], 1)} km²**")
     if cmp.get("area_km2_delta_a_minus_b") is not None:
         st.write(
             f"Diferença de área (A − B): "
-            f"**{cmp['area_km2_delta_a_minus_b']:.3f} km²**"
+            f"**{br_num(cmp['area_km2_delta_a_minus_b'], 1)} km²**"
         )
     st.caption(str(cmp["area_source"]))
     st.warning(str(cmp["disclaimer_pt"]))

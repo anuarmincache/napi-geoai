@@ -233,6 +233,25 @@ section[data-testid="stSidebar"] .napi-side-group {
 """
 
 
+def br_num(value: object, digits: int = 0, *, missing: str = "n/d") -> str:
+    """Número no padrão brasileiro (1.234,5). ``None`` vira ``missing``."""
+
+    if value is None:
+        return missing
+    try:
+        text = f"{float(value):,.{int(digits)}f}"
+    except (TypeError, ValueError):
+        return missing
+    return text.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def date_br(iso: object, *, missing: str = "n/d") -> str:
+    parts = str(iso or "")[:10].split("-")
+    if len(parts) == 3 and all(p.isdigit() for p in parts):
+        return f"{parts[2]}/{parts[1]}/{parts[0]}"
+    return missing
+
+
 def configure_page(title: str, *, icon: str = "🗺️") -> None:
     st.set_page_config(
         page_title=f"NAPI GeoAI — {title}",

@@ -15,6 +15,7 @@ from geoai.portal import (
 )
 
 from _bootstrap import (
+    br_num,
     cached_municipality_layer,
     configure_page,
     render_footer,
@@ -145,7 +146,7 @@ else:
     st.markdown(f"**{selected.name}** · código IBGE `{selected.code}`")
     c1, c2, c3 = st.columns(3)
     c1.metric("Código IBGE", selected.code)
-    c2.metric("Área oficial (km²)", f"{selected.area_km2:,.3f}")
+    c2.metric("Área oficial (km²)", f"{br_num(selected.area_km2, 1)}")
     c3.metric("Indicador ambiental", "indisponível")
     st.caption(
         "AREA_KM2 é o campo oficial da Malha Municipal IBGE 2025. "
@@ -177,12 +178,12 @@ else:
     xa, xb = st.columns(2)
     with xa:
         st.markdown(f"**{compared['a']['name']}**")
-        st.write(f"Área oficial: **{compared['a']['area_km2']:,.3f} km²**")
+        st.write(f"Área oficial: **{br_num(compared['a']['area_km2'], 1)} km²**")
     with xb:
         st.markdown(f"**{compared['b']['name']}**")
-        st.write(f"Área oficial: **{compared['b']['area_km2']:,.3f} km²**")
+        st.write(f"Área oficial: **{br_num(compared['b']['area_km2'], 1)} km²**")
     delta = compared["area_km2_delta_a_minus_b"]
-    st.write(f"Δ área oficial (A−B): **{delta:,.3f} km²**")
+    st.write(f"Δ área oficial (A−B): **{br_num(delta, 1)} km²**")
     st.warning(compared["disclaimer_pt"])
 
 st.subheader("Fonte, referência e método")

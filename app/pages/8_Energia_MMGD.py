@@ -25,6 +25,7 @@ from geoai.portal.mmgd_panel import (
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
+    br_num,
     cached_mmgd_panel,
     cached_municipality_layer,
     configure_page,
@@ -63,7 +64,6 @@ if not mmgd.available:
     render_footer()
     st.stop()
 
-st.caption(f"Carregamento cacheado dos artefatos: {t_load * 1000:.0f} ms")
 
 level = st.radio(
     "Nível didático",
@@ -152,7 +152,7 @@ else:
     mw = scope.get("potencia_instalada_mw_conhecida")
     c2.metric(
         f"MW instalada conhecida ({scope_lab})",
-        f"{mw:,.1f}" if mw is not None else "n/d no filtro",
+        br_num(mw, 1) if mw is not None else "n/d no filtro",
         help="Disponível no escopo total; ausente nos filtros categóricos.",
     )
     uc = scope.get("qtd_uc_recebe_credito_total")
@@ -194,7 +194,7 @@ if "mmgd_query" not in st.session_state:
 if scope.get("mw_available_in_scope"):
     rank_labels = [
         f"{r['NM_MUN']} ({r['CD_MUN']}) — "
-        f"{float(r.get('display_mw') or 0):.2f} MW"
+        f"{br_num(r.get('display_mw') or 0, 1)} MW"
         for r in ranked
     ]
 else:
@@ -289,9 +289,11 @@ with left:
                 porte=porte_filter,
             )
             render_html_map(html, height=620)
-            st.caption(
-                f"Mapa gerado em {(time.perf_counter() - t_map0) * 1000:.0f} ms"
-            )
+            if level == AudienceLevel.TECHNICAL:
+                st.caption(
+                    f"Artefatos carregados em {t_load * 1000:.0f} ms · mapa "
+                    f"gerado em {(time.perf_counter() - t_map0) * 1000:.0f} ms"
+                )
         except Exception as exc:  # noqa: BLE001
             st.error(f"Falha no mapa MMGD: {exc}")
 
@@ -322,7 +324,7 @@ else:
     m2.metric(
         "MW instalada conhecida",
         (
-            f"{float(proj['display_mw']):,.3f}"
+            br_num(proj["display_mw"], 2)
             if proj.get("display_mw") is not None
             else "n/d no filtro"
         ),
