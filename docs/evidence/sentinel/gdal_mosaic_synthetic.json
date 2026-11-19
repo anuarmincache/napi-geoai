@@ -1,0 +1,30 @@
+{
+  "sentinel_scene": false,
+  "official_pixels": false,
+  "ndvi_published": false,
+  "catalog_ndvi_published_after": false,
+  "rule": "first_valid_tile_in_declared_order",
+  "crs": "EPSG:32722",
+  "gsd_m": 10,
+  "scl_resample": "gdal_warp_nearest",
+  "block": 2,
+  "n_aoi": 24,
+  "n_valid": 23,
+  "pixels_per_tile": [
+    7,
+    16
+  ],
+  "overlap_both_valid": 0,
+  "valid_fraction": 0.9583333333333334,
+  "quality_approved_for_pilot": false,
+  "provenance_values": [
+    0,
+    1,
+    2
+  ],
+  "disk_bytes_written": 0,
+  "elapsed_seconds": 0.022,
+  "peak_rss_mb": 62.961,
+  "gdal": "3.13.3",
+  "qgis_python": true
+}

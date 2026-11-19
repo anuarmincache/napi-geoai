@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 
 import geopandas as gpd
@@ -125,7 +126,14 @@ def test_read_ibge_uf_zip_rejects_missing_crs_without_assume(
     shp_dir = tmp_path / "shp"
     shp_dir.mkdir()
     shp_path = shp_dir / "PR_UF_fake.shp"
-    gdf.to_file(shp_path)
+    # O aviso do pyogrio é o efeito de gravar de propósito um shapefile sem CRS.
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message="'crs' was not provided",
+            category=UserWarning,
+        )
+        gdf.to_file(shp_path)
     for prj in shp_dir.glob("*.prj"):
         prj.unlink()
 
