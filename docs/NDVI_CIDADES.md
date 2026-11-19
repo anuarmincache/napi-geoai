@@ -85,3 +85,27 @@ consultas em 459 s, sem falha. Geometria: malha de apresentação
   50%, e Curitiba recebeu uma tile com 100%. Em escala, isso baixa cenas que
   serão reprovadas depois. A nuvem do item é da tile inteira e não substitui
   a fração válida no município, mas serve de triagem antes do download.
+
+## Otimização do ciclo — 2026-11-19
+
+`geoai/sentinel/cycle_plan.py`, usado por `scripts/plan_ndvi_targets.py`
+(plano `schema_version` 2).
+
+No plano medido, as três bandas das 39 cenas somam 8,08 GB: B04 3,84 GB, B08
+4,19 GB e SCL 0,058 GB. Das 39 cenas, 19 têm nuvem do item acima de 60% e 10
+estão em 100%.
+
+1. **Triagem por nuvem.** Passagem só é candidata com nuvem ponderada pela
+   cobertura do município em até 40% (`--max-cloud`). É triagem, não aceite.
+2. **Reuso de cena.** Entre as candidatas, vence a que acrescenta menos bytes
+   às cenas já escolhidas para outros municípios.
+3. **SCL primeiro.** O estágio 1 baixa só a SCL das cenas distintas e mede o
+   teto da fração válida por município. B04 e B08 só são baixadas para cenas
+   que servem algum município aprovado no estágio 1.
+
+O plano grava a regra antiga e a nova lado a lado, e todas as passagens
+candidatas de cada município. Município sem passagem dentro do limite fica
+sem imagem na janela e não gera download.
+
+O estágio 1 (download da SCL e medição por município) ainda não está
+implementado: depende de credencial do Copernicus e de GDAL no computador.

@@ -169,9 +169,28 @@ else:
         f"Janela de {plan['window_days']} dias até {date_br(plan['as_of_utc'])}. "
         f"{summary['bytes_note_pt']} " + " ".join(plan["limits_pt"])
     )
+    if plan.get("schema_version") == 2:
+        naive = plan["naive_summary"]
+        s1, s2, s3 = st.columns(3)
+        s1.metric(
+            "Estágio 1: só máscara (MB)",
+            br_num(summary["stage1_mask_bytes"] / 1e6),
+            help="Banda SCL das cenas distintas. Mede o teto de pixels válidos.",
+        )
+        s2.metric(
+            "Estágio 2: bandas, no máximo (GB)",
+            br_num(summary["stage2_bands_bytes_max"] / 1e9, 1),
+            help="B04 e B08. Cenas reprovadas no estágio 1 não são baixadas.",
+        )
+        s3.metric(
+            "Regra anterior (GB)",
+            br_num(naive["official_bytes_known"] / 1e9, 1),
+            help="Passagem mais recente que cobre, sem olhar nuvem.",
+        )
+        st.caption(plan["selection_rule_pt"])
     if summary["targets_without_pass"]:
         st.warning(
-            "Sem passagem que cubra o município na janela: "
+            "Sem passagem aproveitável na janela: "
             + ", ".join(summary["targets_without_pass"])
             + "."
         )

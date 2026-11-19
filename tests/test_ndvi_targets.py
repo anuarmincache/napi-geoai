@@ -133,3 +133,71 @@ def test_plan_counts_each_scene_once(monkeypatch: pytest.MonkeyPatch) -> None:
     empty = planner.plan_target(search, targets[0], mesh, "2026-11-04/2026-11-19")
     assert empty["selected_acquisition"] is None and empty["tiles"] == []
     assert planner.summarize({"x": empty})["targets_without_pass"] == ["Maringá"]
+    assert empty["candidates"] == []
+    assert len(records[targets[0]["cd_mun"]]["candidates"]) == 1
+
+
+def _cand(acq: str, when: str, tiles: list[tuple[str, float, float]]) -> dict:
+    return {
+        "acquisition_id": acq,
+        "sensing_time_utc": when,
+        "tiles": [
+            {
+                "mgrs_tile": name,
+                "product_id": f"{acq}_{name}",
+                "aoi_coverage": coverage,
+                "eo_cloud_cover": cloud,
+                "band_bytes": {"B04_10m": 100, "B08_10m": 100, "SCL_20m": 2},
+            }
+            for name, cloud, coverage in tiles
+        ],
+    }
+
+
+def test_weighted_cloud_uses_municipal_coverage() -> None:
+    from geoai.sentinel.cycle_plan import weighted_cloud
+
+    tiles = _cand("A", "t", [("X", 10.0, 0.9), ("Y", 90.0, 0.1)])["tiles"]
+    assert weighted_cloud(tiles) == pytest.approx(18.0)
+    tiles[0]["eo_cloud_cover"] = None
+    assert weighted_cloud(tiles) is None  # sem dado não vira zero
+
+
+def test_optimizer_drops_cloudy_passes_and_shares_scenes() -> None:
+    from geoai.sentinel.cycle_plan import optimize_cycle, summarize_selection
+
+    clear_old = _cand("OLD", "2026-11-10T13:00:00Z", [("22KCV", 5.0, 1.0)])
+    cloudy_new = _cand("NEW", "2026-11-19T13:00:00Z", [("22KCV", 95.0, 1.0)])
+    other_clear = _cand("MID", "2026-11-15T13:00:00Z", [("22KDV", 5.0, 1.0)])
+    records = {
+        # só tem a passagem limpa antiga
+        "1": {"candidates": [clear_old, cloudy_new]},
+        # pode usar a cena de "1" (reuso) ou outra cena igualmente limpa
+        "2": {"candidates": [other_clear, clear_old]},
+        # só passagem nublada: fica sem imagem, não baixa nada
+        "3": {"candidates": [cloudy_new]},
+        "4": {"candidates": []},
+    }
+    selection = optimize_cycle(records, max_cloud=40.0)
+    assert selection["1"]["selected_acquisition"] == "OLD"
+    assert selection["2"]["selected_acquisition"] == "OLD"  # reuso da cena
+    assert selection["3"]["selected_acquisition"] is None
+    assert selection["3"]["reason"] == "todas_acima_do_limite_de_nuvem"
+    assert selection["4"]["reason"] == "sem_passagem_cobrindo"
+    summary = summarize_selection(selection, {"3": "C", "4": "D"})
+    assert summary["distinct_products"] == 1
+    assert summary["stage1_mask_bytes"] == 2
+    assert summary["stage2_bands_bytes_max"] == 200
+    assert summary["scenes_with_cloud_above_50"] == 0
+    assert summary["targets_without_pass"] == ["C", "D"]
+
+
+def test_optimizer_prefers_clearer_then_newer_on_equal_cost() -> None:
+    from geoai.sentinel.cycle_plan import optimize_cycle
+
+    a = _cand("A", "2026-11-10T13:00:00Z", [("T1", 30.0, 1.0)])
+    b = _cand("B", "2026-11-12T13:00:00Z", [("T1", 10.0, 1.0)])
+    c = _cand("C", "2026-11-15T13:00:00Z", [("T1", 10.0, 1.0)])
+    chosen = optimize_cycle({"1": {"candidates": [a, b, c]}})["1"]
+    assert chosen["selected_acquisition"] == "C"
+    assert chosen["weighted_cloud"] == 10.0
