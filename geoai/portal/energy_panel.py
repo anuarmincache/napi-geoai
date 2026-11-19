@@ -45,7 +45,8 @@ def energy_attribution_lines(bundle: EnergyPanelBundle) -> tuple[str, ...]:
         f"DatGeracaoConjuntoDados (amostra): {dat}",
         "Métrica: capacidade fiscalizada conhecida (MW) — ausente ≠ zero; "
         "não é geração em MWh.",
-        "Escopo: geração centralizada SIGA; MMGD fora deste MVP.",
+        "Escopo: geração centralizada SIGA. MMGD é pipeline/painel "
+        "separado — não misturar métricas.",
         f"Fase padrão: {PHASE_OPERACAO}",
         f"Referência espacial: {bundle.panel.get('spatial_reference') or 'qgis'}",
         f"Municípios no painel: {bundle.panel.get('municipality_count')} "

@@ -5,8 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 
 from geoai.portal.agriculture_panel import agriculture_source_inventory
+from geoai.portal.agro_panel import load_agro_panel_bundle
 
 REPO = Path(__file__).resolve().parents[1]
+AGRO_READY = load_agro_panel_bundle(REPO).available
 
 
 def test_agriculture_inventory_keeps_statistics_closed() -> None:
@@ -28,12 +30,14 @@ def test_agriculture_inventory_keeps_statistics_closed() -> None:
 
     pam = rows["Produção Agrícola Municipal"]
     assert pam.organization == "IBGE/SIDRA — PAM"
-    assert pam.catalogued is False
-    assert pam.local_file is False
-    assert pam.validated is False
+    # PAM e PPM só abrem quando o artefato IBGE validado existe.
+    for item in (pam, rows["Pecuária municipal"]):
+        assert item.catalogued is AGRO_READY
+        assert item.validated is AGRO_READY
+        assert item.integrated is AGRO_READY
+        assert item.supports_agricultural_indicator is AGRO_READY
 
     for theme in (
-        "Pecuária municipal",
         "Séries agrícolas",
         "Indicadores agropecuários do Paraná",
     ):
@@ -50,8 +54,18 @@ def test_agriculture_inventory_keeps_statistics_closed() -> None:
     assert land.supports_agricultural_indicator is False
 
 
-def test_no_agricultural_indicator_is_marked_ready() -> None:
+def test_indicators_ready_only_with_validated_artifact(tmp_path: Path) -> None:
+    # Repositório sem artefato agropecuário: nada fica marcado como pronto.
     assert all(
         item.supports_agricultural_indicator is False
-        for item in agriculture_source_inventory(REPO)
+        for item in agriculture_source_inventory(tmp_path)
     )
+    ready = {
+        item.theme_pt
+        for item in agriculture_source_inventory(REPO)
+        if item.supports_agricultural_indicator
+    }
+    expected = (
+        {"Produção Agrícola Municipal", "Pecuária municipal"} if AGRO_READY else set()
+    )
+    assert ready == expected

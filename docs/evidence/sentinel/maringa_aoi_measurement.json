@@ -1,0 +1,50 @@
+{
+  "sentinel_scene": true,
+  "official_pixels": true,
+  "dates_combined": false,
+  "results": [
+    {
+      "acquisition_id": "S2B_20261112T133149_R081",
+      "official_pixels": true,
+      "dates_combined": false,
+      "rows": 3373,
+      "cols": 2686,
+      "n_aoi": 4876416,
+      "n_valid": 3565350,
+      "valid_fraction": 0.7311414776754075,
+      "pixels_per_tile": [
+        3086107,
+        479243
+      ],
+      "overlap_both_valid": 2034052,
+      "quality_approved": true,
+      "rule": "first_valid_tile_in_declared_order",
+      "bytes_downloaded": 308160853,
+      "bytes_on_disk": 357870297,
+      "ndvi_published": false,
+      "cog": null,
+      "scale": 0.0001,
+      "offset": -0.1,
+      "nodata_dn": 0,
+      "published_nodata": -9999.0,
+      "would_publish": true
+    }
+  ],
+  "ndvi_published": false,
+  "elapsed_seconds": 231.657,
+  "peak_rss_mb": null,
+  "peak_rss_status": "not_measured",
+  "pixel_equation": "3086107 + 479243 = 3565350",
+  "overlap_inside_first_tile": true,
+  "disk_free_bytes": 267943276544,
+  "rule": "first_valid_tile_in_declared_order",
+  "tiles": [
+    "22KCV",
+    "22KDV"
+  ],
+  "bands": [
+    "B04_10m",
+    "B08_10m",
+    "SCL_20m"
+  ]
+}

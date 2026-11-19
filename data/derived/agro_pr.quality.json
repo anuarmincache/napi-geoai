@@ -1,0 +1,448 @@
+{
+  "prepared_at": "2026-11-19T17:41:12.153689+00:00",
+  "ibge_expected": 399,
+  "municipality_count": 399,
+  "rows_pam": {
+    "area_plantada": 34314,
+    "area_colhida": 34314,
+    "producao": 34314,
+    "rendimento": 34314
+  },
+  "rows_ppm": {
+    "rebanho": 1197,
+    "produto": 399
+  },
+  "pam_year": "2025",
+  "ppm_year_rebanho": "2025",
+  "ppm_year_produto": "2025",
+  "crops_in_panel": 12,
+  "crops_available_in_source": 85,
+  "totals": {
+    "pam": {
+      "40124": {
+        "area_plantada": {
+          "soma_publicada": 5842842.0,
+          "contagem_por_status": {
+            "valor": 388,
+            "zero": 11,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 5840639.0,
+          "contagem_por_status": {
+            "valor": 388,
+            "zero": 11,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 21292721.0,
+          "contagem_por_status": {
+            "valor": 388,
+            "zero": 11,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "valor": 388,
+            "zero": 11,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40122": {
+        "area_plantada": {
+          "soma_publicada": 3117175.0,
+          "contagem_por_status": {
+            "valor": 389,
+            "zero": 10,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 3102285.0,
+          "contagem_por_status": {
+            "valor": 389,
+            "zero": 10,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 20415302.0,
+          "contagem_por_status": {
+            "valor": 389,
+            "zero": 10,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "valor": 389,
+            "zero": 10,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40127": {
+        "area_plantada": {
+          "soma_publicada": 853993.0,
+          "contagem_por_status": {
+            "valor": 298,
+            "zero": 101,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 849030.0,
+          "contagem_por_status": {
+            "valor": 298,
+            "zero": 101,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 2758533.0,
+          "contagem_por_status": {
+            "valor": 298,
+            "zero": 101,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "valor": 298,
+            "zero": 101,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40112": {
+        "area_plantada": {
+          "soma_publicada": 519617.0,
+          "contagem_por_status": {
+            "valor": 283,
+            "zero": 116,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 511775.0,
+          "contagem_por_status": {
+            "valor": 283,
+            "zero": 116,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 865664.0,
+          "contagem_por_status": {
+            "valor": 283,
+            "zero": 116,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "valor": 283,
+            "zero": 116,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40106": {
+        "area_plantada": {
+          "soma_publicada": 505594.0,
+          "contagem_por_status": {
+            "valor": 282,
+            "zero": 117,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 505478.0,
+          "contagem_por_status": {
+            "valor": 282,
+            "zero": 117,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 36204786.0,
+          "contagem_por_status": {
+            "valor": 282,
+            "zero": 117,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "valor": 282,
+            "zero": 117,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40119": {
+        "area_plantada": {
+          "soma_publicada": 142304.0,
+          "contagem_por_status": {
+            "valor": 399,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 142247.0,
+          "contagem_por_status": {
+            "valor": 399,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 3960047.0,
+          "contagem_por_status": {
+            "valor": 399,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "valor": 399,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40103": {
+        "area_plantada": {
+          "soma_publicada": 110472.0,
+          "contagem_por_status": {
+            "zero": 213,
+            "valor": 186,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 110472.0,
+          "contagem_por_status": {
+            "zero": 213,
+            "valor": 186,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 262658.0,
+          "contagem_por_status": {
+            "zero": 213,
+            "valor": 186,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "zero": 213,
+            "valor": 186,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40109": {
+        "area_plantada": {
+          "soma_publicada": 90408.0,
+          "contagem_por_status": {
+            "zero": 340,
+            "valor": 59,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 90408.0,
+          "contagem_por_status": {
+            "zero": 340,
+            "valor": 59,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 377287.0,
+          "contagem_por_status": {
+            "zero": 340,
+            "valor": 59,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "zero": 340,
+            "valor": 59,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40113": {
+        "area_plantada": {
+          "soma_publicada": 79100.0,
+          "contagem_por_status": {
+            "zero": 261,
+            "valor": 138,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 79100.0,
+          "contagem_por_status": {
+            "zero": 261,
+            "valor": 138,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 186505.0,
+          "contagem_por_status": {
+            "zero": 261,
+            "valor": 138,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "zero": 261,
+            "valor": 138,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40147": {
+        "area_plantada": {
+          "soma_publicada": 46873.0,
+          "contagem_por_status": {
+            "zero": 307,
+            "valor": 92,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 46873.0,
+          "contagem_por_status": {
+            "zero": 307,
+            "valor": 92,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 494677.0,
+          "contagem_por_status": {
+            "zero": 307,
+            "valor": 92,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "zero": 307,
+            "valor": 92,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40105": {
+        "area_plantada": {
+          "soma_publicada": 27076.0,
+          "contagem_por_status": {
+            "zero": 287,
+            "valor": 112,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 27076.0,
+          "contagem_por_status": {
+            "zero": 287,
+            "valor": 112,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 842062.0,
+          "contagem_por_status": {
+            "zero": 287,
+            "valor": 112,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "zero": 287,
+            "valor": 112,
+            "sem_registro": 0
+          }
+        }
+      },
+      "40139": {
+        "area_plantada": {
+          "soma_publicada": 25278.0,
+          "contagem_por_status": {
+            "valor": 176,
+            "zero": 223,
+            "sem_registro": 0
+          }
+        },
+        "area_colhida": {
+          "soma_publicada": 25254.0,
+          "contagem_por_status": {
+            "valor": 176,
+            "zero": 223,
+            "sem_registro": 0
+          }
+        },
+        "producao": {
+          "soma_publicada": 43820.0,
+          "contagem_por_status": {
+            "valor": 176,
+            "zero": 223,
+            "sem_registro": 0
+          }
+        },
+        "rendimento": {
+          "contagem_por_status": {
+            "valor": 176,
+            "zero": 223,
+            "sem_registro": 0
+          }
+        }
+      }
+    },
+    "ppm": {
+      "bovinos": {
+        "soma_publicada": 8472972.0,
+        "contagem_por_status": {
+          "valor": 399,
+          "sem_registro": 0
+        }
+      },
+      "suinos": {
+        "soma_publicada": 7047439.0,
+        "contagem_por_status": {
+          "valor": 398,
+          "zero": 1,
+          "sem_registro": 0
+        }
+      },
+      "galinaceos": {
+        "soma_publicada": 463493696.0,
+        "contagem_por_status": {
+          "valor": 399,
+          "sem_registro": 0
+        }
+      },
+      "leite": {
+        "soma_publicada": 4800865.0,
+        "contagem_por_status": {
+          "valor": 399,
+          "sem_registro": 0
+        }
+      }
+    }
+  },
+  "reconcile_ok": true
+}

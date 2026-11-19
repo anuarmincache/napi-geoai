@@ -5,12 +5,18 @@ from __future__ import annotations
 import json
 
 import streamlit as st
-import streamlit.components.v1 as components
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
 from geoai.portal import (
     list_municipalities,
     municipality_label,
     search_municipalities,
+)
+from geoai.portal.agro_panel import (
+    PPM_LABELS_PT,
+    agro_cell,
+    agro_format_cell,
+    agro_indicator,
+    list_agro_crops,
 )
 from geoai.portal.municipal_profile import (
     compare_municipal_profiles,
@@ -21,20 +27,26 @@ from geoai.portal.municipal_profile import (
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
+    br_num,
+    cached_agro_panel,
+    cached_mmgd_panel,
     cached_municipality_layer,
     cached_population_panel,
     configure_page,
+    date_br,
     render_footer,
+    render_html_map,
     sidebar_brand,
 )
 
 configure_page("Ficha municipal")
 sidebar_brand()
 
-st.title("Ficha municipal — população e indicadores")
+st.title("Ficha municipal integrada")
 st.caption(
-    "Estimativa IBGE **01/07/2026** + área malha **2025** + capacidade "
-    "SIGA conhecida (centralizada). Não é Censo, MWh, MMGD nem aptidão solar."
+    "Território, população, energia e agropecuária de um município em um só "
+    "lugar. Estimativa IBGE **01/07/2026** (não é Censo), malha **2025**, "
+    "ANEEL SIGA e MMGD, IBGE PAM e PPM. Potência não é energia gerada (MWh)."
 )
 
 mun = cached_municipality_layer()
@@ -128,51 +140,153 @@ metric_choice = st.selectbox(
     }.__getitem__,
 )
 
-left, right = st.columns([2.2, 1], gap="medium")
-with right:
-    st.markdown("#### Ficha")
-    if profile:
-        st.metric("Nome", profile["NM_MUN"])
-        st.metric("Código IBGE", profile["CD_MUN"])
-        st.metric(
-            "População estimada 2026 (hab)",
-            f"{int(profile['populacao_estimada_2026_hab']):,}".replace(",", "."),
+SIGA_STATUS_PT = {
+    "com_empreendimento": "com usinas associadas",
+    "sem_empreendimento": "sem usina associada",
+}
+
+if profile:
+    st.markdown(f"### {profile['NM_MUN']}")
+    st.caption(f"Código IBGE {profile['CD_MUN']} · Paraná")
+
+    card_t, card_e = st.columns(2, gap="medium")
+    with card_t.container(border=True):
+        st.markdown("##### 🗺️ Território e população")
+        t1, t2, t3 = st.columns(3)
+        t1.metric(
+            "População estimada",
+            br_num(profile["populacao_estimada_2026_hab"]),
         )
-        st.caption(f"Referência: {profile['populacao_referencia_data']} (não é Censo)")
-        dens = profile.get("densidade_demografica_estimada_2026_hab_km2")
-        st.metric(
-            "Densidade estimada (hab/km²)",
-            f"{dens:.2f}" if dens is not None else "n/d",
+        t2.metric(
+            "Densidade (hab/km²)",
+            br_num(profile.get("densidade_demografica_estimada_2026_hab_km2"), 1),
         )
-        st.caption(profile.get("densidade_note_pt") or "")
-        st.metric(
-            "Área malha 2025 (km²)",
-            f"{float(profile['area_km2_ibge_2025']):,.3f}",
+        t3.metric("Área (km²)", br_num(profile["area_km2_ibge_2025"], 1))
+        st.caption(
+            "IBGE, estimativa de "
+            f"{date_br(profile['populacao_referencia_data'])} (não é Censo) e "
+            "Malha Municipal 2025. " + (profile.get("densidade_note_pt") or "")
         )
-        st.metric("Status energia SIGA", str(profile.get("status_energia_siga")))
-        mw = profile.get("potencia_fiscalizada_conhecida_mw")
-        st.metric(
-            "MW fiscalizada conhecida (SIGA)",
-            f"{float(mw):,.3f}" if mw is not None else "n/d",
-        )
-        kw = profile.get("potencia_fiscalizada_conhecida_kw_por_habitante")
-        st.metric(
-            "kW/hab (SIGA conhecida)",
-            f"{float(kw):,.4f}" if kw is not None else "n/d",
-        )
-        st.caption(profile.get("kw_por_habitante_note_pt") or "")
+
+    with card_e.container(border=True):
+        st.markdown("##### ⚡ Geração centralizada (ANEEL SIGA)")
+        status = str(profile.get("status_energia_siga"))
+        e1, e2, e3 = st.columns(3)
         n_pl = profile.get("n_empreendimentos_siga_operacao")
-        st.metric(
-            "Usinas SIGA associadas",
-            f"{int(n_pl)}" if n_pl is not None else "n/d",
+        e1.metric("Usinas", br_num(n_pl))
+        e2.metric(
+            "MW fiscalizada",
+            br_num(profile.get("potencia_fiscalizada_conhecida_mw"), 1),
         )
+        e3.metric(
+            "kW por habitante",
+            br_num(profile.get("potencia_fiscalizada_conhecida_kw_por_habitante"), 2),
+        )
+        st.metric("Status energia SIGA", SIGA_STATUS_PT.get(status, status))
         if profile.get("zero_vinculado"):
             st.info(
                 "Zero vinculado (usinas georreferenciadas associadas) — "
                 "não interpretar como ausência absoluta de empreendimentos."
             )
         st.caption(profile.get("energy_scope_pt") or "")
-        st.caption(profile.get("unassociated_plants_limitation_pt") or "")
+        if level != AudienceLevel.BASIC:
+            st.caption(profile.get("kw_por_habitante_note_pt") or "")
+            st.caption(profile.get("unassociated_plants_limitation_pt") or "")
+
+    card_m, card_a = st.columns(2, gap="medium")
+    with card_m.container(border=True):
+        st.markdown("##### ☀️ Geração distribuída (ANEEL MMGD)")
+        mmgd = cached_mmgd_panel()
+        mmgd_row = None
+        if mmgd.available:
+            mmgd_row = next(
+                (
+                    r
+                    for r in (mmgd.panel.get("municipalities") or [])
+                    if str(r.get("CD_MUN")) == str(profile["CD_MUN"])
+                ),
+                None,
+            )
+        if not mmgd.available:
+            st.caption(mmgd.missing_reason_pt or "Painel MMGD indisponível.")
+        elif mmgd_row is None:
+            st.caption("Município ausente no painel MMGD.")
+        else:
+            n_mmgd = int(mmgd_row.get("n_empreendimentos") or 0)
+            mw_mmgd = mmgd_row.get("potencia_instalada_mw_conhecida")
+            pop_hab = float(profile["populacao_estimada_2026_hab"] or 0)
+            m1, m2, m3 = st.columns(3)
+            m1.metric("Instalações", br_num(n_mmgd))
+            m2.metric("MW instalada", br_num(mw_mmgd, 1))
+            m3.metric(
+                "kW por habitante",
+                br_num(float(mw_mmgd) * 1000 / pop_hab, 2)
+                if mw_mmgd is not None and pop_hab > 0
+                else "n/d",
+                help=(
+                    "Indicador derivado (classe B): potência instalada "
+                    "conhecida MMGD em kW ÷ população estimada IBGE 2026."
+                ),
+            )
+            classes = sorted(
+                (mmgd_row.get("by_classe") or {}).items(),
+                key=lambda kv: -int(kv[1]),
+            )[:3]
+            if classes:
+                st.caption(
+                    "Principais classes de consumo: "
+                    + ", ".join(f"{k} ({br_num(v)})" for k, v in classes)
+                    + "."
+                )
+            st.caption(
+                f"Snapshot ANEEL {mmgd.panel.get('periodo_referencia') or 'n/d'}. "
+                "MMGD ≠ SIGA. Contagem = empreendimentos; "
+                "UCs crédito não substituem essa contagem. Muitas instalações "
+                "não provam saturação de mercado."
+            )
+
+    with card_a.container(border=True):
+        st.markdown("##### 🌾 Agropecuária (IBGE PAM e PPM)")
+        agro = cached_agro_panel()
+        if not agro.available:
+            st.caption(agro.missing_reason_pt or "Painel agropecuário indisponível.")
+        else:
+            a_cols = [*st.columns(2), *st.columns(2)]
+            for col, key in zip(a_cols, PPM_LABELS_PT, strict=True):
+                ind = agro_indicator(agro, "ppm", key)
+                value, status_cell = agro_cell(agro, profile["CD_MUN"], ind)
+                col.metric(
+                    f"{PPM_LABELS_PT[key]} ({ind.unit.lower()})",
+                    agro_format_cell(value, status_cell, "").strip(),
+                )
+            crops_here = []
+            for crop in list_agro_crops(agro):
+                ind = agro_indicator(agro, "pam", "area_plantada", str(crop["id"]))
+                value, _status = agro_cell(agro, profile["CD_MUN"], ind)
+                if value:
+                    crops_here.append((float(value), str(crop["name"]), ind.unit))
+            crops_here.sort(reverse=True)
+            if crops_here:
+                st.caption(
+                    "Maiores áreas plantadas: "
+                    + ", ".join(
+                        f"{name} ({br_num(v)} {unit.lower()})"
+                        for v, name, unit in crops_here[:3]
+                    )
+                    + "."
+                )
+            st.caption(
+                f"PAM {agro.panel['pam']['year']} e PPM "
+                f"{agro.panel['ppm']['year_rebanho']}. Efetivo de rebanho não é "
+                "resíduo disponível para biogás."
+            )
+left, right = st.columns([2.2, 1], gap="medium")
+with right:
+    st.markdown("#### Mapa temático")
+    st.caption(
+        "O mapa ao lado compara os 399 municípios no indicador escolhido "
+        "acima. O município selecionado fica destacado."
+    )
     with st.expander("Fonte e metodologia", expanded=False):
         for line in population_attribution_lines(pop):
             st.markdown(f'<p class="napi-meta">{line}</p>', unsafe_allow_html=True)
@@ -186,7 +300,7 @@ with left:
                 metric=metric_choice,
                 selected_code=code,
             )
-            components.html(html, height=620, scrolling=False)
+            render_html_map(html, height=620)
         except Exception as exc:  # noqa: BLE001
             st.error(f"Falha no mapa: {exc}")
 

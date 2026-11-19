@@ -14,7 +14,7 @@ Nenhum cálculo de aptidão solar é derivado aqui.
 |---|---|---|---|---|---|
 | `ibge.malhas_municipais.pr_uf_2025` | IBGE | ZIP/SHP | HTTP file (geoftp) | não | prototype |
 | `aneel.siga.empreendimentos_geracao` | ANEEL | CSV/XML | CKAN + HTTP download | não | prototype |
-| `aneel.mmgd.empreendimentos` | ANEEL | ZIP/CSV/Parquet | CKAN + HTTP download | não | catalogued |
+| `aneel.mmgd.empreendimentos` | ANEEL | ZIP/CSV/Parquet | CKAN + HTTP download | não | prototype |
 | `inpe.labren.atlas_solar_2017` | INPE/LABREN | CSV/SHP/QGS | índice web / data.inpe.br | não* | catalogued |
 | `mapbiomas.brazil.lulc` | MapBiomas | GeoTIFF / GEE | plataforma web, GEE, GCS | GEE opcional | catalogued |
 | `ons.dados_abertos.capacidade_geracao` | ONS | CSV/XLSX/Parquet | portal dados.ons.org.br | não** | catalogued |
@@ -45,8 +45,8 @@ Detalhes do recorte Paraná: [FONTES_LIMITES_PARANA.md](FONTES_LIMITES_PARANA.md
 | Download verificado | `siga-empreendimentos-geracao.csv` (HTTP 200, ~7,5 MiB) | ZIP ~100+ MiB |
 | Licença | ODbL | ODbL |
 | API auxiliar | ` /api/3/action/package_show` | idem |
-| Conector | `geoai.connectors.aneel` (CSV SIGA) | apenas catalogado |
-| Observação | coords com vírgula decimal; delimiter `;` | migração SISGD→MMGD em 2025 |
+| Conector | `geoai.connectors.aneel` (CSV SIGA) | `geoai.connectors.aneel_mmgd` |
+| Observação | coords com vírgula decimal; delimiter `;` | migração SISGD→MMGD em 2025; potência kW; sem CPF/nome em artefatos públicos |
 
 SIGEL/ArcGIS (`sigel.aneel.gov.br`) existe como camada geoespacial complementar; não é o conector deste MVP.
 

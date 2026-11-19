@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import warnings
 from pathlib import Path
 
 import geopandas as gpd
@@ -106,8 +107,14 @@ def test_fail_closed_without_crs_evidence(tmp_path: Path) -> None:
     root = _stage_derived(tmp_path)
     geo_path = root / "data" / "derived" / "parana_uf_2025.geojson"
     gdf = gpd.GeoDataFrame({"id": [1]}, geometry=[box(-54, -26, -48, -22)])
-    # Sem CRS no arquivo.
-    gdf.to_file(geo_path, driver="GeoJSON")
+    # Sem CRS no arquivo. O aviso do pyogrio registra exatamente essa omissão.
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message="'crs' was not provided",
+            category=UserWarning,
+        )
+        gdf.to_file(geo_path, driver="GeoJSON")
     val_path = root / "data" / "derived" / "parana_uf_2025.validation.json"
     val = json.loads(val_path.read_text(encoding="utf-8"))
     val.pop("source_crs", None)

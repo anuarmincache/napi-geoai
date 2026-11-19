@@ -6,9 +6,9 @@ Issue: [#30](https://github.com/anuarmincache/napi-geoai/issues/30)
 
 Painel municipal de **capacidade fiscalizada (MW)** de geração **centralizada** SIGA/ANEEL no Paraná, associado aos **399 municípios IBGE** via join espacial (QGIS oficial + GeoPandas complementar).
 
-## Fora deste MVP
+## Fora deste MVP (SIGA)
 
-- MMGD (micro/minigeração distribuída) — apenas catalogado
+- MMGD — tratado no MVP 14 (pipeline/artefatos derivados; UI própria; não misturar com SIGA)
 - Geração efetiva em MWh
 - Aptidão solar / pesos
 - Cloud, Supabase, serviços pagos

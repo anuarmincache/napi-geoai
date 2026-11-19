@@ -1,0 +1,233 @@
+{
+  "acquisition_id": "S2B_20261112T133149_R081",
+  "acquisitions": [
+    {
+      "acquisition_id": "S2B_20261112T133149_R081",
+      "algorithm_version": "napi-ndvi-block-writer-1",
+      "image_date": "2026-11-12",
+      "publication_state": "nao_publicado",
+      "quality_status": "approved_with_reservations",
+      "role": "atual",
+      "valid_pixel_fraction": 0.7311414776754075
+    }
+  ],
+  "algorithm": {
+    "gdal_version": "3.13.3",
+    "peak_rss_mb": null,
+    "peak_rss_status": "not_measured",
+    "rule": "first_valid_tile_in_declared_order",
+    "version": "napi-ndvi-block-writer-1"
+  },
+  "counts": {
+    "n_aoi": 4876416,
+    "n_valid": 3565350,
+    "overlap_both_valid": 2034052,
+    "pixel_equation": "3086107 + 479243 = 3565350",
+    "pixels_per_tile": {
+      "22KCV": 3086107,
+      "22KDV": 479243
+    }
+  },
+  "crs": "EPSG:32722",
+  "downloads": {
+    "csv": {
+      "available": false,
+      "bytes": null,
+      "exists": false,
+      "filename": null,
+      "public_download": false,
+      "published": false,
+      "reason": "nao_gerado",
+      "sha256": null,
+      "validated": false
+    },
+    "geotiff": {
+      "available": true,
+      "bytes": 17023508,
+      "exists": true,
+      "filename": "ndvi-4b0a50e404664b367e2f357daa86bdf48ba2f4d482f8bb4ba5ba3d53c3234b6f.tif",
+      "public_download": false,
+      "published": false,
+      "reason": null,
+      "sha256": "4b0a50e404664b367e2f357daa86bdf48ba2f4d482f8bb4ba5ba3d53c3234b6f",
+      "validated": true
+    },
+    "json": {
+      "available": true,
+      "bytes": null,
+      "checksum_record": "catalog/integrity/4115200.json",
+      "exists": true,
+      "filename": "4115200.json",
+      "public_download": false,
+      "published": false,
+      "reason": null,
+      "sha256": null,
+      "validated": true
+    },
+    "png": {
+      "available": false,
+      "bytes": null,
+      "exists": false,
+      "filename": null,
+      "public_download": false,
+      "published": false,
+      "reason": "nao_gerado",
+      "sha256": null,
+      "validated": false
+    }
+  },
+  "grid": {
+    "cols": 2686,
+    "geotransform": [
+      387690.0,
+      10.0,
+      0.0,
+      7428040.0,
+      0.0,
+      -10.0
+    ],
+    "rows": 3373
+  },
+  "image_date": "2026-11-12",
+  "last_update_attempt": {
+    "at": "2026-11-17T00:18:08.8872919Z",
+    "published": false,
+    "result": "produto_local_validado"
+  },
+  "municipality": {
+    "ibge": "4115200",
+    "name": "Maringá",
+    "uf": "PR"
+  },
+  "ndvi_dtype": "float32",
+  "ndvi_published": false,
+  "nodata": -9999.0,
+  "previous_acquisitions": [],
+  "processed_at": "2026-11-17T00:18:08.8872919Z",
+  "product_type": "NDVI",
+  "provenance": {
+    "dtype": "uint8",
+    "histogram": {
+      "0": 5494528,
+      "1": 3086107,
+      "2": 479243
+    },
+    "product": {
+      "available": true,
+      "bytes": 94091,
+      "exists": true,
+      "filename": "provenance-0843d50c783e2870bc8e1b7dcae2d48ed71c22adf42f6c54c7af9495a8091277.tif",
+      "public_download": false,
+      "published": false,
+      "reason": null,
+      "sha256": "0843d50c783e2870bc8e1b7dcae2d48ed71c22adf42f6c54c7af9495a8091277",
+      "validated": true
+    },
+    "values": {
+      "0": "nao_selecionado",
+      "1": "22KCV",
+      "2": "22KDV"
+    }
+  },
+  "publication_state": "nao_publicado",
+  "quality": {
+    "fraction_gate_passed": true,
+    "minimum_valid_fraction": 0.7,
+    "note_pt": "A fração válida 0,7311414776754075 atingiu o limiar de 0,70. A inspeção no QGIS, em 16/11/2026, encontrou 686 pixels válidos fora do intervalo [-1, 1], todos na tile 22KCV. Os valores armazenados não foram alterados. O mapa está validado localmente e não foi publicado.",
+    "outside_unit_interval": {
+      "above": 513,
+      "below": 173,
+      "count": 686,
+      "display": "neutral_not_vegetation",
+      "maximum": 1.0,
+      "minimum": -1.0,
+      "observed_max": 15.800000190734863,
+      "observed_min": -37.0,
+      "source": "inspecao_qgis_2026-11-16",
+      "source_values_modified": false
+    },
+    "status": "approved_with_reservations"
+  },
+  "satellite": "Sentinel-2B",
+  "schema": "napi-map-catalog-1",
+  "spatial_resolution_m": 10.0,
+  "style": {
+    "above_display_max": {
+      "denser_vegetation": false,
+      "display": "endpoint_green",
+      "from": 0.8,
+      "hex": "#1B5E20",
+      "until": 1.0
+    },
+    "below_display_min": {
+      "display": "endpoint_yellow",
+      "from": -1.0,
+      "hex": "#F4E04D",
+      "until": 0.0
+    },
+    "display_max": 0.8,
+    "display_min": 0.0,
+    "id": "ndvi-yellow-green-v1",
+    "interpolation": "linear",
+    "legend_note_pt": "Escala fixa de visualização, de 0,0 a 0,8. Abaixo de 0,0 e até -1, a cor é o amarelo inicial. Acima de 0,8 e até 1, a cor é o verde final, sem indicar vegetação mais densa. Abaixo de -1 ou acima de 1, a cor é cinza neutro. Pixels sem dado ficam transparentes.",
+    "legend_title": "NDVI",
+    "nodata_display": "transparent",
+    "nodata_value": -9999.0,
+    "outside_physical_interval": {
+      "denser_vegetation": false,
+      "display": "neutral",
+      "hex": "#7A7A7A",
+      "maximum": 1.0,
+      "minimum": -1.0,
+      "source_values_modified": false
+    },
+    "render": [
+      "ler o GeoTIFF em modo somente leitura",
+      "nodata -9999 fica transparente antes de qualquer cor",
+      "NDVI abaixo de -1 ou acima de 1 fica cinza neutro",
+      "NDVI de -1 até 0 recebe o amarelo inicial",
+      "NDVI de 0,8 até 1 recebe o verde final",
+      "entre 0,0 e 0,8 a rampa é linear",
+      "gravar PNG apenas numa etapa posterior, fora do GeoTIFF",
+      "repetir as mesmas regras no MapLibre"
+    ],
+    "resolution_label": "10 m",
+    "source_values_modified": false,
+    "stops": [
+      {
+        "hex": "#F4E04D",
+        "label": "0,0",
+        "value": 0.0
+      },
+      {
+        "hex": "#C5D63D",
+        "label": "0,2",
+        "value": 0.2
+      },
+      {
+        "hex": "#7CB342",
+        "label": "0,4",
+        "value": 0.4
+      },
+      {
+        "hex": "#2E7D32",
+        "label": "0,6",
+        "value": 0.6
+      },
+      {
+        "hex": "#1B5E20",
+        "label": "0,8",
+        "value": 0.8
+      }
+    ]
+  },
+  "update_policy": {
+    "guarantees_new_valid_scene": false,
+    "if_quality_fails": "manter_ultimo_mapa_aprovado",
+    "interval_days": 15,
+    "previous_products": "preservar",
+    "scene_organization": "uma_cena_por_tile",
+    "scheduler_active": false
+  },
+  "valid_pixel_fraction": 0.7311414776754075
+}

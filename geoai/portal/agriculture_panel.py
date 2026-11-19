@@ -8,7 +8,9 @@ from pathlib import Path
 
 from geoai.connectors.catalog import get_source
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
+from geoai.portal.agro_panel import load_agro_panel_bundle
 from geoai.portal.paths import (
+    agro_panel_path,
     municipalities_geojson_path,
     municipalities_validation_path,
     repo_root_from_here,
@@ -80,6 +82,10 @@ def agriculture_source_inventory(
 
     root = repo_root or repo_root_from_here()
     mesh_file, mesh_ok = _municipal_mesh(root)
+    agro_file = agro_panel_path(root).is_file()
+    agro_ok = load_agro_panel_bundle(root).available
+    pam_id = "ibge.sidra.pam.tabela_5457"
+    ppm_id = "ibge.sidra.ppm.tabela_3939"
     return (
         AgricultureSourceStatus(
             theme_pt="Limites municipais",
@@ -100,30 +106,37 @@ def agriculture_source_inventory(
         ),
         AgricultureSourceStatus(
             theme_pt="Produção Agrícola Municipal",
-            source_id=None,
+            source_id=pam_id if agro_ok else None,
             organization="IBGE/SIDRA — PAM",
-            catalogued=False,
-            local_file=_has_named_file(root, ("sidra", "pam")),
-            validated=False,
-            integrated=False,
-            supports_agricultural_indicator=False,
+            catalogued=agro_ok and _is_catalogued(pam_id),
+            local_file=agro_file,
+            validated=agro_ok,
+            integrated=agro_ok,
+            supports_agricultural_indicator=agro_ok,
             note_pt=(
-                "Não está no catálogo e não há tabela local. Área plantada, "
+                "Tabela 5457 integrada: área plantada, área colhida, "
+                "quantidade produzida e rendimento das principais culturas. "
+                "Município ausente numa cultura não vira zero."
+                if agro_ok
+                else "Não está no catálogo e não há tabela local. Área plantada, "
                 "área colhida, produção e rendimento ficam indisponíveis. "
                 "Município ausente numa cultura não vira zero."
             ),
         ),
         AgricultureSourceStatus(
             theme_pt="Pecuária municipal",
-            source_id=None,
+            source_id=ppm_id if agro_ok else None,
             organization="IBGE/SIDRA — PPM",
-            catalogued=False,
-            local_file=_has_named_file(root, ("ppm", "pecuaria_municipal")),
-            validated=False,
-            integrated=False,
-            supports_agricultural_indicator=False,
+            catalogued=agro_ok and _is_catalogued(ppm_id),
+            local_file=agro_file,
+            validated=agro_ok,
+            integrated=agro_ok,
+            supports_agricultural_indicator=agro_ok,
             note_pt=(
-                "Não está no catálogo e não há tabela local. Rebanho e "
+                "Tabelas 3939 e 74 integradas: bovinos, suínos, galináceos e "
+                "leite. Efetivo de rebanho não é resíduo disponível."
+                if agro_ok
+                else "Não está no catálogo e não há tabela local. Rebanho e "
                 "produtos de origem animal não são estimados."
             ),
         ),

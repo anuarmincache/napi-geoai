@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 
 import streamlit as st
-import streamlit.components.v1 as components
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
 from geoai.portal import (
     compare_municipalities,
@@ -20,9 +19,11 @@ from geoai.portal import (
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
+    br_num,
     cached_municipality_layer,
     configure_page,
     render_footer,
+    render_html_map,
     sidebar_brand,
 )
 
@@ -145,7 +146,7 @@ with c_search:
         st.button(
             "Limpar busca",
             on_click=_clear_search,
-            use_container_width=True,
+            width="stretch",
             help="Remove o filtro e volta a listar os 399 municípios.",
         )
 
@@ -245,7 +246,7 @@ with meta_col:
     if rec:
         st.metric("Nome", rec.name)
         st.metric("Código IBGE", rec.code)
-        st.metric("Área oficial (km²)", f"{rec.area_km2:.3f}")
+        st.metric("Área oficial (km²)", f"{br_num(rec.area_km2, 1)}")
     else:
         st.info(
             f"Mapa geral: {EXPECTED_PR_MUNICIPALITY_COUNT} municípios. "
@@ -268,7 +269,7 @@ with map_col:
                 fill_opacity=float(fill_opacity),
                 line_weight=float(line_weight),
             )
-            components.html(html, height=int(map_height), scrolling=False)
+            render_html_map(html, height=int(map_height))
         except Exception as exc:  # noqa: BLE001
             st.error(f"Falha ao renderizar mapa: {exc}")
 
@@ -326,14 +327,14 @@ else:
     ca, cb = st.columns(2)
     with ca:
         st.markdown(f"**{cmp['a']['name']}** (`{cmp['a']['code']}`)")
-        st.write(f"Área IBGE: **{cmp['a']['area_km2']:.3f} km²**")
+        st.write(f"Área IBGE: **{br_num(cmp['a']['area_km2'], 1)} km²**")
     with cb:
         st.markdown(f"**{cmp['b']['name']}** (`{cmp['b']['code']}`)")
-        st.write(f"Área IBGE: **{cmp['b']['area_km2']:.3f} km²**")
+        st.write(f"Área IBGE: **{br_num(cmp['b']['area_km2'], 1)} km²**")
     if cmp.get("area_km2_delta_a_minus_b") is not None:
         st.write(
             f"Diferença de área (A − B): "
-            f"**{cmp['area_km2_delta_a_minus_b']:.3f} km²**"
+            f"**{br_num(cmp['area_km2_delta_a_minus_b'], 1)} km²**"
         )
     st.caption(str(cmp["area_source"]))
     st.warning(str(cmp["disclaimer_pt"]))

@@ -94,6 +94,8 @@ data/raw/
 data/processed/
 data/external/
 data/jobs/
+data/raw/sentinel/
+data/processed/sentinel/
 # GeoJSON derivados pequenos e metadados de proveniência podem ser versionados
 !data/derived/
 !data/derived/**/*.geojson
@@ -117,3 +119,9 @@ qgis_crash_reports/
 scratch/
 tmp/
 temp/
+
+# Auditorias e evidências locais (não versionar sem autorização)
+reports/
+
+# Caminhos desta máquina para o visualizador local de NDVI
+config/viewer.local.json

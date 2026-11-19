@@ -21,8 +21,11 @@ PAGES = (
     REPO / "app" / "pages" / "5_Explorador_Territorial.py",
     REPO / "app" / "pages" / "6_Energia_SIGA.py",
     REPO / "app" / "pages" / "7_Ficha_Municipal.py",
+    REPO / "app" / "pages" / "8_Energia_MMGD.py",
     REPO / "app" / "pages" / "9_Meio_Ambiente.py",
     REPO / "app" / "pages" / "10_Agricultura.py",
+    REPO / "app" / "pages" / "11_Ferramentas.py",
+    REPO / "app" / "pages" / "12_NDVI_Cidades.py",
 )
 
 
@@ -193,8 +196,53 @@ def test_home_lists_energy_page(_streamlit_paths: None) -> None:
     assert not at.exception, at.exception
     info = "\n".join(str(item.value) for item in at.info)
     assert "Energia" in info
+    assert "MMGD" in info
     assert "Meio Ambiente" in info
     assert "Agricultura" in info
+
+
+def test_mmgd_page_kpis_and_technology_filter(_streamlit_paths: None) -> None:
+    from geoai.portal.mmgd_panel import load_mmgd_panel_bundle, mmgd_scope_totals
+
+    if not load_mmgd_panel_bundle(REPO).available:
+        pytest.skip("painel MMGD ausente")
+
+    page = REPO / "app" / "pages" / "8_Energia_MMGD.py"
+    at = AppTest.from_file(str(page), default_timeout=180)
+    at.run()
+    assert not at.exception, at.exception
+    labels = [str(m.label) for m in at.metric]
+    assert any("Empreendimentos" in lab for lab in labels)
+    assert any("MW instalada" in lab for lab in labels)
+    warnings = "\n".join(str(w.value) for w in at.warning)
+    assert "rejeitados" in warnings.lower() or "MMGD" in warnings
+    captions = "\n".join(str(c.value) for c in at.caption)
+    assert "ODbL" in captions or "ANEEL" in captions or "11/2026" in captions
+
+    all_scope = mmgd_scope_totals(load_mmgd_panel_bundle(REPO))
+    emp_label = next(lab for lab in labels if lab.startswith("Empreendimentos"))
+    values = {str(m.label): str(m.value) for m in at.metric}
+    # formatação pt com ponto de milhar
+    expected = f"{all_scope['n_empreendimentos']:,}".replace(",", ".")
+    assert values[emp_label] == expected
+
+    # Primeiro selectbox = tecnologia
+    assert at.selectbox
+    tech = at.selectbox[0]
+    assert "(todas)" in list(tech.options)
+    assert "UFV" in list(tech.options)
+    tech.set_value("UFV")
+    at.run()
+    assert not at.exception, at.exception
+    labels_ufv = [str(m.label) for m in at.metric]
+    assert any("UFV" in lab or "tipo:UFV" in lab for lab in labels_ufv)
+    ufv_scope = mmgd_scope_totals(load_mmgd_panel_bundle(REPO), tipo="UFV")
+    values_ufv = {str(m.label): str(m.value) for m in at.metric}
+    emp_ufv = next(lab for lab in labels_ufv if lab.startswith("Empreendimentos"))
+    expected_ufv = f"{ufv_scope['n_empreendimentos']:,}".replace(",", ".")
+    assert values_ufv[emp_ufv] == expected_ufv
+    mw_lab = next(lab for lab in labels_ufv if lab.startswith("MW instalada"))
+    assert "n/d" in values_ufv[mw_lab].lower()
 
 
 def test_energy_page_searches_any_municipality(_streamlit_paths: None) -> None:
@@ -275,11 +323,39 @@ def test_agriculture_page_withholds_invented_indicators(
     assert "PAM" in text
     assert "CONAB" in text
     assert "IPARDES" in text
-    assert "indisponível" in text.lower()
+    assert "indisponíve" in text.lower()
     assert "não catalogada" in text
     metrics = {str(item.label): str(item.value) for item in at.metric}
-    assert metrics["Produção agrícola"] == "indisponível"
-    assert metrics["Área plantada"] == "indisponível"
-    assert metrics["Rendimento"] == "indisponível"
-    assert metrics["Pecuária"] == "indisponível"
+    labels = ("Produção agrícola", "Área plantada", "Rendimento", "Pecuária")
+    from geoai.portal.agro_panel import load_agro_panel_bundle
 
+    if load_agro_panel_bundle(REPO).available:
+        # Com artefato IBGE validado: valores vêm do painel, com fonte citada.
+        assert all(metrics[label] != "indisponível" for label in labels)
+        assert "IBGE" in text
+        assert "biogás" in text
+    else:
+        assert all(metrics[label] == "indisponível" for label in labels)
+
+
+def test_ndvi_page_reports_progress_without_inventing(_streamlit_paths: None) -> None:
+    page = REPO / "app" / "pages" / "12_NDVI_Cidades.py"
+    at = AppTest.from_file(str(page), default_timeout=120)
+    at.run()
+    assert not at.exception, at.exception
+    metrics = {str(item.label): str(item.value) for item in at.metric}
+    assert metrics["Municípios na lista"] == "97"
+    from geoai.portal.ndvi_panel import load_ndvi_overview
+
+    counts = load_ndvi_overview(REPO)["counts"]
+    assert metrics["Com NDVI publicado"] == str(counts["publicado"])
+    text = "\n".join(
+        [
+            *(str(item.value) for item in at.caption),
+            *(str(item.value) for item in at.warning),
+            *(str(item.value) for item in at.markdown),
+        ]
+    )
+    assert "não é biomassa" in text
+    if counts["publicado"] == 0:
+        assert "Nenhum mapa de NDVI está publicado" in text

@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 import streamlit as st
-import streamlit.components.v1 as components
 from geoai.portal import attribution_lines, didactic_copy_text, folium_map_html
 from geoai.presentation import AudienceLevel
 
-from _bootstrap import cached_parana_layer, configure_page, render_footer, sidebar_brand
+from _bootstrap import (
+    cached_parana_layer,
+    configure_page,
+    render_footer,
+    render_html_map,
+    sidebar_brand,
+)
 
 configure_page("Mapa Paraná")
 sidebar_brand()
@@ -44,7 +49,8 @@ level_label = st.radio(
 )
 level = level_label[0]
 title, description = didactic_copy_text(bundle, level)
-st.subheader(title)
+if title.strip().casefold() != "mapa do paraná":
+    st.subheader(title)
 st.write(description)
 
 c1, c2 = st.columns([2, 1])
@@ -96,7 +102,7 @@ with c1:
             fill_opacity=float(fill_opacity),
             line_weight=float(line_weight),
         )
-        components.html(html, height=int(map_height), scrolling=False)
+        render_html_map(html, height=int(map_height))
     except Exception as exc:  # noqa: BLE001
         st.error(f"Falha ao renderizar mapa: {exc}")
 

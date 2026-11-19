@@ -1,0 +1,1665 @@
+{
+ "schema_version": 1,
+ "rule_pt": "Municípios do Paraná com população estimada IBGE acima de 20.000 habitantes (campo populacao_estimada_2026_hab).",
+ "threshold": 20000,
+ "population_reference_date": "2026-07-01",
+ "geometry_note_pt": "bbox e ponto de rótulo calculados na malha de apresentação (simplificada). A AOI de processamento usa a malha oficial.",
+ "aoi_note_pt": "A AOI é o município inteiro, como no piloto de Maringá. Inclui área rural: o NDVI municipal reflete sobretudo lavoura e vegetação, não apenas a área urbana.",
+ "count": 97,
+ "total_area_km2": 79454.356,
+ "by_sentinel_utm_epsg": {
+  "32722": 90,
+  "32721": 7
+ },
+ "targets": [
+  {
+   "cd_mun": "4106902",
+   "name": "Curitiba",
+   "population": 1832183,
+   "area_km2": 435.406,
+   "bbox": [
+    -49.389339,
+    -25.645386,
+    -49.184389,
+    -25.344964
+   ],
+   "label_point": [
+    -49.286127,
+    -25.494726
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4113700",
+   "name": "Londrina",
+   "population": 584465,
+   "area_km2": 1647.796,
+   "bbox": [
+    -51.321264,
+    -23.779941,
+    -50.87625,
+    -23.172279
+   ],
+   "label_point": [
+    -51.117483,
+    -23.47531
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4115200",
+   "name": "Maringá",
+   "population": 432635,
+   "area_km2": 487.912,
+   "bbox": [
+    -52.100087,
+    -23.558334,
+    -51.836195,
+    -23.253979
+   ],
+   "label_point": [
+    -51.961255,
+    -23.411073
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4119905",
+   "name": "Ponta Grossa",
+   "population": 378527,
+   "area_km2": 2044.902,
+   "bbox": [
+    -50.456645,
+    -25.386572,
+    -49.68043,
+    -24.892119
+   ],
+   "label_point": [
+    -49.992584,
+    -25.139485
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4104808",
+   "name": "Cascavel",
+   "population": 372026,
+   "area_km2": 2094.263,
+   "bbox": [
+    -53.723584,
+    -25.371501,
+    -53.072085,
+    -24.74316
+   ],
+   "label_point": [
+    -53.299698,
+    -25.060691
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4125506",
+   "name": "São José dos Pinhais",
+   "population": 353874,
+   "area_km2": 945.509,
+   "bbox": [
+    -49.275578,
+    -25.831978,
+    -48.842561,
+    -25.462385
+   ],
+   "label_point": [
+    -49.109153,
+    -25.647623
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4108304",
+   "name": "Foz do Iguaçu",
+   "population": 299112,
+   "area_km2": 606.501,
+   "bbox": [
+    -54.619896,
+    -25.696899,
+    -54.29635,
+    -25.211494
+   ],
+   "label_point": [
+    -54.553091,
+    -25.457532
+   ],
+   "sentinel_utm_epsg": 32721
+  },
+  {
+   "cd_mun": "4105805",
+   "name": "Colombo",
+   "population": 242698,
+   "area_km2": 197.369,
+   "bbox": [
+    -49.268321,
+    -25.393473,
+    -49.092217,
+    -25.225708
+   ],
+   "label_point": [
+    -49.19232,
+    -25.307143
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4109401",
+   "name": "Guarapuava",
+   "population": 190542,
+   "area_km2": 3163.893,
+   "bbox": [
+    -52.022926,
+    -25.682052,
+    -51.089834,
+    -24.986463
+   ],
+   "label_point": [
+    -51.460095,
+    -25.334456
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4107652",
+   "name": "Fazenda Rio Grande",
+   "population": 170123,
+   "area_km2": 116.41,
+   "bbox": [
+    -49.365506,
+    -25.75432,
+    -49.240705,
+    -25.610993
+   ],
+   "label_point": [
+    -49.301473,
+    -25.680673
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4101804",
+   "name": "Araucária",
+   "population": 164291,
+   "area_km2": 469.549,
+   "bbox": [
+    -49.586581,
+    -25.788663,
+    -49.339183,
+    -25.479048
+   ],
+   "label_point": [
+    -49.451395,
+    -25.635545
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4127700",
+   "name": "Toledo",
+   "population": 162658,
+   "area_km2": 1197.223,
+   "bbox": [
+    -54.042609,
+    -24.942327,
+    -53.535131,
+    -24.452974
+   ],
+   "label_point": [
+    -53.812057,
+    -24.691455
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4118204",
+   "name": "Paranaguá",
+   "population": 150436,
+   "area_km2": 821.427,
+   "bbox": [
+    -48.704115,
+    -25.734123,
+    -48.276912,
+    -25.374966
+   ],
+   "label_point": [
+    -48.581136,
+    -25.555256
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4104204",
+   "name": "Campo Largo",
+   "population": 146002,
+   "area_km2": 1239.801,
+   "bbox": [
+    -49.855511,
+    -25.554072,
+    -49.372079,
+    -24.97819
+   ],
+   "label_point": [
+    -49.69322,
+    -25.265588
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4101408",
+   "name": "Apucarana",
+   "population": 135481,
+   "area_km2": 556.771,
+   "bbox": [
+    -51.632547,
+    -23.736778,
+    -51.214834,
+    -23.418377
+   ],
+   "label_point": [
+    -51.394732,
+    -23.576312
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4119152",
+   "name": "Pinhais",
+   "population": 131857,
+   "area_km2": 61.008,
+   "bbox": [
+    -49.203482,
+    -25.471936,
+    -49.103908,
+    -25.378058
+   ],
+   "label_point": [
+    -49.155815,
+    -25.424963
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4126256",
+   "name": "Sarandi",
+   "population": 130211,
+   "area_km2": 103.942,
+   "bbox": [
+    -51.928657,
+    -23.560982,
+    -51.797228,
+    -23.392905
+   ],
+   "label_point": [
+    -51.87939,
+    -23.475797
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4119509",
+   "name": "Piraquara",
+   "population": 129035,
+   "area_km2": 225.065,
+   "bbox": [
+    -49.175629,
+    -25.550101,
+    -48.940981,
+    -25.387155
+   ],
+   "label_point": [
+    -49.056067,
+    -25.467043
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4100400",
+   "name": "Almirante Tamandaré",
+   "population": 127031,
+   "area_km2": 193.736,
+   "bbox": [
+    -49.450634,
+    -25.38695,
+    -49.229509,
+    -25.224334
+   ],
+   "label_point": [
+    -49.328402,
+    -25.305199
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4101507",
+   "name": "Arapongas",
+   "population": 125767,
+   "area_km2": 383.37,
+   "bbox": [
+    -51.594517,
+    -23.549487,
+    -51.300982,
+    -23.342477
+   ],
+   "label_point": [
+    -51.438391,
+    -23.447106
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4128104",
+   "name": "Umuarama",
+   "population": 124077,
+   "area_km2": 1233.997,
+   "bbox": [
+    -53.66575,
+    -23.965028,
+    -53.167093,
+    -23.448763
+   ],
+   "label_point": [
+    -53.333368,
+    -23.707267
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4103701",
+   "name": "Cambé",
+   "population": 111553,
+   "area_km2": 499.583,
+   "bbox": [
+    -51.420274,
+    -23.398683,
+    -51.168786,
+    -23.012666
+   ],
+   "label_point": [
+    -51.249409,
+    -23.2064
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4104303",
+   "name": "Campo Mourão",
+   "population": 104881,
+   "area_km2": 748.054,
+   "bbox": [
+    -52.543926,
+    -24.298061,
+    -52.190259,
+    -23.953608
+   ],
+   "label_point": [
+    -52.361704,
+    -24.128059
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4108403",
+   "name": "Francisco Beltrão",
+   "population": 103424,
+   "area_km2": 731.379,
+   "bbox": [
+    -53.377781,
+    -26.196921,
+    -52.88493,
+    -25.936527
+   ],
+   "label_point": [
+    -53.103874,
+    -26.068513
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4118501",
+   "name": "Pato Branco",
+   "population": 99041,
+   "area_km2": 539.154,
+   "bbox": [
+    -52.813154,
+    -26.307838,
+    -52.531531,
+    -25.996292
+   ],
+   "label_point": [
+    -52.655827,
+    -26.15085
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4118402",
+   "name": "Paranavaí",
+   "population": 96870,
+   "area_km2": 1197.394,
+   "bbox": [
+    -52.749596,
+    -23.139805,
+    -52.34698,
+    -22.606849
+   ],
+   "label_point": [
+    -52.50765,
+    -22.864273
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4105508",
+   "name": "Cianorte",
+   "population": 83579,
+   "area_km2": 807.796,
+   "bbox": [
+    -52.742179,
+    -23.953406,
+    -52.452556,
+    -23.520083
+   ],
+   "label_point": [
+    -52.63994,
+    -23.738269
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4127106",
+   "name": "Telêmaco Borba",
+   "population": 77798,
+   "area_km2": 1379.02,
+   "bbox": [
+    -50.741216,
+    -24.471175,
+    -50.268834,
+    -24.036388
+   ],
+   "label_point": [
+    -50.523365,
+    -24.254195
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4122404",
+   "name": "Rolândia",
+   "population": 76671,
+   "area_km2": 456.228,
+   "bbox": [
+    -51.54112,
+    -23.394823,
+    -51.289931,
+    -23.167178
+   ],
+   "label_point": [
+    -51.428035,
+    -23.272444
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4104907",
+   "name": "Castro",
+   "population": 76015,
+   "area_km2": 2526.498,
+   "bbox": [
+    -50.244606,
+    -25.079481,
+    -49.498777,
+    -24.540291
+   ],
+   "label_point": [
+    -49.819392,
+    -24.812649
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4110706",
+   "name": "Irati",
+   "population": 61192,
+   "area_km2": 1000.188,
+   "bbox": [
+    -51.14512,
+    -25.621424,
+    -50.579684,
+    -25.354757
+   ],
+   "label_point": [
+    -50.831555,
+    -25.487209
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4114609",
+   "name": "Marechal Cândido Rondon",
+   "population": 59291,
+   "area_km2": 743.593,
+   "bbox": [
+    -54.336105,
+    -24.766756,
+    -53.985397,
+    -24.410334
+   ],
+   "label_point": [
+    -54.120124,
+    -24.588463
+   ],
+   "sentinel_utm_epsg": 32721
+  },
+  {
+   "cd_mun": "4115804",
+   "name": "Medianeira",
+   "population": 58681,
+   "area_km2": 326.67,
+   "bbox": [
+    -54.203892,
+    -25.366349,
+    -53.992541,
+    -25.164699
+   ],
+   "label_point": [
+    -54.09572,
+    -25.264858
+   ],
+   "sentinel_utm_epsg": 32721
+  },
+  {
+   "cd_mun": "4128203",
+   "name": "União da Vitória",
+   "population": 56701,
+   "area_km2": 727.443,
+   "bbox": [
+    -51.284629,
+    -26.301156,
+    -50.892572,
+    -25.937771
+   ],
+   "label_point": [
+    -51.113065,
+    -26.124189
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4109807",
+   "name": "Ibiporã",
+   "population": 53486,
+   "area_km2": 298.998,
+   "bbox": [
+    -51.171103,
+    -23.346545,
+    -50.948359,
+    -23.10638
+   ],
+   "label_point": [
+    -51.050446,
+    -23.230249
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4104006",
+   "name": "Campina Grande do Sul",
+   "population": 51154,
+   "area_km2": 542.239,
+   "bbox": [
+    -49.135701,
+    -25.370664,
+    -48.525577,
+    -24.996444
+   ],
+   "label_point": [
+    -48.872008,
+    -25.184026
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4120606",
+   "name": "Prudentópolis",
+   "population": 50988,
+   "area_km2": 2257.861,
+   "bbox": [
+    -51.410703,
+    -25.521309,
+    -50.780535,
+    -24.752922
+   ],
+   "label_point": [
+    -51.082858,
+    -25.138906
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4117602",
+   "name": "Palmas",
+   "population": 50564,
+   "area_km2": 1561.474,
+   "bbox": [
+    -52.177962,
+    -26.599363,
+    -51.51089,
+    -26.243623
+   ],
+   "label_point": [
+    -51.857712,
+    -26.419635
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4117503",
+   "name": "Paiçandu",
+   "population": 49694,
+   "area_km2": 170.824,
+   "bbox": [
+    -52.227468,
+    -23.522038,
+    -52.004832,
+    -23.400007
+   ],
+   "label_point": [
+    -52.102569,
+    -23.46148
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4107207",
+   "name": "Dois Vizinhos",
+   "population": 48127,
+   "area_km2": 418.162,
+   "bbox": [
+    -53.259957,
+    -25.87651,
+    -52.951981,
+    -25.607768
+   ],
+   "label_point": [
+    -53.0671,
+    -25.741507
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4113205",
+   "name": "Lapa",
+   "population": 45877,
+   "area_km2": 2100.392,
+   "bbox": [
+    -50.239432,
+    -26.058275,
+    -49.518603,
+    -25.544091
+   ],
+   "label_point": [
+    -49.880424,
+    -25.801037
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4124103",
+   "name": "Santo Antônio da Platina",
+   "population": 45730,
+   "area_km2": 720.385,
+   "bbox": [
+    -50.242464,
+    -23.45265,
+    -49.925159,
+    -23.123373
+   ],
+   "label_point": [
+    -50.076622,
+    -23.288455
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4106407",
+   "name": "Cornélio Procópio",
+   "population": 45614,
+   "area_km2": 636.59,
+   "bbox": [
+    -50.8138,
+    -23.375326,
+    -50.465071,
+    -23.014314
+   ],
+   "label_point": [
+    -50.652363,
+    -23.196158
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4109609",
+   "name": "Guaratuba",
+   "population": 45529,
+   "area_km2": 1320.951,
+   "bbox": [
+    -48.992825,
+    -25.984249,
+    -48.549651,
+    -25.597371
+   ],
+   "label_point": [
+    -48.720597,
+    -25.79318
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4114807",
+   "name": "Marialva",
+   "population": 45360,
+   "area_km2": 474.954,
+   "bbox": [
+    -52.060721,
+    -23.677419,
+    -51.709675,
+    -23.315269
+   ],
+   "label_point": [
+    -51.780705,
+    -23.495942
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4125605",
+   "name": "São Mateus do Sul",
+   "population": 43558,
+   "area_km2": 1344.742,
+   "bbox": [
+    -50.677769,
+    -26.13528,
+    -50.214467,
+    -25.719994
+   ],
+   "label_point": [
+    -50.44051,
+    -25.934216
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4115705",
+   "name": "Matinhos",
+   "population": 42671,
+   "area_km2": 117.479,
+   "bbox": [
+    -48.638267,
+    -25.852833,
+    -48.36382,
+    -25.696217
+   ],
+   "label_point": [
+    -48.554148,
+    -25.777245
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4111803",
+   "name": "Jacarezinho",
+   "population": 41571,
+   "area_km2": 603.383,
+   "bbox": [
+    -50.139054,
+    -23.338374,
+    -49.808527,
+    -22.954497
+   ],
+   "label_point": [
+    -49.974645,
+    -23.147314
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4122206",
+   "name": "Rio Branco do Sul",
+   "population": 40745,
+   "area_km2": 820.071,
+   "bbox": [
+    -49.579895,
+    -25.234598,
+    -49.060348,
+    -24.876036
+   ],
+   "label_point": [
+    -49.382647,
+    -25.055327
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4102000",
+   "name": "Assis Chateaubriand",
+   "population": 38591,
+   "area_km2": 980.816,
+   "bbox": [
+    -53.715528,
+    -24.689185,
+    -53.429846,
+    -24.201564
+   ],
+   "label_point": [
+    -53.57878,
+    -24.446394
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4114203",
+   "name": "Mandaguari",
+   "population": 38564,
+   "area_km2": 335.912,
+   "bbox": [
+    -51.836956,
+    -23.648398,
+    -51.606158,
+    -23.329775
+   ],
+   "label_point": [
+    -51.690072,
+    -23.489632
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4117909",
+   "name": "Palotina",
+   "population": 37431,
+   "area_km2": 651.237,
+   "bbox": [
+    -53.966575,
+    -24.467482,
+    -53.663306,
+    -24.120356
+   ],
+   "label_point": [
+    -53.830209,
+    -24.29043
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4112009",
+   "name": "Jaguariaíva",
+   "population": 36575,
+   "area_km2": 1443.264,
+   "bbox": [
+    -49.985746,
+    -24.614551,
+    -49.454685,
+    -24.065021
+   ],
+   "label_point": [
+    -49.783526,
+    -24.340731
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4114104",
+   "name": "Mandaguaçu",
+   "population": 35253,
+   "area_km2": 293.792,
+   "bbox": [
+    -52.178404,
+    -23.417764,
+    -51.956872,
+    -23.154778
+   ],
+   "label_point": [
+    -52.046905,
+    -23.288836
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4117701",
+   "name": "Palmeira",
+   "population": 35054,
+   "area_km2": 1473.233,
+   "bbox": [
+    -50.359015,
+    -25.651964,
+    -49.740393,
+    -25.250985
+   ],
+   "label_point": [
+    -50.126399,
+    -25.45127
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4119608",
+   "name": "Pitanga",
+   "population": 34583,
+   "area_km2": 1687.454,
+   "bbox": [
+    -52.119973,
+    -24.90113,
+    -51.450378,
+    -24.448168
+   ],
+   "label_point": [
+    -51.796551,
+    -24.672916
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4111258",
+   "name": "Itaperuçu",
+   "population": 33763,
+   "area_km2": 322.553,
+   "bbox": [
+    -49.605511,
+    -25.263364,
+    -49.321081,
+    -24.960153
+   ],
+   "label_point": [
+    -49.51565,
+    -25.111485
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4119954",
+   "name": "Pontal do Paraná",
+   "population": 33730,
+   "area_km2": 202.242,
+   "bbox": [
+    -48.59063,
+    -25.752264,
+    -48.346916,
+    -25.543573
+   ],
+   "label_point": [
+    -48.466022,
+    -25.647956
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4111506",
+   "name": "Ivaiporã",
+   "population": 33619,
+   "area_km2": 436.378,
+   "bbox": [
+    -51.776639,
+    -24.404284,
+    -51.459986,
+    -24.156717
+   ],
+   "label_point": [
+    -51.62552,
+    -24.280927
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4113304",
+   "name": "Laranjeiras do Sul",
+   "population": 33267,
+   "area_km2": 677.933,
+   "bbox": [
+    -52.565763,
+    -25.50445,
+    -52.245943,
+    -25.114555
+   ],
+   "label_point": [
+    -52.348756,
+    -25.306671
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4108809",
+   "name": "Guaíra",
+   "population": 33145,
+   "area_km2": 563.414,
+   "bbox": [
+    -54.345579,
+    -24.387183,
+    -54.097741,
+    -23.998994
+   ],
+   "label_point": [
+    -54.250565,
+    -24.176724
+   ],
+   "sentinel_utm_epsg": 32721
+  },
+  {
+   "cd_mun": "4104253",
+   "name": "Campo Magro",
+   "population": 32227,
+   "area_km2": 275.423,
+   "bbox": [
+    -49.578104,
+    -25.418066,
+    -49.340139,
+    -25.174549
+   ],
+   "label_point": [
+    -49.453521,
+    -25.296324
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4122305",
+   "name": "Rio Negro",
+   "population": 31954,
+   "area_km2": 604.477,
+   "bbox": [
+    -49.940579,
+    -26.236976,
+    -49.486489,
+    -25.943461
+   ],
+   "label_point": [
+    -49.665171,
+    -26.091766
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4102406",
+   "name": "Bandeirantes",
+   "population": 31690,
+   "area_km2": 445.192,
+   "bbox": [
+    -50.476456,
+    -23.275369,
+    -50.20922,
+    -23.031301
+   ],
+   "label_point": [
+    -50.341585,
+    -23.156053
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4120903",
+   "name": "Quedas do Iguaçu",
+   "population": 31431,
+   "area_km2": 822.345,
+   "bbox": [
+    -53.152572,
+    -25.614003,
+    -52.765074,
+    -25.278473
+   ],
+   "label_point": [
+    -52.958532,
+    -25.446882
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4110102",
+   "name": "Imbituva",
+   "population": 30940,
+   "area_km2": 758.099,
+   "bbox": [
+    -50.816882,
+    -25.410675,
+    -50.447214,
+    -25.038086
+   ],
+   "label_point": [
+    -50.653393,
+    -25.226401
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4125704",
+   "name": "São Miguel do Iguaçu",
+   "population": 30624,
+   "area_km2": 852.133,
+   "bbox": [
+    -54.399139,
+    -25.59729,
+    -54.106988,
+    -25.199214
+   ],
+   "label_point": [
+    -54.266026,
+    -25.396627
+   ],
+   "sentinel_utm_epsg": 32721
+  },
+  {
+   "cd_mun": "4119301",
+   "name": "Pinhão",
+   "population": 30431,
+   "area_km2": 2003.799,
+   "bbox": [
+    -52.029783,
+    -26.011203,
+    -51.301958,
+    -25.587875
+   ],
+   "label_point": [
+    -51.57436,
+    -25.801172
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4109708",
+   "name": "Ibaiti",
+   "population": 29465,
+   "area_km2": 902.797,
+   "bbox": [
+    -50.476054,
+    -23.99736,
+    -50.115303,
+    -23.576567
+   ],
+   "label_point": [
+    -50.289766,
+    -23.782231
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4114302",
+   "name": "Mandirituba",
+   "population": 29437,
+   "area_km2": 378.818,
+   "bbox": [
+    -49.448799,
+    -25.957161,
+    -49.205213,
+    -25.673353
+   ],
+   "label_point": [
+    -49.314955,
+    -25.814435
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4108601",
+   "name": "Goioerê",
+   "population": 28895,
+   "area_km2": 563.954,
+   "bbox": [
+    -53.263981,
+    -24.282885,
+    -52.85497,
+    -24.061992
+   ],
+   "label_point": [
+    -53.069969,
+    -24.178266
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4116901",
+   "name": "Nova Esperança",
+   "population": 27140,
+   "area_km2": 402.051,
+   "bbox": [
+    -52.420749,
+    -23.300178,
+    -52.098578,
+    -23.026345
+   ],
+   "label_point": [
+    -52.180348,
+    -23.164712
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4123501",
+   "name": "Santa Helena",
+   "population": 26601,
+   "area_km2": 753.997,
+   "bbox": [
+    -54.455376,
+    -25.041273,
+    -54.145331,
+    -24.695165
+   ],
+   "label_point": [
+    -54.313496,
+    -24.867035
+   ],
+   "sentinel_utm_epsg": 32721
+  },
+  {
+   "cd_mun": "4101606",
+   "name": "Arapoti",
+   "population": 26321,
+   "area_km2": 1363.843,
+   "bbox": [
+    -50.220875,
+    -24.301355,
+    -49.739028,
+    -23.843793
+   ],
+   "label_point": [
+    -49.933308,
+    -24.074036
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4102109",
+   "name": "Astorga",
+   "population": 26262,
+   "area_km2": 435.21,
+   "bbox": [
+    -51.869988,
+    -23.387159,
+    -51.590007,
+    -23.085107
+   ],
+   "label_point": [
+    -51.694372,
+    -23.237657
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4128005",
+   "name": "Ubiratã",
+   "population": 25928,
+   "area_km2": 653.097,
+   "bbox": [
+    -53.182228,
+    -24.67398,
+    -52.873159,
+    -24.346837
+   ],
+   "label_point": [
+    -53.028949,
+    -24.510585
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4120804",
+   "name": "Quatro Barras",
+   "population": 25663,
+   "area_km2": 181.565,
+   "bbox": [
+    -49.123853,
+    -25.444076,
+    -48.899453,
+    -25.302697
+   ],
+   "label_point": [
+    -49.020358,
+    -25.375176
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4124053",
+   "name": "Santa Terezinha de Itaipu",
+   "population": 25510,
+   "area_km2": 270.949,
+   "bbox": [
+    -54.507332,
+    -25.552257,
+    -54.326909,
+    -25.324531
+   ],
+   "label_point": [
+    -54.431701,
+    -25.43023
+   ],
+   "sentinel_utm_epsg": 32721
+  },
+  {
+   "cd_mun": "4124400",
+   "name": "Santo Antônio do Sudoeste",
+   "population": 25273,
+   "area_km2": 327.008,
+   "bbox": [
+    -53.742702,
+    -26.176364,
+    -53.512323,
+    -25.954123
+   ],
+   "label_point": [
+    -53.635412,
+    -26.065041
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4106605",
+   "name": "Cruzeiro do Oeste",
+   "population": 25071,
+   "area_km2": 776.101,
+   "bbox": [
+    -53.223692,
+    -23.976118,
+    -52.950502,
+    -23.493347
+   ],
+   "label_point": [
+    -53.070263,
+    -23.735611
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4121703",
+   "name": "Reserva",
+   "population": 24856,
+   "area_km2": 1646.103,
+   "bbox": [
+    -51.197175,
+    -24.863267,
+    -50.719752,
+    -24.323387
+   ],
+   "label_point": [
+    -50.93731,
+    -24.594053
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4117305",
+   "name": "Ortigueira",
+   "population": 24808,
+   "area_km2": 2431.67,
+   "bbox": [
+    -51.37454,
+    -24.413806,
+    -50.677095,
+    -23.795602
+   ],
+   "label_point": [
+    -50.964314,
+    -24.105008
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4104659",
+   "name": "Carambeí",
+   "population": 24721,
+   "area_km2": 647.021,
+   "bbox": [
+    -50.356974,
+    -25.024862,
+    -49.936453,
+    -24.757041
+   ],
+   "label_point": [
+    -50.170561,
+    -24.890545
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4126603",
+   "name": "Siqueira Campos",
+   "population": 24299,
+   "area_km2": 277.112,
+   "bbox": [
+    -49.908452,
+    -23.765608,
+    -49.650851,
+    -23.546406
+   ],
+   "label_point": [
+    -49.807474,
+    -23.656371
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4106506",
+   "name": "Coronel Vivida",
+   "population": 24107,
+   "area_km2": 683.799,
+   "bbox": [
+    -52.821401,
+    -26.118107,
+    -52.358359,
+    -25.86942
+   ],
+   "label_point": [
+    -52.561705,
+    -25.993017
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4113502",
+   "name": "Loanda",
+   "population": 24090,
+   "area_km2": 722.091,
+   "bbox": [
+    -53.284608,
+    -23.105,
+    -52.869833,
+    -22.836143
+   ],
+   "label_point": [
+    -53.075013,
+    -22.965179
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4119400",
+   "name": "Piraí do Sul",
+   "population": 23991,
+   "area_km2": 1349.154,
+   "bbox": [
+    -50.209973,
+    -24.64678,
+    -49.567423,
+    -24.239452
+   ],
+   "label_point": [
+    -50.003989,
+    -24.443139
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4103602",
+   "name": "Cambará",
+   "population": 23352,
+   "area_km2": 367.462,
+   "bbox": [
+    -50.209989,
+    -23.095128,
+    -49.961378,
+    -22.897505
+   ],
+   "label_point": [
+    -50.085234,
+    -22.996367
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4105904",
+   "name": "Colorado",
+   "population": 23347,
+   "area_km2": 408.533,
+   "bbox": [
+    -52.089935,
+    -22.957951,
+    -51.833796,
+    -22.677296
+   ],
+   "label_point": [
+    -51.997641,
+    -22.813803
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4112108",
+   "name": "Jandaia do Sul",
+   "population": 22000,
+   "area_km2": 188.103,
+   "bbox": [
+    -51.79924,
+    -23.70436,
+    -51.601046,
+    -23.549539
+   ],
+   "label_point": [
+    -51.691857,
+    -23.626948
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4105409",
+   "name": "Chopinzinho",
+   "population": 21690,
+   "area_km2": 961.682,
+   "bbox": [
+    -52.725906,
+    -25.94508,
+    -52.20972,
+    -25.643932
+   ],
+   "label_point": [
+    -52.413925,
+    -25.793964
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4104501",
+   "name": "Capanema",
+   "population": 21208,
+   "area_km2": 415.961,
+   "bbox": [
+    -53.991245,
+    -25.709015,
+    -53.585458,
+    -25.504453
+   ],
+   "label_point": [
+    -53.704655,
+    -25.606149
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4101002",
+   "name": "Ampére",
+   "population": 20479,
+   "area_km2": 297.174,
+   "bbox": [
+    -53.606933,
+    -26.020524,
+    -53.345411,
+    -25.796183
+   ],
+   "label_point": [
+    -53.494463,
+    -25.910645
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4103453",
+   "name": "Cafelândia",
+   "population": 20411,
+   "area_km2": 275.17,
+   "bbox": [
+    -53.459123,
+    -24.807844,
+    -53.235951,
+    -24.570908
+   ],
+   "label_point": [
+    -53.370311,
+    -24.687306
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4127502",
+   "name": "Tibagi",
+   "population": 20408,
+   "area_km2": 2996.47,
+   "bbox": [
+    -50.87667,
+    -25.008062,
+    -50.086003,
+    -24.36224
+   ],
+   "label_point": [
+    -50.465533,
+    -24.684854
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4121406",
+   "name": "Realeza",
+   "population": 20276,
+   "area_km2": 353.922,
+   "bbox": [
+    -53.638963,
+    -25.835591,
+    -53.463436,
+    -25.506532
+   ],
+   "label_point": [
+    -53.550959,
+    -25.672065
+   ],
+   "sentinel_utm_epsg": 32722
+  },
+  {
+   "cd_mun": "4106209",
+   "name": "Contenda",
+   "population": 20205,
+   "area_km2": 296.488,
+   "bbox": [
+    -49.614369,
+    -25.806266,
+    -49.385053,
+    -25.59155
+   ],
+   "label_point": [
+    -49.534368,
+    -25.701492
+   ],
+   "sentinel_utm_epsg": 32722
+  }
+ ]
+}

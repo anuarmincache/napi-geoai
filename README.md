@@ -100,7 +100,9 @@ Preparação Community Cloud (MVP 08): [docs/MVP08_DEPLOY.md](docs/MVP08_DEPLOY.
 
 Explorador territorial (MVP 09): [docs/MVP09_EXPLORADOR.md](docs/MVP09_EXPLORADOR.md) — 399 municípios IBGE, busca, cidades-polo e comparação sem indicadores inventados.
 
-Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERGIA.md) — busca nos 399 municípios, usinas associadas, potências fiscalizada e outorgada separadas, composição por tipo (UTE/CGH/PCH/UFV/UHE/EOL), aviso dos 34 empreendimentos não associados; MMGD fora do escopo.
+Painel energético SIGA/ANEEL (MVP 10): [docs/MVP10_ENERGIA.md](docs/MVP10_ENERGIA.md) — busca nos 399 municípios, usinas associadas, potências fiscalizada e outorgada separadas, composição por tipo (UTE/CGH/PCH/UFV/UHE/EOL), aviso dos 34 empreendimentos não associados.
+
+MMGD/ANEEL (MVP 14): [docs/MVP14_FASE2_RELATORIO.md](docs/MVP14_FASE2_RELATORIO.md), página Streamlit **Energia — MMGD/ANEEL** (`app/pages/8_Energia_MMGD.py`) — empreendimentos e potência instalada conhecida (MW) nos 399 municípios; UCs crédito secundárias; ODbL; **não** misturar com SIGA.
 
 População IBGE 2026 e ficha municipal (MVP 11): [docs/MVP11_POPULACAO.md](docs/MVP11_POPULACAO.md) — estimativa 01/07/2026, densidade, kW/hab SIGA, 399 municípios.
 
@@ -109,6 +111,8 @@ Meio Ambiente (MVP 12): [docs/MVP12_MEIO_AMBIENTE.md](docs/MVP12_MEIO_AMBIENTE.m
 Agricultura (MVP 13): [docs/MVP13_AGRICULTURA.md](docs/MVP13_AGRICULTURA.md) — malha IBGE 2025; PAM, PPM, CONAB e IPARDES ausentes; produção e rendimento indisponíveis.
 
 Fundação de jobs geoespaciais (Issue #40, sem visualização Sentinel): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). O Streamlit continua lendo artefatos prontos. Jobs locais (`vector_bbox_metrics`, janela NDVI sintética) ficam em `scripts/run_geo_job.py`, com publicação atômica, lock local por chave e `data/jobs/` fora do Git. Não há download Sentinel-2 nem mapa de imagem nesta etapa. Medição pequena: `docs/evidence/processing/benchmark_small.json`.
+
+Piloto Sentinel-2 em Maringá, CD_MUN 4115200 (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). A geometria sai da malha IBGE 2025, aberta pelo GDAL em `/vsizip/`. A passagem S2B de 2026-11-12, órbita R081, é a candidata geométrica, com as tiles 22KCV e 22KDV. A sobreposição usa a primeira tile válida, sem média e sem contar o pixel duas vezes. A fração medida é 0,7311414776754075: 3.086.107 + 479.243. O NDVI não foi publicado. O dry-run não baixou JP2: a soma oficial das seis bandas é 357.870.297 bytes e o bloco de trabalho cabe em 3,3 MiB, mais a máscara da AOI. A B04 já conferida só é reutilizada com `NAPI_VALIDATED_B04`; sem isso o plano recusa o download. O JP2 usado precisa coincidir com o tamanho, o SHA3-256 e a grade oficiais. `--measure-only` calcula a fração sem gravar COG. Não há raster nem mapa de NDVI. A página só lê o catálogo.
 
 ```powershell
 py -3 -m pip install -e ".[dev,ui]"

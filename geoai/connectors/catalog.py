@@ -160,15 +160,22 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
             "Atualização periódica no CKAN; houve suspensão 23/09/2025–13/11/2025 "
             "(migração SISGD→MMGD). Confirmar data do recurso antes de usar."
         ),
-        verification_policy="Apenas catalogado; sem conector automático neste MVP",
+        verification_policy=(
+            "Conector prototype: ZIP via HTTP, validação de cabeçalho, "
+            "streaming PR; bruto fora do Git. Confirmar last_modified CKAN."
+        ),
         catalogued_at=CATALOGUED_AT,
-        spatial_coverage="Brasil (município/UF)",
+        spatial_coverage="Brasil (município/UF; CodMunicipioIbge)",
         crs_or_coords="atributos municipais (sem geometria nativa no CSV principal)",
-        granularity="empreendimento MMGD",
+        granularity="empreendimento MMGD (CodEmpreendimento)",
         auth_required=False,
-        status=SourceStatus.CATALOGUED,
-        notes="Arquivo grande (~100+ MiB). Não versionar bruto.",
-        connector_module=None,
+        status=SourceStatus.PROTOTYPE,
+        notes=(
+            "ZIP ~108 MiB; CSV interno ~1,5 GiB. Não versionar bruto. "
+            "Potência em kW. Campos pessoais (CPF/nome/CEP) "
+            "não vão a artefatos públicos."
+        ),
+        connector_module="geoai.connectors.aneel_mmgd",
     ),
     SourceSpec(
         source_id="inpe.labren.atlas_solar_2017",
@@ -271,6 +278,78 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
         status=SourceStatus.CATALOGUED,
         notes="Catalogado; sem conector neste MVP.",
         connector_module=None,
+    ),
+    SourceSpec(
+        source_id="ibge.sidra.pam.tabela_5457",
+        organization="IBGE",
+        product="Produção Agrícola Municipal (PAM), tabela 5457",
+        access_mode=AccessMode.HTTP_FILE,
+        entry_url="https://sidra.ibge.gov.br/tabela/5457",
+        download_url="https://apisidra.ibge.gov.br/values/t/5457",
+        formats=("json",),
+        license_note="IBGE/SIDRA: uso livre com citação da fonte.",
+        official_update_cadence="Anual (Produção Agrícola Municipal).",
+        verification_policy=(
+            "Conector prototype: identificadores resolvidos por nome nos "
+            "metadados oficiais; códigos conferidos contra os 399 municípios."
+        ),
+        catalogued_at="2026-11-19",
+        spatial_coverage="Brasil (município); recorte Paraná",
+        crs_or_coords="atributos municipais (código IBGE)",
+        granularity="município × produto das lavouras",
+        auth_required=False,
+        status=SourceStatus.PROTOTYPE,
+        notes=(
+            "Área plantada, área colhida, quantidade produzida e rendimento. "
+            "Área plantada não é cobertura do solo."
+        ),
+        connector_module="geoai.connectors.sidra",
+    ),
+    SourceSpec(
+        source_id="ibge.sidra.ppm.tabela_3939",
+        organization="IBGE",
+        product="Pesquisa da Pecuária Municipal (PPM), tabela 3939",
+        access_mode=AccessMode.HTTP_FILE,
+        entry_url="https://sidra.ibge.gov.br/tabela/3939",
+        download_url="https://apisidra.ibge.gov.br/values/t/3939",
+        formats=("json",),
+        license_note="IBGE/SIDRA: uso livre com citação da fonte.",
+        official_update_cadence="Anual (Pesquisa da Pecuária Municipal).",
+        verification_policy=(
+            "Conector prototype: identificadores resolvidos por nome nos "
+            "metadados oficiais; códigos conferidos contra os 399 municípios."
+        ),
+        catalogued_at="2026-11-19",
+        spatial_coverage="Brasil (município); recorte Paraná",
+        crs_or_coords="atributos municipais (código IBGE)",
+        granularity="município × tipo de rebanho",
+        auth_required=False,
+        status=SourceStatus.PROTOTYPE,
+        notes="Efetivo dos rebanhos. Efetivo não é resíduo disponível para biogás.",
+        connector_module="geoai.connectors.sidra",
+    ),
+    SourceSpec(
+        source_id="ibge.sidra.ppm.tabela_74",
+        organization="IBGE",
+        product="Pesquisa da Pecuária Municipal (PPM), tabela 74",
+        access_mode=AccessMode.HTTP_FILE,
+        entry_url="https://sidra.ibge.gov.br/tabela/74",
+        download_url="https://apisidra.ibge.gov.br/values/t/74",
+        formats=("json",),
+        license_note="IBGE/SIDRA: uso livre com citação da fonte.",
+        official_update_cadence="Anual (Pesquisa da Pecuária Municipal).",
+        verification_policy=(
+            "Conector prototype: identificadores resolvidos por nome nos "
+            "metadados oficiais; códigos conferidos contra os 399 municípios."
+        ),
+        catalogued_at="2026-11-19",
+        spatial_coverage="Brasil (município); recorte Paraná",
+        crs_or_coords="atributos municipais (código IBGE)",
+        granularity="município × produto de origem animal",
+        auth_required=False,
+        status=SourceStatus.PROTOTYPE,
+        notes="Produção de origem animal (leite).",
+        connector_module="geoai.connectors.sidra",
     ),
 )
 

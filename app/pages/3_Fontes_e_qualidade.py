@@ -29,7 +29,7 @@ rows = [
     }
     for s in sources
 ]
-st.dataframe(rows, use_container_width=True, hide_index=True)
+st.dataframe(rows, width="stretch", hide_index=True)
 
 st.subheader("Qualidade — piloto territorial PR")
 bundle = cached_parana_layer()
