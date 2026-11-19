@@ -27,6 +27,7 @@ from typing import Any
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
+from geoai.portal.paths import municipalities_geojson_path  # noqa: E402
 from geoai.sentinel.aoi import load_official_municipality  # noqa: E402
 from geoai.sentinel.assets import BANDS  # noqa: E402
 from geoai.sentinel.pilot import (  # noqa: E402
@@ -170,16 +171,23 @@ def main(argv: list[str] | None = None) -> int:
             "lista de alvos ausente: rode scripts/prepare_ndvi_targets.py"
         )
     mesh_zip = REPO / MESH_RELATIVE
+    geometry_source = "malha_oficial_ibge"
     if not mesh_zip.is_file():
-        raise SystemExit(
-            f"malha oficial ausente em {MESH_RELATIVE}: rode "
-            "scripts/prepare_parana_municipalities.py"
+        # Plano de catálogo: a malha de apresentação (simplificada) basta
+        # para estimar cenas e volume. A medição continua exigindo a oficial.
+        mesh_zip = municipalities_geojson_path(REPO)
+        geometry_source = "malha_de_apresentacao_simplificada"
+        print(
+            f"aviso: {MESH_RELATIVE} ausente; usando a malha de apresentação "
+            "(simplificada) só para o plano.",
+            flush=True,
         )
     targets = registry["targets"][: args.limit] if args.limit else registry["targets"]
     as_of = parse_as_of(args.as_of)
     window = f"{_stamp(as_of - timedelta(days=args.days))}/{_stamp(as_of)}"
     search = _pilot_search()
 
+    populations = {t["cd_mun"]: int(t["population"]) for t in targets}
     started = time.perf_counter()
     records: dict[str, dict[str, Any]] = {}
     failures: dict[str, str] = {}
@@ -221,7 +229,18 @@ def main(argv: list[str] | None = None) -> int:
         "elapsed_seconds": round(time.perf_counter() - started, 1),
         "targets_requested": len(targets),
         "failures": failures,
+        "geometry_source": geometry_source,
         "summary": summarize(records),
+        "summary_by_min_population": {
+            str(limit): summarize(
+                {
+                    code: record
+                    for code, record in records.items()
+                    if populations[code] > limit
+                }
+            )
+            for limit in (20_000, 30_000, 50_000, 100_000)
+        },
         "targets": records,
     }
     out = plan_path(REPO)
@@ -239,6 +258,12 @@ def main(argv: list[str] | None = None) -> int:
         f"{summary['official_bytes_known'] / 1e9:.2f} GB oficiais conhecidos · "
         f"{len(failures)} falha(s)"
     )
+    for limit, part in payload["summary_by_min_population"].items():
+        print(
+            f"  acima de {int(limit):,} hab: {part['targets']} municípios · "
+            f"{part['distinct_products']} cenas · "
+            f"{part['official_bytes_known'] / 1e9:.2f} GB".replace(",", ".")
+        )
     return 0 if not failures else 1
 
 
