@@ -30,6 +30,11 @@ sys.path.insert(0, str(REPO))
 from geoai.portal.paths import municipalities_geojson_path  # noqa: E402
 from geoai.sentinel.aoi import load_official_municipality  # noqa: E402
 from geoai.sentinel.assets import BANDS  # noqa: E402
+from geoai.sentinel.cycle_plan import (  # noqa: E402
+    DEFAULT_MAX_CLOUD,
+    optimize_cycle,
+    summarize_selection,
+)
 from geoai.sentinel.pilot import (  # noqa: E402
     MESH_RELATIVE,
     MIN_FOOTPRINT_COVERAGE,
@@ -78,14 +83,45 @@ def plan_target(
     scenes = search._evaluate(features, municipality)
     plans = search._acquisition_plans(scenes, municipality)
     selected = search._choose_acquisition(plans)
+    def _tiles(plan: dict[str, Any]) -> list[dict[str, Any]]:
+        tiles = []
+        for tile in plan["tiles"]:
+            if not tile["selected"]:
+                continue
+            feature = by_id.get(str(tile["product_id"])) or {}
+            tiles.append(
+                {
+                    "mgrs_tile": tile["mgrs_tile"],
+                    "product_id": tile["product_id"],
+                    "aoi_coverage": tile["aoi_coverage"],
+                    "eo_cloud_cover": tile["eo_cloud_cover"],
+                    "proj_code": (
+                        (feature.get("assets") or {}).get("B04_10m") or {}
+                    ).get("proj:code"),
+                    "band_bytes": _band_sizes(feature),
+                }
+            )
+        return tiles
+
+    candidates = [
+        {
+            "acquisition_id": plan["acquisition_id"],
+            "sensing_time_utc": plan["sensing_time_utc"],
+            "tiles": _tiles(plan),
+        }
+        for plan in plans
+        if plan.get("covers_threshold")
+    ]
     record: dict[str, Any] = {
         "cd_mun": target["cd_mun"],
         "name": target["name"],
         "coverage_crs": municipality.coverage_crs,
         "scenes_found": len(features),
         "acquisitions_found": len(plans),
-        "acquisitions_covering": sum(1 for p in plans if p.get("covers_threshold")),
+        "acquisitions_covering": len(candidates),
         "truncated": bool(truncated),
+        "candidates": candidates,
+        # regra do piloto, mantida só para comparação: a mais recente que cobre
         "selected_acquisition": None,
         "sensing_time_utc": None,
         "tiles": [],
@@ -95,22 +131,7 @@ def plan_target(
     record["selected_acquisition"] = selected["acquisition_id"]
     record["sensing_time_utc"] = selected["sensing_time_utc"]
     record["mosaic_required"] = bool(selected["mosaic_required"])
-    for tile in selected["tiles"]:
-        if not tile["selected"]:
-            continue
-        feature = by_id.get(str(tile["product_id"])) or {}
-        record["tiles"].append(
-            {
-                "mgrs_tile": tile["mgrs_tile"],
-                "product_id": tile["product_id"],
-                "aoi_coverage": tile["aoi_coverage"],
-                "eo_cloud_cover": tile["eo_cloud_cover"],
-                "proj_code": ((feature.get("assets") or {}).get("B04_10m") or {}).get(
-                    "proj:code"
-                ),
-                "band_bytes": _band_sizes(feature),
-            }
-        )
+    record["tiles"] = _tiles(selected)
     return record
 
 
@@ -161,6 +182,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--as-of", default=None, help="Instante UTC RFC3339")
     parser.add_argument("--days", type=int, default=15, help="Janela em dias")
     parser.add_argument("--limit", type=int, default=None, help="Só os N maiores")
+    parser.add_argument(
+        "--max-cloud",
+        type=float,
+        default=DEFAULT_MAX_CLOUD,
+        help="Nuvem ponderada máxima (%%) para uma passagem ser candidata",
+    )
     args = parser.parse_args(argv)
     if args.days <= 0:
         raise SystemExit("--days deve ser positivo")
@@ -187,7 +214,6 @@ def main(argv: list[str] | None = None) -> int:
     window = f"{_stamp(as_of - timedelta(days=args.days))}/{_stamp(as_of)}"
     search = _pilot_search()
 
-    populations = {t["cd_mun"]: int(t["population"]) for t in targets}
     started = time.perf_counter()
     records: dict[str, dict[str, Any]] = {}
     failures: dict[str, str] = {}
@@ -206,8 +232,25 @@ def main(argv: list[str] | None = None) -> int:
             flush=True,
         )
 
+    names = {t["cd_mun"]: t["name"] for t in targets}
+    selection = optimize_cycle(records, max_cloud=args.max_cloud)
+    summary = summarize_selection(selection, names)
+    naive = summarize(records)
+    plan_targets = {}
+    for code, record in records.items():
+        chosen = selection[code]
+        plan_targets[code] = {
+            "cd_mun": code,
+            "name": record["name"],
+            "coverage_crs": record["coverage_crs"],
+            "acquisitions_covering": record["acquisitions_covering"],
+            "truncated": record["truncated"],
+            **chosen,
+            "latest_covering_acquisition": record["selected_acquisition"],
+            "candidates": record["candidates"],
+        }
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "kind": "plano_stac_sem_download",
         "queried_at_utc": _stamp(datetime.now(UTC)),
         "as_of_utc": _stamp(as_of),
@@ -216,32 +259,31 @@ def main(argv: list[str] | None = None) -> int:
         "stac_search_url": STAC_SEARCH_URL,
         "collection": STAC_COLLECTION,
         "min_footprint_coverage": MIN_FOOTPRINT_COVERAGE,
+        "max_weighted_cloud": args.max_cloud,
+        "geometry_source": geometry_source,
         "temporal_rule_pt": (
             "Uma única passagem por município (mesmo satélite, mesmo instante "
             "e mesma órbita relativa). Datas não se misturam."
         ),
+        "selection_rule_pt": (
+            "Só entram passagens cuja nuvem do item, ponderada pela cobertura "
+            f"do município em cada tile, fica em até {args.max_cloud:g}%. "
+            "Entre elas, vence a que acrescenta menos bytes às cenas já "
+            "escolhidas; empate por menor nuvem e depois pela mais recente."
+        ),
         "limits_pt": [
             "Plano de catálogo: nenhuma banda foi baixada e nenhum pixel medido.",
             "Cobertura do footprint não é fração de pixels válidos.",
-            "Nuvem do item (eo:cloud_cover) é da tile inteira, não do município.",
+            "Nuvem do item (eo:cloud_cover) é da tile inteira, não do município: "
+            "serve de triagem e não de aceite.",
             "A fração válida só existe depois da leitura de B04, B08 e SCL.",
         ],
         "elapsed_seconds": round(time.perf_counter() - started, 1),
         "targets_requested": len(targets),
         "failures": failures,
-        "geometry_source": geometry_source,
-        "summary": summarize(records),
-        "summary_by_min_population": {
-            str(limit): summarize(
-                {
-                    code: record
-                    for code, record in records.items()
-                    if populations[code] > limit
-                }
-            )
-            for limit in (20_000, 30_000, 50_000, 100_000)
-        },
-        "targets": records,
+        "summary": summary,
+        "naive_summary": naive,
+        "targets": plan_targets,
     }
     out = plan_path(REPO)
     tmp = out.with_suffix(".json.partial")
@@ -249,21 +291,29 @@ def main(argv: list[str] | None = None) -> int:
         json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
     )
     tmp.replace(out)
-    summary = payload["summary"]
     print(f"gravado {out.relative_to(REPO)}")
     print(
-        f"{summary['targets_with_pass']}/{summary['targets']} municípios com "
-        f"passagem · {summary['distinct_products']} cenas distintas em "
-        f"{len(summary['distinct_mgrs_tiles'])} tiles · "
-        f"{summary['official_bytes_known'] / 1e9:.2f} GB oficiais conhecidos · "
-        f"{len(failures)} falha(s)"
+        f"REGRA ANTIGA (mais recente que cobre): {naive['targets_with_pass']}/"
+        f"{naive['targets']} municípios · {naive['distinct_products']} cenas · "
+        f"{naive['official_bytes_known'] / 1e9:.2f} GB"
     )
-    for limit, part in payload["summary_by_min_population"].items():
+    print(
+        f"REGRA NOVA (nuvem <= {args.max_cloud:g}% e reuso de cena): "
+        f"{summary['targets_with_pass']}/{summary['targets']} municípios · "
+        f"{summary['distinct_products']} cenas · "
+        f"{summary['scenes_with_cloud_above_50']} com nuvem acima de 50%"
+    )
+    print(
+        f"  estágio 1 (só SCL): {summary['stage1_mask_bytes'] / 1e6:.0f} MB · "
+        f"estágio 2 (B04+B08, no máximo): "
+        f"{summary['stage2_bands_bytes_max'] / 1e9:.2f} GB"
+    )
+    if summary["targets_without_pass"]:
         print(
-            f"  acima de {int(limit):,} hab: {part['targets']} municípios · "
-            f"{part['distinct_products']} cenas · "
-            f"{part['official_bytes_known'] / 1e9:.2f} GB".replace(",", ".")
+            "  sem passagem aproveitável:",
+            ", ".join(summary["targets_without_pass"]),
         )
+    print(f"{len(failures)} falha(s) de consulta")
     return 0 if not failures else 1
 
 

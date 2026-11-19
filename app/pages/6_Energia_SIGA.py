@@ -30,6 +30,7 @@ from _bootstrap import (
     cached_energy_panel,
     cached_municipality_layer,
     configure_page,
+    page_header,
     render_footer,
     render_html_map,
     sidebar_brand,
@@ -38,7 +39,12 @@ from _bootstrap import (
 configure_page("Energia — SIGA/ANEEL")
 sidebar_brand()
 
-st.title("Energia — empreendimentos de geração (SIGA/ANEEL)")
+page_header(
+    "Usinas e geração centralizada",
+    "Usinas em operação no Paraná por município e tecnologia, segundo a ANEEL.",
+    art_kind="grid",
+    eyebrow="Energia",
+)
 st.caption(
     "Capacidade **fiscalizada conhecida** (MW) de geração **centralizada** "
     "no Paraná. Ausência ≠ zero. Não é geração efetiva (MWh), não é MMGD e "

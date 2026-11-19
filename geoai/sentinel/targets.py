@@ -128,7 +128,7 @@ def load_ndvi_plan(repo_root: Path) -> dict[str, Any] | None:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return None
-    return data if data.get("schema_version") == 1 else None
+    return data if data.get("schema_version") in (1, 2) else None
 
 
 def target_status(
@@ -162,7 +162,7 @@ def target_status(
             }
         return {
             "code": "sem_passagem",
-            "label_pt": "Sem passagem que cubra o município na janela",
+            "label_pt": "Sem passagem aproveitável na janela",
             "acquisition_id": None,
             "valid_fraction": None,
         }

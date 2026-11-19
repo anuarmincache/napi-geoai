@@ -37,6 +37,7 @@ from _bootstrap import (
     cached_agro_panel,
     cached_municipality_layer,
     configure_page,
+    page_header,
     render_footer,
     render_html_map,
     sidebar_brand,
@@ -45,7 +46,12 @@ from _bootstrap import (
 configure_page("Agricultura")
 sidebar_brand()
 
-st.title("Agricultura")
+page_header(
+    "Agricultura e pecuária",
+    "Lavouras, rebanhos e leite nos 399 municípios, com dados do IBGE.",
+    art_kind="agro",
+    eyebrow="Território",
+)
 agro = cached_agro_panel()
 if agro.available:
     st.caption(

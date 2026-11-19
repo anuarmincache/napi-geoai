@@ -288,6 +288,8 @@ def test_energy_page_searches_any_municipality(_streamlit_paths: None) -> None:
 def test_environment_page_withholds_invented_indicators(
     _streamlit_paths: None,
 ) -> None:
+    from geoai.portal.landcover_panel import load_landcover_bundle
+
     page = REPO / "app" / "pages" / "9_Meio_Ambiente.py"
     at = AppTest.from_file(str(page), default_timeout=120)
     at.run()
@@ -302,8 +304,16 @@ def test_environment_page_withholds_invented_indicators(
     assert "MapBiomas" in text
     assert "não catalogada" in text
     assert "indisponíveis" in text
-    assert "percentual de vegetação" in text.lower() or "vegetação" in text.lower()
     assert "desmatamento" in text.lower()
+    if load_landcover_bundle(REPO).available:
+        # Com a Coleção 11 validada: citação, limites e nada de UC/água.
+        assert "Coleção 11" in text
+        assert "não é taxa de desmatamento" in text.lower()
+        assert "Unidades de conservação e recursos hídricos estão" in text
+        assert "não foram reescalados" in text or "reescalado" in text
+    else:
+        assert "vegetação" in text.lower()
+
 
 def test_agriculture_page_withholds_invented_indicators(
     _streamlit_paths: None,

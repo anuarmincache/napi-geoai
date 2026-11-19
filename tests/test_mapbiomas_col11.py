@@ -26,11 +26,13 @@ def _row(
     return CoverageRecord(code, biome, "PR", class_id, year, hectares)
 
 
-def test_production_path_stays_closed_without_the_file():
-    assert LOCAL_FILE is False
-    assert CONTENT_SHA256 is None
-    with pytest.raises(MapBiomasContractError, match="Arquivo oficial ausente"):
+def test_production_path_requires_the_registered_file():
+    assert LOCAL_FILE is True
+    assert CONTENT_SHA256 is not None and len(CONTENT_SHA256) == 64
+    with pytest.raises(MapBiomasContractError):
         validate_parana_records((), {"4100103"})
+    with pytest.raises(MapBiomasContractError):
+        validate_parana_records((), {"4100103"}, content_sha256="0" * 64)
 
 
 def test_biome_slices_are_kept_and_the_ibge_set_must_match():

@@ -34,6 +34,7 @@ from _bootstrap import (
     cached_population_panel,
     configure_page,
     date_br,
+    page_header,
     render_footer,
     render_html_map,
     sidebar_brand,
@@ -42,7 +43,12 @@ from _bootstrap import (
 configure_page("Ficha municipal")
 sidebar_brand()
 
-st.title("Ficha municipal integrada")
+page_header(
+    "Ficha do município",
+    "Território, população, energia e agropecuária de um município em um só lugar.",
+    art_kind="map",
+    eyebrow="Comece aqui",
+)
 st.caption(
     "Território, população, energia e agropecuária de um município em um só "
     "lugar. Estimativa IBGE **01/07/2026** (não é Censo), malha **2025**, "

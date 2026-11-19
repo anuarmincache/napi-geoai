@@ -95,3 +95,15 @@ def agro_provenance_path(repo_root: Path | None = None) -> Path:
 
 def agro_quality_path(repo_root: Path | None = None) -> Path:
     return derived_dir(repo_root) / "agro_pr.quality.json"
+
+
+def landcover_panel_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "mapbiomas_pr_landcover_panel.json"
+
+
+def landcover_provenance_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "mapbiomas_pr_landcover.provenance.json"
+
+
+def landcover_quality_path(repo_root: Path | None = None) -> Path:
+    return derived_dir(repo_root) / "mapbiomas_pr_landcover.quality.json"

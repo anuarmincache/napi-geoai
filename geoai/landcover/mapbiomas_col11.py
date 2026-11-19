@@ -1,4 +1,8 @@
-"""Contrato da Coleção 11 municipal. Não lê arquivo e não calcula o Paraná."""
+"""Contrato da Coleção 11 municipal: legenda, regras de carga e validação.
+
+A leitura do arquivo fica em ``geoai/landcover/mapbiomas_load.py``. O
+arquivo oficial foi obtido em 2026-11-19; tamanho e SHA-256 estão abaixo.
+"""
 
 from __future__ import annotations
 
@@ -21,9 +25,18 @@ YEAR_MAX = 2025
 UNIT = "ha"
 RESOLUTION_M = 30
 SENSOR = "Landsat"
-LOCAL_FILE = False
-CONTENT_SHA256 = None
-CONTENT_BYTES = None
+DRIVE_FILE_ID = "1otOqymHuixvkRGVl65zTTNyfaHo46Gqk"
+OFFICIAL_LINK = f"https://drive.google.com/uc?id={DRIVE_FILE_ID}&export=download"
+# O link entrega um .zip com um único membro: o .xlsx abaixo.
+# LOCAL_FILE: o arquivo oficial foi obtido e conferido. O bruto fica em
+# data/raw/mapbiomas/ (fora do Git); a carga exige o mesmo SHA-256.
+LOCAL_FILE = True
+CONTENT_SHA256 = "8de70a35fdd35f943e059763d128825ee08c0978948311ac03c769e0f178abfe"
+CONTENT_BYTES = 78_354_101
+ZIP_SHA256 = "c223fd84dcdd21e49d651788ff5a726a7e3aa04d2eab730e99407dd80a8d3e30"
+ZIP_BYTES = 78_296_450
+RELEASE_LABEL = "Versão 11, agosto de 2026 (aba READ_ME)"
+DATA_SHEET = "COVERAGE_11"
 
 # Códigos publicados na página de cobertura da Coleção 11 (nível, id, pai).
 _LEGEND_ROWS: tuple[tuple[int, int, int | None, str], ...] = (
@@ -128,12 +141,23 @@ def observed_leaves(class_ids: set[int]) -> set[int]:
 def validate_parana_records(
     records: tuple[CoverageRecord, ...] | list[CoverageRecord],
     ibge_codes: set[str],
+    *,
+    content_sha256: str | None = None,
 ) -> dict[str, object]:
-    """Confere o recorte PR. Não completa município nem classe ausente."""
+    """Confere o recorte PR. Não completa município nem classe ausente.
+
+    Só aceita registros lidos do arquivo oficial conferido: o SHA-256 do
+    arquivo usado precisa ser o registrado neste contrato.
+    """
 
     if CONTENT_SHA256 is None or not LOCAL_FILE:
         raise MapBiomasContractError(
             "Arquivo oficial ausente: validação de produção bloqueada."
+        )
+    if content_sha256 != CONTENT_SHA256:
+        raise MapBiomasContractError(
+            "SHA-256 do arquivo difere do registrado no contrato: "
+            "validação de produção bloqueada."
         )
     return _validate_records(records, ibge_codes)
 

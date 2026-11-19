@@ -7,6 +7,7 @@ import streamlit as st
 from _bootstrap import (
     cached_domain_cards,
     configure_page,
+    page_header,
     render_footer,
     render_status_badge,
     sidebar_brand,
@@ -15,10 +16,15 @@ from _bootstrap import (
 configure_page("Domínios")
 sidebar_brand()
 
-st.title("Domínios temáticos")
+page_header(
+    "Domínios e roteiro",
+    "O que cada área temática já entrega e o que está planejado.",
+    art_kind="docs",
+    eyebrow="Transparência",
+)
 st.caption(
-    "Textos e disponibilidade vêm de `geoai.domains` — a UI não duplica "
-    "a lógica de negócio."
+    "Cada domínio informa o que já está disponível, o que está planejado e "
+    "quais limites se aplicam."
 )
 
 cards = cached_domain_cards()

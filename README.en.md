@@ -49,17 +49,16 @@ pytest -q
 
 Delivered MVP status is documented in the [Portuguese README](README.md). This English page does not repeat that history.
 
-Energy panel (MVP 10): municipal search across all 399 IBGE codes, associated plants only, separate fiscalizada/outorgada MW, generation-type mix, and an explicit notice for 34 unmatched Operação plants. MW is not MWh.
+**Current state (19 November 2026).** The Streamlit portal runs locally with official data for all 399 municipalities of Paraná:
 
-MMGD/ANEEL (MVP 14): Streamlit page **Energia — MMGD/ANEEL** — plants and known installed capacity (MW) for all 399 PR municipalities; credit UCs are secondary; ODbL; do not mix with SIGA.
+- Territory and population: IBGE 2025 municipal mesh and 2026 population estimates.
+- Energy: ANEEL SIGA plants in operation and ANEEL MMGD distributed generation (November 2026 snapshot). MW is not MWh, and the two registries are not added together.
+- Agriculture and livestock: IBGE PAM and PPM, 2025, through the SIDRA API.
+- Land cover: MapBiomas Collection 11, 1985 to 2025. Change between years is a stock difference, not a deforestation rate.
+- Calculators: appliance consumption and preliminary photovoltaic sizing, with user inputs only.
+- Satellite vegetation (NDVI): a list of 97 municipalities and a download plan. Only Maringá has a measured scene and no NDVI map is published.
 
-Environment shell (MVP 12): IBGE municipal mesh only; MapBiomas Collection 11 remains a contract without local statistics or percentages.
-
-Agriculture shell (MVP 13): IBGE municipal mesh only; PAM, PPM, CONAB and IPARDES are absent, so production and yield stay unavailable.
-
-Geospatial job foundation (Issue #40): [docs/PROCESSAMENTO.md](docs/PROCESSAMENTO.md). Streamlit still reads prepared artifacts only. Local jobs (`vector_bbox_metrics` and an in-memory NDVI window) run from `scripts/run_geo_job.py`, with atomic publish and a local per-key lock. Job output under `data/jobs/` is gitignored. Sentinel-2 download and imagery visualization are not part of this stage. A small measurement is stored in `docs/evidence/processing/benchmark_small.json`.
-
-Sentinel-2 pilot for Maringá, IBGE code 4115200 (Issue #42): [docs/SENTINEL_PILOTO.md](docs/SENTINEL_PILOTO.md). Geometry comes from the 2025 IBGE mesh, opened by GDAL through `/vsizip/`. The 12 November 2026 Sentinel-2B pass, relative orbit R081, is the geometric candidate, with tiles 22KCV and 22KDV. Overlap keeps the first valid tile, with no average and no double count. The measured valid-pixel fraction is 0.7311414776754075, from 3,086,107 + 479,243. No NDVI raster was published. The dry run did not download any JP2: the official six-band total is 357,870,297 bytes and one processing block fits in 3.3 MiB, plus the AOI mask. The validated B04 is reused only when `NAPI_VALIDATED_B04` points at it; otherwise the plan refuses the download. A JP2 that is used must match the official size, SHA3-256 and grid. `--measure-only` computes the fraction and does not write a COG. No NDVI raster or imagery map is published. The Streamlit page only reads the catalog.
+The portal is not deployed publicly. It does not compute solar suitability and does not state economic feasibility. Details, tables and examples are in the [Portuguese README](README.md).
 
 ## Scientific integrity and license
 
