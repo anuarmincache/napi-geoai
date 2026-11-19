@@ -60,3 +60,28 @@ população não é o mais adequado.
 python scripts/prepare_ndvi_targets.py
 python scripts/plan_ndvi_targets.py --days 15
 ```
+
+## Plano medido em 2026-11-19 (catálogo real, sem download)
+
+`data/derived/ndvi_plan_pr.json`, janela de 15 dias até 19/11/2026, 97
+consultas em 459 s, sem falha. Geometria: malha de apresentação
+(simplificada), suficiente para o plano e não para a medição.
+
+| Corte de população | Municípios | Com passagem | Cenas | Tiles | Volume oficial |
+|---|---:|---:|---:|---:|---:|
+| acima de 20 mil | 97 | 95 | 39 | 31 | 8,08 GB |
+| acima de 30 mil | 68 | 67 | 35 | 29 | 7,52 GB |
+| acima de 50 mil | 38 | 37 | 27 | 24 | 5,98 GB |
+| acima de 100 mil | 24 | 23 | 19 | 19 | 4,22 GB |
+
+- Reduzir de 97 para 68 municípios economiza 7% do volume. O custo é das
+  cenas, não dos municípios.
+- 37 municípios precisam de mosaico de duas tiles da mesma passagem.
+- 22 usos de tile estão em EPSG:32721 e 118 em EPSG:32722.
+- Ponta Grossa e Piraí do Sul não têm passagem única que cubra 99,9% do
+  polígono na janela. Com a regra atual ficam sem imagem.
+- A regra do piloto escolhe a passagem mais recente que cobre o município,
+  sem olhar nuvem. No plano, 64 de 140 usos de tile têm nuvem do item acima de
+  50%, e Curitiba recebeu uma tile com 100%. Em escala, isso baixa cenas que
+  serão reprovadas depois. A nuvem do item é da tile inteira e não substitui
+  a fração válida no município, mas serve de triagem antes do download.

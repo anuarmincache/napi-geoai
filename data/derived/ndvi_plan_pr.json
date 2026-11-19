@@ -1,0 +1,3296 @@
+{
+ "schema_version": 1,
+ "kind": "plano_stac_sem_download",
+ "queried_at_utc": "2026-11-19T18:26:33Z",
+ "as_of_utc": "2026-11-19T18:18:54Z",
+ "window_days": 15,
+ "window_utc": "2026-11-04T18:18:54Z/2026-11-19T18:18:54Z",
+ "stac_search_url": "https://stac.dataspace.copernicus.eu/v1/search",
+ "collection": "sentinel-2-l2a",
+ "min_footprint_coverage": 0.999,
+ "temporal_rule_pt": "Uma única passagem por município (mesmo satélite, mesmo instante e mesma órbita relativa). Datas não se misturam.",
+ "limits_pt": [
+  "Plano de catálogo: nenhuma banda foi baixada e nenhum pixel medido.",
+  "Cobertura do footprint não é fração de pixels válidos.",
+  "Nuvem do item (eo:cloud_cover) é da tile inteira, não do município.",
+  "A fração válida só existe depois da leitura de B04, B08 e SCL."
+ ],
+ "elapsed_seconds": 459.4,
+ "targets_requested": 97,
+ "failures": {},
+ "geometry_source": "malha_de_apresentacao_simplificada",
+ "summary": {
+  "targets": 97,
+  "targets_with_pass": 95,
+  "targets_without_pass": [
+   "Piraí do Sul",
+   "Ponta Grossa"
+  ],
+  "targets_needing_mosaic": 37,
+  "distinct_products": 39,
+  "distinct_mgrs_tiles": [
+   "21JYM",
+   "21JYN",
+   "21JZM",
+   "21JZN",
+   "21KYP",
+   "21KZP",
+   "21KZQ",
+   "22JBS",
+   "22JBT",
+   "22JCR",
+   "22JCS",
+   "22JCT",
+   "22JDR",
+   "22JDS",
+   "22JDT",
+   "22JES",
+   "22JET",
+   "22JFS",
+   "22JFT",
+   "22JGS",
+   "22JGT",
+   "22KBU",
+   "22KBV",
+   "22KCU",
+   "22KCV",
+   "22KDU",
+   "22KDV",
+   "22KEU",
+   "22KEV",
+   "22KFU",
+   "22KFV"
+  ],
+  "distinct_acquisitions": [
+   "S2B_20261112T133149_R081",
+   "S2B_20261115T133829_R124",
+   "S2B_20261119T132239_R038"
+  ],
+  "band_files": 117,
+  "band_files_without_official_size": 0,
+  "official_bytes_known": 8084414432,
+  "bytes_note_pt": "Soma dos tamanhos oficiais (file:size) de B04, B08 e SCL das cenas distintas. Cada cena conta uma vez, mesmo servindo vários municípios. Se houver arquivo sem tamanho oficial, a soma é parcial."
+ },
+ "summary_by_min_population": {
+  "20000": {
+   "targets": 97,
+   "targets_with_pass": 95,
+   "targets_without_pass": [
+    "Piraí do Sul",
+    "Ponta Grossa"
+   ],
+   "targets_needing_mosaic": 37,
+   "distinct_products": 39,
+   "distinct_mgrs_tiles": [
+    "21JYM",
+    "21JYN",
+    "21JZM",
+    "21JZN",
+    "21KYP",
+    "21KZP",
+    "21KZQ",
+    "22JBS",
+    "22JBT",
+    "22JCR",
+    "22JCS",
+    "22JCT",
+    "22JDR",
+    "22JDS",
+    "22JDT",
+    "22JES",
+    "22JET",
+    "22JFS",
+    "22JFT",
+    "22JGS",
+    "22JGT",
+    "22KBU",
+    "22KBV",
+    "22KCU",
+    "22KCV",
+    "22KDU",
+    "22KDV",
+    "22KEU",
+    "22KEV",
+    "22KFU",
+    "22KFV"
+   ],
+   "distinct_acquisitions": [
+    "S2B_20261112T133149_R081",
+    "S2B_20261115T133829_R124",
+    "S2B_20261119T132239_R038"
+   ],
+   "band_files": 117,
+   "band_files_without_official_size": 0,
+   "official_bytes_known": 8084414432,
+   "bytes_note_pt": "Soma dos tamanhos oficiais (file:size) de B04, B08 e SCL das cenas distintas. Cada cena conta uma vez, mesmo servindo vários municípios. Se houver arquivo sem tamanho oficial, a soma é parcial."
+  },
+  "30000": {
+   "targets": 68,
+   "targets_with_pass": 67,
+   "targets_without_pass": [
+    "Ponta Grossa"
+   ],
+   "targets_needing_mosaic": 29,
+   "distinct_products": 35,
+   "distinct_mgrs_tiles": [
+    "21JYM",
+    "21JYN",
+    "21JZM",
+    "21JZN",
+    "21KYP",
+    "21KZP",
+    "21KZQ",
+    "22JBS",
+    "22JBT",
+    "22JCR",
+    "22JCS",
+    "22JCT",
+    "22JDR",
+    "22JDS",
+    "22JDT",
+    "22JES",
+    "22JET",
+    "22JFS",
+    "22JFT",
+    "22JGS",
+    "22JGT",
+    "22KCU",
+    "22KCV",
+    "22KDU",
+    "22KDV",
+    "22KEU",
+    "22KEV",
+    "22KFU",
+    "22KFV"
+   ],
+   "distinct_acquisitions": [
+    "S2B_20261112T133149_R081",
+    "S2B_20261115T133829_R124",
+    "S2B_20261119T132239_R038"
+   ],
+   "band_files": 105,
+   "band_files_without_official_size": 0,
+   "official_bytes_known": 7523798304,
+   "bytes_note_pt": "Soma dos tamanhos oficiais (file:size) de B04, B08 e SCL das cenas distintas. Cada cena conta uma vez, mesmo servindo vários municípios. Se houver arquivo sem tamanho oficial, a soma é parcial."
+  },
+  "50000": {
+   "targets": 38,
+   "targets_with_pass": 37,
+   "targets_without_pass": [
+    "Ponta Grossa"
+   ],
+   "targets_needing_mosaic": 16,
+   "distinct_products": 27,
+   "distinct_mgrs_tiles": [
+    "21JYM",
+    "21JYN",
+    "21JZN",
+    "21KZP",
+    "21KZQ",
+    "22JBS",
+    "22JBT",
+    "22JCR",
+    "22JCS",
+    "22JCT",
+    "22JDR",
+    "22JDS",
+    "22JDT",
+    "22JES",
+    "22JET",
+    "22JFS",
+    "22JFT",
+    "22JGS",
+    "22JGT",
+    "22KCU",
+    "22KCV",
+    "22KDU",
+    "22KDV",
+    "22KEU"
+   ],
+   "distinct_acquisitions": [
+    "S2B_20261112T133149_R081",
+    "S2B_20261115T133829_R124",
+    "S2B_20261119T132239_R038"
+   ],
+   "band_files": 81,
+   "band_files_without_official_size": 0,
+   "official_bytes_known": 5977848706,
+   "bytes_note_pt": "Soma dos tamanhos oficiais (file:size) de B04, B08 e SCL das cenas distintas. Cada cena conta uma vez, mesmo servindo vários municípios. Se houver arquivo sem tamanho oficial, a soma é parcial."
+  },
+  "100000": {
+   "targets": 24,
+   "targets_with_pass": 23,
+   "targets_without_pass": [
+    "Ponta Grossa"
+   ],
+   "targets_needing_mosaic": 9,
+   "distinct_products": 19,
+   "distinct_mgrs_tiles": [
+    "21JYM",
+    "21JYN",
+    "21JZN",
+    "21KZP",
+    "21KZQ",
+    "22JBS",
+    "22JBT",
+    "22JCS",
+    "22JCT",
+    "22JDS",
+    "22JDT",
+    "22JFS",
+    "22JFT",
+    "22JGS",
+    "22KCU",
+    "22KCV",
+    "22KDU",
+    "22KDV",
+    "22KEU"
+   ],
+   "distinct_acquisitions": [
+    "S2B_20261112T133149_R081",
+    "S2B_20261115T133829_R124",
+    "S2B_20261119T132239_R038"
+   ],
+   "band_files": 57,
+   "band_files_without_official_size": 0,
+   "official_bytes_known": 4217678923,
+   "bytes_note_pt": "Soma dos tamanhos oficiais (file:size) de B04, B08 e SCL das cenas distintas. Cada cena conta uma vez, mesmo servindo vários municípios. Se houver arquivo sem tamanho oficial, a soma é parcial."
+  }
+ },
+ "targets": {
+  "4106902": {
+   "cd_mun": "4106902",
+   "name": "Curitiba",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 8,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4113700": {
+   "cd_mun": "4113700",
+   "name": "Londrina",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KEU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEU_20261112T184116",
+     "aoi_coverage": 0.125781,
+     "eo_cloud_cover": 0.11,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 114982894,
+      "B08_10m": 134975293,
+      "SCL_20m": 1286934
+     }
+    },
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 0.688447,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    },
+    {
+     "mgrs_tile": "22KDU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDU_20261112T184116",
+     "aoi_coverage": 0.501842,
+     "eo_cloud_cover": 9.91,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119775425,
+      "B08_10m": 135016484,
+      "SCL_20m": 1932104
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4115200": {
+   "cd_mun": "4115200",
+   "name": "Maringá",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 24,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 0.548657,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    },
+    {
+     "mgrs_tile": "22KCV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KCV_20261112T184116",
+     "aoi_coverage": 0.899311,
+     "eo_cloud_cover": 29.81,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 49709444,
+      "B08_10m": 54152551,
+      "SCL_20m": 795578
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4119905": {
+   "cd_mun": "4119905",
+   "name": "Ponta Grossa",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 28,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 0,
+   "truncated": false,
+   "selected_acquisition": null,
+   "sensing_time_utc": null,
+   "tiles": []
+  },
+  "4104808": {
+   "cd_mun": "4104808",
+   "name": "Cascavel",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JBT",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22JBT_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 62.84,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 117560626,
+      "B08_10m": 129440993,
+      "SCL_20m": 2327227
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4125506": {
+   "cd_mun": "4125506",
+   "name": "São José dos Pinhais",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 8,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JGS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JGS_20261119T164610",
+     "aoi_coverage": 0.228307,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 96146064,
+      "B08_10m": 100812899,
+      "SCL_20m": 293708
+     }
+    },
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 0.971073,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4108304": {
+   "cd_mun": "4108304",
+   "name": "Foz do Iguaçu",
+   "coverage_crs": "EPSG:31981",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JYN",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JYN_20261115T185235",
+     "aoi_coverage": 0.279459,
+     "eo_cloud_cover": 15.4,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 113205240,
+      "B08_10m": 134286321,
+      "SCL_20m": 2044563
+     }
+    },
+    {
+     "mgrs_tile": "21JYM",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JYM_20261115T185235",
+     "aoi_coverage": 0.884601,
+     "eo_cloud_cover": 40.53,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 123656342,
+      "B08_10m": 135025876,
+      "SCL_20m": 2829079
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4105805": {
+   "cd_mun": "4105805",
+   "name": "Colombo",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 8,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4109401": {
+   "cd_mun": "4109401",
+   "name": "Guarapuava",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JDT",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDT_20261112T184116",
+     "aoi_coverage": 0.580495,
+     "eo_cloud_cover": 24.95,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 124197076,
+      "B08_10m": 135327647,
+      "SCL_20m": 2622469
+     }
+    },
+    {
+     "mgrs_tile": "22JDS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDS_20261112T184116",
+     "aoi_coverage": 0.617864,
+     "eo_cloud_cover": 37.18,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 123193938,
+      "B08_10m": 135481917,
+      "SCL_20m": 2709462
+     }
+    },
+    {
+     "mgrs_tile": "22JCT",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCT_20261112T184116",
+     "aoi_coverage": 0.015187,
+     "eo_cloud_cover": 26.57,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 101727302,
+      "B08_10m": 116440782,
+      "SCL_20m": 2631827
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4107652": {
+   "cd_mun": "4107652",
+   "name": "Fazenda Rio Grande",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 4,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4101804": {
+   "cd_mun": "4101804",
+   "name": "Araucária",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 4,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4127700": {
+   "cd_mun": "4127700",
+   "name": "Toledo",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 18,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JZN",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JZN_20261115T185235",
+     "aoi_coverage": 0.999423,
+     "eo_cloud_cover": 59.9,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 117960118,
+      "B08_10m": 130748103,
+      "SCL_20m": 2388564
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4118204": {
+   "cd_mun": "4118204",
+   "name": "Paranaguá",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 8,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JGS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JGS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 96146064,
+      "B08_10m": 100812899,
+      "SCL_20m": 293708
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4104204": {
+   "cd_mun": "4104204",
+   "name": "Campo Largo",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 11,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 0.731392,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    },
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 0.498523,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4101408": {
+   "cd_mun": "4101408",
+   "name": "Apucarana",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 0.665035,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    },
+    {
+     "mgrs_tile": "22KDU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDU_20261112T184116",
+     "aoi_coverage": 0.846883,
+     "eo_cloud_cover": 9.91,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119775425,
+      "B08_10m": 135016484,
+      "SCL_20m": 1932104
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4119152": {
+   "cd_mun": "4119152",
+   "name": "Pinhais",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 8,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4126256": {
+   "cd_mun": "4126256",
+   "name": "Sarandi",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4119509": {
+   "cd_mun": "4119509",
+   "name": "Piraquara",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 16,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4100400": {
+   "cd_mun": "4100400",
+   "name": "Almirante Tamandaré",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 8,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4101507": {
+   "cd_mun": "4101507",
+   "name": "Arapongas",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4128104": {
+   "cd_mun": "4128104",
+   "name": "Umuarama",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21KZQ",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21KZQ_20261115T185235",
+     "aoi_coverage": 0.158629,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 99223394,
+      "B08_10m": 103265640,
+      "SCL_20m": 23216
+     }
+    },
+    {
+     "mgrs_tile": "21KZP",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21KZP_20261115T185235",
+     "aoi_coverage": 0.995028,
+     "eo_cloud_cover": 91.19,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 115113528,
+      "B08_10m": 116853467,
+      "SCL_20m": 1066200
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4103701": {
+   "cd_mun": "4103701",
+   "name": "Cambé",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 3,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4104303": {
+   "cd_mun": "4104303",
+   "name": "Campo Mourão",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 6,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KCU",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KCU_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 85524853,
+      "B08_10m": 88213070,
+      "SCL_20m": 36021
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4108403": {
+   "cd_mun": "4108403",
+   "name": "Francisco Beltrão",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 21,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JCS",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22JCS_20261115T185235",
+     "aoi_coverage": 0.142855,
+     "eo_cloud_cover": 33.61,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 50962280,
+      "B08_10m": 57520787,
+      "SCL_20m": 1148658
+     }
+    },
+    {
+     "mgrs_tile": "22JBS",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22JBS_20261115T185235",
+     "aoi_coverage": 0.998942,
+     "eo_cloud_cover": 45.07,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 125311117,
+      "B08_10m": 134552812,
+      "SCL_20m": 3234092
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4118501": {
+   "cd_mun": "4118501",
+   "name": "Pato Branco",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 13,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JCS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCS_20261112T184116",
+     "aoi_coverage": 0.996289,
+     "eo_cloud_cover": 10.53,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119854438,
+      "B08_10m": 135131132,
+      "SCL_20m": 2511680
+     }
+    },
+    {
+     "mgrs_tile": "22JCR",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCR_20261112T184116",
+     "aoi_coverage": 0.341161,
+     "eo_cloud_cover": 41.62,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 125579411,
+      "B08_10m": 135146970,
+      "SCL_20m": 2925398
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4118402": {
+   "cd_mun": "4118402",
+   "name": "Paranavaí",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KCV",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KCV_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 99547952,
+      "B08_10m": 103134631,
+      "SCL_20m": 33799
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4105508": {
+   "cd_mun": "4105508",
+   "name": "Cianorte",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 9,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KCU",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KCU_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 85524853,
+      "B08_10m": 88213070,
+      "SCL_20m": 36021
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4127106": {
+   "cd_mun": "4127106",
+   "name": "Telêmaco Borba",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KEU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEU_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 0.11,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 114982894,
+      "B08_10m": 134975293,
+      "SCL_20m": 1286934
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4122404": {
+   "cd_mun": "4122404",
+   "name": "Rolândia",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 3,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4104907": {
+   "cd_mun": "4104907",
+   "name": "Castro",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 14,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 0.821627,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    },
+    {
+     "mgrs_tile": "22JET",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JET_20261119T164610",
+     "aoi_coverage": 0.338939,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 31823547,
+      "B08_10m": 33787940,
+      "SCL_20m": 99922
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4110706": {
+   "cd_mun": "4110706",
+   "name": "Irati",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JES",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JES_20261112T184116",
+     "aoi_coverage": 0.89581,
+     "eo_cloud_cover": 75.32,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 113861228,
+      "B08_10m": 116578344,
+      "SCL_20m": 2093721
+     }
+    },
+    {
+     "mgrs_tile": "22JDS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDS_20261112T184116",
+     "aoi_coverage": 0.302252,
+     "eo_cloud_cover": 37.18,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 123193938,
+      "B08_10m": 135481917,
+      "SCL_20m": 2709462
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4114609": {
+   "cd_mun": "4114609",
+   "name": "Marechal Cândido Rondon",
+   "coverage_crs": "EPSG:31981",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JYN",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JYN_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 15.4,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 113205240,
+      "B08_10m": 134286321,
+      "SCL_20m": 2044563
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4115804": {
+   "cd_mun": "4115804",
+   "name": "Medianeira",
+   "coverage_crs": "EPSG:31981",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JYN",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JYN_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 15.4,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 113205240,
+      "B08_10m": 134286321,
+      "SCL_20m": 2044563
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4128203": {
+   "cd_mun": "4128203",
+   "name": "União da Vitória",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 16,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 2,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JES",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JES_20261112T184116",
+     "aoi_coverage": 0.231647,
+     "eo_cloud_cover": 75.32,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 113861228,
+      "B08_10m": 116578344,
+      "SCL_20m": 2093721
+     }
+    },
+    {
+     "mgrs_tile": "22JDS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDS_20261112T184116",
+     "aoi_coverage": 0.997845,
+     "eo_cloud_cover": 37.18,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 123193938,
+      "B08_10m": 135481917,
+      "SCL_20m": 2709462
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4109807": {
+   "cd_mun": "4109807",
+   "name": "Ibiporã",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4104006": {
+   "cd_mun": "4104006",
+   "name": "Campina Grande do Sul",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 16,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JGT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JGT_20261119T164610",
+     "aoi_coverage": 0.815974,
+     "eo_cloud_cover": 98.16,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 100422314,
+      "B08_10m": 112759619,
+      "SCL_20m": 914964
+     }
+    },
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 0.325143,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4120606": {
+   "cd_mun": "4120606",
+   "name": "Prudentópolis",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JET",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JET_20261112T184116",
+     "aoi_coverage": 0.233986,
+     "eo_cloud_cover": 17.64,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 122218167,
+      "B08_10m": 135618387,
+      "SCL_20m": 2755774
+     }
+    },
+    {
+     "mgrs_tile": "22JDT",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDT_20261112T184116",
+     "aoi_coverage": 0.868434,
+     "eo_cloud_cover": 24.95,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 124197076,
+      "B08_10m": 135327647,
+      "SCL_20m": 2622469
+     }
+    },
+    {
+     "mgrs_tile": "22JDS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDS_20261112T184116",
+     "aoi_coverage": 0.159311,
+     "eo_cloud_cover": 37.18,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 123193938,
+      "B08_10m": 135481917,
+      "SCL_20m": 2709462
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4117602": {
+   "cd_mun": "4117602",
+   "name": "Palmas",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 13,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JDR",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDR_20261112T184116",
+     "aoi_coverage": 0.799887,
+     "eo_cloud_cover": 47.27,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 125072762,
+      "B08_10m": 135588384,
+      "SCL_20m": 2709299
+     }
+    },
+    {
+     "mgrs_tile": "22JCR",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCR_20261112T184116",
+     "aoi_coverage": 0.334296,
+     "eo_cloud_cover": 41.62,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 125579411,
+      "B08_10m": 135146970,
+      "SCL_20m": 2925398
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4117503": {
+   "cd_mun": "4117503",
+   "name": "Paiçandu",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 6,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KCV",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KCV_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 99547952,
+      "B08_10m": 103134631,
+      "SCL_20m": 33799
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4107207": {
+   "cd_mun": "4107207",
+   "name": "Dois Vizinhos",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 21,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JZM",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JZM_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 44.68,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 125259309,
+      "B08_10m": 135061738,
+      "SCL_20m": 3245397
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4113205": {
+   "cd_mun": "4113205",
+   "name": "Lapa",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 14,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 0.779585,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    },
+    {
+     "mgrs_tile": "22JES",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JES_20261119T164610",
+     "aoi_coverage": 0.423406,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 56924896,
+      "B08_10m": 62325472,
+      "SCL_20m": 652159
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4124103": {
+   "cd_mun": "4124103",
+   "name": "Santo Antônio da Platina",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KEV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEV_20261112T184116",
+     "aoi_coverage": 0.999998,
+     "eo_cloud_cover": 4.46,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 117466461,
+      "B08_10m": 134378031,
+      "SCL_20m": 1943994
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4106407": {
+   "cd_mun": "4106407",
+   "name": "Cornélio Procópio",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 3,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KEV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEV_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 4.46,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 117466461,
+      "B08_10m": 134378031,
+      "SCL_20m": 1943994
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4109609": {
+   "cd_mun": "4109609",
+   "name": "Guaratuba",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 8,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JGS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JGS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 96146064,
+      "B08_10m": 100812899,
+      "SCL_20m": 293708
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4114807": {
+   "cd_mun": "4114807",
+   "name": "Marialva",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 24,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 0.728485,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    },
+    {
+     "mgrs_tile": "22KDU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDU_20261112T184116",
+     "aoi_coverage": 0.585024,
+     "eo_cloud_cover": 9.91,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119775425,
+      "B08_10m": 135016484,
+      "SCL_20m": 1932104
+     }
+    },
+    {
+     "mgrs_tile": "22KCU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KCU_20261112T184116",
+     "aoi_coverage": 0.371982,
+     "eo_cloud_cover": 44.88,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 72263805,
+      "B08_10m": 81603034,
+      "SCL_20m": 1301933
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4125605": {
+   "cd_mun": "4125605",
+   "name": "São Mateus do Sul",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 7,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JES",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JES_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 75.32,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 113861228,
+      "B08_10m": 116578344,
+      "SCL_20m": 2093721
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4115705": {
+   "cd_mun": "4115705",
+   "name": "Matinhos",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 4,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JGS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JGS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 96146064,
+      "B08_10m": 100812899,
+      "SCL_20m": 293708
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4111803": {
+   "cd_mun": "4111803",
+   "name": "Jacarezinho",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 10,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KFV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KFV_20261112T184116",
+     "aoi_coverage": 0.854231,
+     "eo_cloud_cover": 14.24,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 73514586,
+      "B08_10m": 83484175,
+      "SCL_20m": 1631335
+     }
+    },
+    {
+     "mgrs_tile": "22KEV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEV_20261112T184116",
+     "aoi_coverage": 0.577496,
+     "eo_cloud_cover": 4.46,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 117466461,
+      "B08_10m": 134378031,
+      "SCL_20m": 1943994
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4122206": {
+   "cd_mun": "4122206",
+   "name": "Rio Branco do Sul",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 4,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4102000": {
+   "cd_mun": "4102000",
+   "name": "Assis Chateaubriand",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21KZP",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21KZP_20261115T185235",
+     "aoi_coverage": 0.596455,
+     "eo_cloud_cover": 91.19,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 115113528,
+      "B08_10m": 116853467,
+      "SCL_20m": 1066200
+     }
+    },
+    {
+     "mgrs_tile": "21JZN",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JZN_20261115T185235",
+     "aoi_coverage": 0.634763,
+     "eo_cloud_cover": 59.9,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 117960118,
+      "B08_10m": 130748103,
+      "SCL_20m": 2388564
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4114203": {
+   "cd_mun": "4114203",
+   "name": "Mandaguari",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 0.947692,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    },
+    {
+     "mgrs_tile": "22KDU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDU_20261112T184116",
+     "aoi_coverage": 0.374586,
+     "eo_cloud_cover": 9.91,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119775425,
+      "B08_10m": 135016484,
+      "SCL_20m": 1932104
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4117909": {
+   "cd_mun": "4117909",
+   "name": "Palotina",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 18,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21KZP",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21KZP_20261115T185235",
+     "aoi_coverage": 0.999983,
+     "eo_cloud_cover": 91.19,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 115113528,
+      "B08_10m": 116853467,
+      "SCL_20m": 1066200
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4112009": {
+   "cd_mun": "4112009",
+   "name": "Jaguariaíva",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 28,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KFU",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22KFU_20261119T164610",
+     "aoi_coverage": 0.911641,
+     "eo_cloud_cover": 99.05,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 107891406,
+      "B08_10m": 117157228,
+      "SCL_20m": 1411565
+     }
+    },
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 0.271081,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4114104": {
+   "cd_mun": "4114104",
+   "name": "Mandaguaçu",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 6,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KCV",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KCV_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 99547952,
+      "B08_10m": 103134631,
+      "SCL_20m": 33799
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4117701": {
+   "cd_mun": "4117701",
+   "name": "Palmeira",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 28,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 0.180142,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    },
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 0.334223,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    },
+    {
+     "mgrs_tile": "22JET",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JET_20261119T164610",
+     "aoi_coverage": 0.21993,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 31823547,
+      "B08_10m": 33787940,
+      "SCL_20m": 99922
+     }
+    },
+    {
+     "mgrs_tile": "22JES",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JES_20261119T164610",
+     "aoi_coverage": 0.771779,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 56924896,
+      "B08_10m": 62325472,
+      "SCL_20m": 652159
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4119608": {
+   "cd_mun": "4119608",
+   "name": "Pitanga",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JDT",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDT_20261112T184116",
+     "aoi_coverage": 0.866658,
+     "eo_cloud_cover": 24.95,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 124197076,
+      "B08_10m": 135327647,
+      "SCL_20m": 2622469
+     }
+    },
+    {
+     "mgrs_tile": "22JCT",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCT_20261112T184116",
+     "aoi_coverage": 0.242804,
+     "eo_cloud_cover": 26.57,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 101727302,
+      "B08_10m": 116440782,
+      "SCL_20m": 2631827
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4111258": {
+   "cd_mun": "4111258",
+   "name": "Itaperuçu",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 4,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4119954": {
+   "cd_mun": "4119954",
+   "name": "Pontal do Paraná",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 4,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JGS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JGS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 96146064,
+      "B08_10m": 100812899,
+      "SCL_20m": 293708
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4111506": {
+   "cd_mun": "4111506",
+   "name": "Ivaiporã",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 3,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDU_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 9.91,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119775425,
+      "B08_10m": 135016484,
+      "SCL_20m": 1932104
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4113304": {
+   "cd_mun": "4113304",
+   "name": "Laranjeiras do Sul",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JCT",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCT_20261112T184116",
+     "aoi_coverage": 0.66706,
+     "eo_cloud_cover": 26.57,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 101727302,
+      "B08_10m": 116440782,
+      "SCL_20m": 2631827
+     }
+    },
+    {
+     "mgrs_tile": "22JCS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCS_20261112T184116",
+     "aoi_coverage": 0.661653,
+     "eo_cloud_cover": 10.53,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119854438,
+      "B08_10m": 135131132,
+      "SCL_20m": 2511680
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4108809": {
+   "cd_mun": "4108809",
+   "name": "Guaíra",
+   "coverage_crs": "EPSG:31981",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21KYP",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21KYP_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 80.03,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 112657159,
+      "B08_10m": 118021134,
+      "SCL_20m": 1551076
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4104253": {
+   "cd_mun": "4104253",
+   "name": "Campo Magro",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 8,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFT_20261119T164610",
+     "aoi_coverage": 0.974899,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 94935475,
+      "B08_10m": 104439850,
+      "SCL_20m": 382589
+     }
+    },
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 0.401728,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4122305": {
+   "cd_mun": "4122305",
+   "name": "Rio Negro",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 16,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4102406": {
+   "cd_mun": "4102406",
+   "name": "Bandeirantes",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 3,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KEV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEV_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 4.46,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 117466461,
+      "B08_10m": 134378031,
+      "SCL_20m": 1943994
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4120903": {
+   "cd_mun": "4120903",
+   "name": "Quedas do Iguaçu",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 30,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JCT",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22JCT_20261115T185235",
+     "aoi_coverage": 0.157997,
+     "eo_cloud_cover": 97.46,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 67510904,
+      "B08_10m": 68354410,
+      "SCL_20m": 338391
+     }
+    },
+    {
+     "mgrs_tile": "22JCS",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22JCS_20261115T185235",
+     "aoi_coverage": 0.626238,
+     "eo_cloud_cover": 33.61,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 50962280,
+      "B08_10m": 57520787,
+      "SCL_20m": 1148658
+     }
+    },
+    {
+     "mgrs_tile": "22JBS",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22JBS_20261115T185235",
+     "aoi_coverage": 0.708737,
+     "eo_cloud_cover": 45.07,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 125311117,
+      "B08_10m": 134552812,
+      "SCL_20m": 3234092
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4110102": {
+   "cd_mun": "4110102",
+   "name": "Imbituva",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JET",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JET_20261112T184116",
+     "aoi_coverage": 0.999344,
+     "eo_cloud_cover": 17.64,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 122218167,
+      "B08_10m": 135618387,
+      "SCL_20m": 2755774
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4125704": {
+   "cd_mun": "4125704",
+   "name": "São Miguel do Iguaçu",
+   "coverage_crs": "EPSG:31981",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JYN",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JYN_20261115T185235",
+     "aoi_coverage": 0.479085,
+     "eo_cloud_cover": 15.4,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 113205240,
+      "B08_10m": 134286321,
+      "SCL_20m": 2044563
+     }
+    },
+    {
+     "mgrs_tile": "21JYM",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JYM_20261115T185235",
+     "aoi_coverage": 0.805331,
+     "eo_cloud_cover": 40.53,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 123656342,
+      "B08_10m": 135025876,
+      "SCL_20m": 2829079
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4119301": {
+   "cd_mun": "4119301",
+   "name": "Pinhão",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 8,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 2,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JDS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDS_20261112T184116",
+     "aoi_coverage": 0.993775,
+     "eo_cloud_cover": 37.18,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 123193938,
+      "B08_10m": 135481917,
+      "SCL_20m": 2709462
+     }
+    },
+    {
+     "mgrs_tile": "22JCS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCS_20261112T184116",
+     "aoi_coverage": 0.053219,
+     "eo_cloud_cover": 10.53,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119854438,
+      "B08_10m": 135131132,
+      "SCL_20m": 2511680
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4109708": {
+   "cd_mun": "4109708",
+   "name": "Ibaiti",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KEU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEU_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 0.11,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 114982894,
+      "B08_10m": 134975293,
+      "SCL_20m": 1286934
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4114302": {
+   "cd_mun": "4114302",
+   "name": "Mandirituba",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 4,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4108601": {
+   "cd_mun": "4108601",
+   "name": "Goioerê",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 9,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KCU",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KCU_20261115T185235",
+     "aoi_coverage": 0.221376,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 85524853,
+      "B08_10m": 88213070,
+      "SCL_20m": 36021
+     }
+    },
+    {
+     "mgrs_tile": "22KBU",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KBU_20261115T185235",
+     "aoi_coverage": 0.992885,
+     "eo_cloud_cover": 92.48,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 114859854,
+      "B08_10m": 116393277,
+      "SCL_20m": 948304
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4116901": {
+   "cd_mun": "4116901",
+   "name": "Nova Esperança",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KCV",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KCV_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 99547952,
+      "B08_10m": 103134631,
+      "SCL_20m": 33799
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4123501": {
+   "cd_mun": "4123501",
+   "name": "Santa Helena",
+   "coverage_crs": "EPSG:31981",
+   "scenes_found": 3,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JYN",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JYN_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 15.4,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 113205240,
+      "B08_10m": 134286321,
+      "SCL_20m": 2044563
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4101606": {
+   "cd_mun": "4101606",
+   "name": "Arapoti",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 14,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KFU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KFU_20261112T184116",
+     "aoi_coverage": 0.610158,
+     "eo_cloud_cover": 1.05,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 48433950,
+      "B08_10m": 56441209,
+      "SCL_20m": 710865
+     }
+    },
+    {
+     "mgrs_tile": "22KEU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEU_20261112T184116",
+     "aoi_coverage": 0.637087,
+     "eo_cloud_cover": 0.11,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 114982894,
+      "B08_10m": 134975293,
+      "SCL_20m": 1286934
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4102109": {
+   "cd_mun": "4102109",
+   "name": "Astorga",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 3,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDV_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 9.29,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 118638016,
+      "B08_10m": 132693962,
+      "SCL_20m": 1880746
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4128005": {
+   "cd_mun": "4128005",
+   "name": "Ubiratã",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 18,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JBT",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22JBT_20261115T185235",
+     "aoi_coverage": 0.953576,
+     "eo_cloud_cover": 62.84,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 117560626,
+      "B08_10m": 129440993,
+      "SCL_20m": 2327227
+     }
+    },
+    {
+     "mgrs_tile": "21KZP",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21KZP_20261115T185235",
+     "aoi_coverage": 0.214385,
+     "eo_cloud_cover": 91.19,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 115113528,
+      "B08_10m": 116853467,
+      "SCL_20m": 1066200
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4120804": {
+   "cd_mun": "4120804",
+   "name": "Quatro Barras",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 16,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JGT",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JGT_20261119T164610",
+     "aoi_coverage": 0.495017,
+     "eo_cloud_cover": 98.16,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 100422314,
+      "B08_10m": 112759619,
+      "SCL_20m": 914964
+     }
+    },
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 0.976628,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4124053": {
+   "cd_mun": "4124053",
+   "name": "Santa Terezinha de Itaipu",
+   "coverage_crs": "EPSG:31981",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JYM",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JYM_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 40.53,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 123656342,
+      "B08_10m": 135025876,
+      "SCL_20m": 2829079
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4124400": {
+   "cd_mun": "4124400",
+   "name": "Santo Antônio do Sudoeste",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JZM",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JZM_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 44.68,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 125259309,
+      "B08_10m": 135061738,
+      "SCL_20m": 3245397
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4106605": {
+   "cd_mun": "4106605",
+   "name": "Cruzeiro do Oeste",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 18,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KBU",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KBU_20261115T185235",
+     "aoi_coverage": 0.999708,
+     "eo_cloud_cover": 92.48,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 114859854,
+      "B08_10m": 116393277,
+      "SCL_20m": 948304
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4121703": {
+   "cd_mun": "4121703",
+   "name": "Reserva",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDU_20261112T184116",
+     "aoi_coverage": 0.215647,
+     "eo_cloud_cover": 9.91,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119775425,
+      "B08_10m": 135016484,
+      "SCL_20m": 1932104
+     }
+    },
+    {
+     "mgrs_tile": "22JET",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JET_20261112T184116",
+     "aoi_coverage": 0.603369,
+     "eo_cloud_cover": 17.64,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 122218167,
+      "B08_10m": 135618387,
+      "SCL_20m": 2755774
+     }
+    },
+    {
+     "mgrs_tile": "22JDT",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JDT_20261112T184116",
+     "aoi_coverage": 0.612964,
+     "eo_cloud_cover": 24.95,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 124197076,
+      "B08_10m": 135327647,
+      "SCL_20m": 2622469
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4117305": {
+   "cd_mun": "4117305",
+   "name": "Ortigueira",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 12,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KEU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEU_20261112T184116",
+     "aoi_coverage": 0.659328,
+     "eo_cloud_cover": 0.11,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 114982894,
+      "B08_10m": 134975293,
+      "SCL_20m": 1286934
+     }
+    },
+    {
+     "mgrs_tile": "22KDU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDU_20261112T184116",
+     "aoi_coverage": 0.570636,
+     "eo_cloud_cover": 9.91,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119775425,
+      "B08_10m": 135016484,
+      "SCL_20m": 1932104
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4104659": {
+   "cd_mun": "4104659",
+   "name": "Carambeí",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 14,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JET",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JET_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 17.64,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 122218167,
+      "B08_10m": 135618387,
+      "SCL_20m": 2755774
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4126603": {
+   "cd_mun": "4126603",
+   "name": "Siqueira Campos",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 14,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 7,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KFU",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22KFU_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 99.05,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 107891406,
+      "B08_10m": 117157228,
+      "SCL_20m": 1411565
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4106506": {
+   "cd_mun": "4106506",
+   "name": "Coronel Vivida",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 7,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JCS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCS_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 10.53,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119854438,
+      "B08_10m": 135131132,
+      "SCL_20m": 2511680
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4113502": {
+   "cd_mun": "4113502",
+   "name": "Loanda",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 9,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KBV",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KBV_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 99723785,
+      "B08_10m": 103724794,
+      "SCL_20m": 22651
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4119400": {
+   "cd_mun": "4119400",
+   "name": "Piraí do Sul",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 28,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 0,
+   "truncated": false,
+   "selected_acquisition": null,
+   "sensing_time_utc": null,
+   "tiles": []
+  },
+  "4103602": {
+   "cd_mun": "4103602",
+   "name": "Cambará",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KEV",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEV_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 4.46,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 117466461,
+      "B08_10m": 134378031,
+      "SCL_20m": 1943994
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4105904": {
+   "cd_mun": "4105904",
+   "name": "Colorado",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 24,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 6,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDV",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KDV_20261115T185235",
+     "aoi_coverage": 0.483649,
+     "eo_cloud_cover": 99.91,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 9503222,
+      "B08_10m": 9818485,
+      "SCL_20m": 35732
+     }
+    },
+    {
+     "mgrs_tile": "22KCV",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T22KCV_20261115T185235",
+     "aoi_coverage": 0.893707,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 99547952,
+      "B08_10m": 103134631,
+      "SCL_20m": 33799
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4112108": {
+   "cd_mun": "4112108",
+   "name": "Jandaia do Sul",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KDU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KDU_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 9.91,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119775425,
+      "B08_10m": 135016484,
+      "SCL_20m": 1932104
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4105409": {
+   "cd_mun": "4105409",
+   "name": "Chopinzinho",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 7,
+   "acquisitions_found": 6,
+   "acquisitions_covering": 2,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JCS",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JCS_20261112T184116",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 10.53,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 119854438,
+      "B08_10m": 135131132,
+      "SCL_20m": 2511680
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4104501": {
+   "cd_mun": "4104501",
+   "name": "Capanema",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 9,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JZM",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JZM_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 44.68,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 125259309,
+      "B08_10m": 135061738,
+      "SCL_20m": 3245397
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4101002": {
+   "cd_mun": "4101002",
+   "name": "Ampére",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JZM",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JZM_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 44.68,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 125259309,
+      "B08_10m": 135061738,
+      "SCL_20m": 3245397
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4103453": {
+   "cd_mun": "4103453",
+   "name": "Cafelândia",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JZN",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JZN_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 59.9,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 117960118,
+      "B08_10m": 130748103,
+      "SCL_20m": 2388564
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4127502": {
+   "cd_mun": "4127502",
+   "name": "Tibagi",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 14,
+   "acquisitions_found": 7,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261112T133149_R081",
+   "sensing_time_utc": "2026-11-12T13:31:49Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22KEU",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22KEU_20261112T184116",
+     "aoi_coverage": 0.164103,
+     "eo_cloud_cover": 0.11,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 114982894,
+      "B08_10m": 134975293,
+      "SCL_20m": 1286934
+     }
+    },
+    {
+     "mgrs_tile": "22JET",
+     "product_id": "S2B_MSIL2A_20261112T133149_N0513_R081_T22JET_20261112T184116",
+     "aoi_coverage": 0.984108,
+     "eo_cloud_cover": 17.64,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 122218167,
+      "B08_10m": 135618387,
+      "SCL_20m": 2755774
+     }
+    }
+   ],
+   "mosaic_required": true
+  },
+  "4121406": {
+   "cd_mun": "4121406",
+   "name": "Realeza",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 6,
+   "acquisitions_found": 3,
+   "acquisitions_covering": 3,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261115T133829_R124",
+   "sensing_time_utc": "2026-11-15T13:38:29Z",
+   "tiles": [
+    {
+     "mgrs_tile": "21JZM",
+     "product_id": "S2B_MSIL2A_20261115T133829_N0513_R124_T21JZM_20261115T185235",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 44.68,
+     "proj_code": "EPSG:32721",
+     "band_bytes": {
+      "B04_10m": 125259309,
+      "B08_10m": 135061738,
+      "SCL_20m": 3245397
+     }
+    }
+   ],
+   "mosaic_required": false
+  },
+  "4106209": {
+   "cd_mun": "4106209",
+   "name": "Contenda",
+   "coverage_crs": "EPSG:31982",
+   "scenes_found": 4,
+   "acquisitions_found": 4,
+   "acquisitions_covering": 4,
+   "truncated": false,
+   "selected_acquisition": "S2B_20261119T132239_R038",
+   "sensing_time_utc": "2026-11-19T13:22:39Z",
+   "tiles": [
+    {
+     "mgrs_tile": "22JFS",
+     "product_id": "S2B_MSIL2A_20261119T132239_N0513_R038_T22JFS_20261119T164610",
+     "aoi_coverage": 1.0,
+     "eo_cloud_cover": 100.0,
+     "proj_code": "EPSG:32722",
+     "band_bytes": {
+      "B04_10m": 103551414,
+      "B08_10m": 112401653,
+      "SCL_20m": 1021233
+     }
+    }
+   ],
+   "mosaic_required": false
+  }
+ }
+}
