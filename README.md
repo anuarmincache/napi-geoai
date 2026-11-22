@@ -63,11 +63,12 @@ migração do front. O motor científico em `geoai/` é o mesmo para as duas.
 
 | Ferramenta | Para que serve |
 |---|---|
-| GeoPandas, Shapely, PyProj | Geometria municipal, projeções e operações espaciais |
+| QGIS e PyQGIS | Geoprocessamento: projetos e estilos em `qgis/`, validação da malha municipal e junção espacial de referência das usinas por município |
+| GDAL, pelo Python do QGIS | Leitura das bandas Sentinel-2 em blocos e cálculo do NDVI |
+| GeoPandas, Shapely, PyProj | Geometria municipal, projeções e conferência independente das operações feitas no QGIS |
 | httpx | Chamadas às APIs oficiais (IBGE/SIDRA, ANEEL, STAC do Copernicus) |
 | openpyxl | Leitura das planilhas oficiais (MapBiomas Coleção 11) |
-| GDAL via PyQGIS | Leitura das bandas Sentinel-2 em blocos e cálculo do NDVI |
-| psycopg (opcional) | PostgreSQL/PostGIS, preparado para uso futuro |
+| PostgreSQL/PostGIS, com psycopg | Banco geoespacial local, preparado para uso futuro |
 | pytest, Ruff | Testes e verificação de estilo |
 
 ### Portal em uso (`app/`)
@@ -89,6 +90,11 @@ migração do front. O motor científico em `geoai/` é o mesmo para as duas.
 | deck.gl | Camada dos 399 municípios sobre o mapa |
 | Apache ECharts | Gráficos |
 | Motion | Animações |
+
+Cada operação espacial importante é feita no QGIS e conferida de forma
+independente em Python, e as duas contagens precisam fechar. Os relatórios
+ficam em `data/derived/parana_municipios_2025_qgis_report.json` e
+`data/derived/siga_pr_qgis_join_report.json`.
 
 ### Fontes de dados
 
