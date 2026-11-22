@@ -25,6 +25,13 @@ import {
   totalMensalKwh,
 } from "@/lib/calculos";
 
+const ROTULO_CAMPO = {
+  potencia_w: "Potência em watts",
+  horas_por_dia: "Horas por dia",
+  dias_por_mes: "Dias por mês",
+  quantidade: "Quantidade",
+} as const;
+
 const INICIAIS: Equipamento[] = [
   {
     id: "1",
@@ -139,6 +146,7 @@ export default function Calculadoras() {
                           onChange={(e) =>
                             atualizar(item.id, "nome", e.target.value)
                           }
+                          aria-label={`Nome do equipamento ${item.nome}`}
                           className="w-40 rounded-lg border border-line px-2 py-1.5 text-sm outline-none focus:border-moss"
                         />
                       </td>
@@ -157,6 +165,7 @@ export default function Calculadoras() {
                             onChange={(e) =>
                               atualizar(item.id, campo, e.target.value)
                             }
+                            aria-label={`${ROTULO_CAMPO[campo]} de ${item.nome}`}
                             className="w-24 rounded-lg border border-line px-2 py-1.5 text-right text-sm outline-none focus:border-moss"
                           />
                         </td>
@@ -224,6 +233,7 @@ export default function Calculadoras() {
               <input
                 value={tarifa}
                 onChange={(e) => setTarifa(e.target.value)}
+                aria-label="Tarifa em reais por kWh"
                 placeholder="informe a sua tarifa"
                 className="mt-1 w-full rounded-xl border border-line px-3 py-2 text-sm outline-none focus:border-moss"
               />
@@ -366,6 +376,7 @@ function Campo({
       <input
         value={valor}
         onChange={(e) => aoMudar(e.target.value)}
+        aria-label={rotulo}
         className="mt-1 w-full rounded-xl border border-line px-3 py-2 text-sm outline-none focus:border-moss"
       />
       <span className="mt-1 block text-[11px] leading-snug text-muted">

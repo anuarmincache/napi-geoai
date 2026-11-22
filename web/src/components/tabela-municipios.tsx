@@ -102,6 +102,7 @@ export function TabelaMunicipios({
             setLimite(porPagina);
           }}
           placeholder="Buscar por nome ou código IBGE"
+          aria-label="Buscar município na tabela por nome ou código IBGE"
           className="min-w-[14rem] flex-1 rounded-xl border border-line bg-paper px-3 py-2 text-sm outline-none focus:border-moss"
         />
         <span className="text-xs text-muted">
