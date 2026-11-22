@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+.DS_Store
+
+# Dados gerados a partir de data/derived/ por scripts/build_web_data.py.
+# Fora do Git para não duplicar o artefato versionado nem deixá-lo desatualizar.
+public/dados/
+tsconfig.tsbuildinfo
+
+# Copiado de node_modules por scripts/preparar-maplibre.mjs.
+public/maplibre-gl-worker.mjs
+AGENTS.md

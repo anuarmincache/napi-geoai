@@ -10,6 +10,10 @@
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](docs/ARQUITETURA.md)
 [![Streamlit](https://img.shields.io/badge/Streamlit-portal-455B40?style=for-the-badge&logo=streamlit&logoColor=white)](docs/STREAMLIT_UI.md)
 [![QGIS](https://img.shields.io/badge/QGIS-PyQGIS-589632?style=for-the-badge&logo=qgis&logoColor=white)](docs/ARQUITETURA.md)
+[![Next.js](https://img.shields.io/badge/Next.js-prot%C3%B3tipo-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](web/README.md)
+[![TypeScript](https://img.shields.io/badge/TypeScript-prot%C3%B3tipo-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](web/README.md)
+[![deck.gl](https://img.shields.io/badge/deck.gl-mapas-5b8a3a?style=for-the-badge)](web/README.md)
+[![Sentinel-2](https://img.shields.io/badge/Copernicus-Sentinel--2-0B5394?style=for-the-badge)](docs/NDVI_CIDADES.md)
 
 </div>
 
@@ -49,6 +53,48 @@ O portal ajuda a priorizar investigações. Ele não substitui projeto, licencia
 
 Ainda indisponível: unidades de conservação, recursos hídricos, recurso solar e aptidão territorial, biogás, observatório em tempo quase real, radar de oportunidades e assistente de IA. Veja o [ROADMAP.md](ROADMAP.md).
 
+## Tecnologias
+
+O projeto tem duas interfaces: o **portal Streamlit** em `app/`, que é a
+interface em uso, e um **protótipo web** em `web/`, feito para avaliar a
+migração do front. O motor científico em `geoai/` é o mesmo para as duas.
+
+### Motor e dados (Python 3.12)
+
+| Ferramenta | Para que serve |
+|---|---|
+| GeoPandas, Shapely, PyProj | Geometria municipal, projeções e operações espaciais |
+| httpx | Chamadas às APIs oficiais (IBGE/SIDRA, ANEEL, STAC do Copernicus) |
+| openpyxl | Leitura das planilhas oficiais (MapBiomas Coleção 11) |
+| GDAL via PyQGIS | Leitura das bandas Sentinel-2 em blocos e cálculo do NDVI |
+| psycopg (opcional) | PostgreSQL/PostGIS, preparado para uso futuro |
+| pytest, Ruff | Testes e verificação de estilo |
+
+### Portal em uso (`app/`)
+
+| Ferramenta | Para que serve |
+|---|---|
+| Streamlit | Interface das 11 páginas |
+| Folium e Leaflet | Mapas municipais |
+
+### Protótipo web (`web/`)
+
+| Ferramenta | Para que serve |
+|---|---|
+| Next.js e React | Estrutura do site, com exportação estática |
+| TypeScript | Tipagem dos dados e dos componentes |
+| Tailwind CSS | Estilos e a paleta do NAPI Energia Zero-Carbono |
+| shadcn/ui e Radix | Componentes de interface |
+| MapLibre GL JS | Mapa-base e controles |
+| deck.gl | Camada dos 399 municípios sobre o mapa |
+| Apache ECharts | Gráficos |
+| Motion | Animações |
+
+### Fontes de dados
+
+IBGE (malha municipal, estimativas de população, PAM e PPM), ANEEL (SIGA e
+MMGD), MapBiomas (Coleção 11) e Copernicus (Sentinel-2 L2A, catálogo STAC).
+
 ## Regras científicas
 
 Nenhum indicador, mapa ou texto do portal usa número inventado ou preenchimento artificial.
@@ -82,6 +128,16 @@ pytest -q
 
 Guia completo para Windows: [docs/INSTALACAO_WINDOWS.md](docs/INSTALACAO_WINDOWS.md).
 
+Para o protótipo web (Node.js 20 ou superior):
+
+```powershell
+cd web
+npm install
+npm run dev
+```
+
+Detalhes em [web/README.md](web/README.md).
+
 ## Como os dados são gerados
 
 Os dados brutos ficam fora do Git, em `data/raw/`. Cada script baixa da fonte oficial, valida e grava um artefato leve em `data/derived/`. Se uma etapa falha, nada é sobrescrito.
@@ -114,7 +170,9 @@ Serviços de apresentação (geoai/portal)
 Interface Streamlit (app/)
 ```
 
-A interface não contém regra de negócio: ela lê os serviços de `geoai/portal`. PostgreSQL/PostGIS e FastAPI estão preparados para uso futuro e não são necessários para rodar o portal. Detalhes em [docs/ARQUITETURA.md](docs/ARQUITETURA.md) e [docs/ARQUITETURA_MODULAR.md](docs/ARQUITETURA_MODULAR.md).
+As duas interfaces, o portal Streamlit em `app/` e o protótipo web em `web/`,
+leem os mesmos artefatos pelos serviços de `geoai/portal` e não contêm regra de
+negócio. PostgreSQL/PostGIS e FastAPI estão preparados para uso futuro e não são necessários para rodar o portal. Detalhes em [docs/ARQUITETURA.md](docs/ARQUITETURA.md) e [docs/ARQUITETURA_MODULAR.md](docs/ARQUITETURA_MODULAR.md).
 
 Identidade visual: paleta e logotipo do NAPI Energia Zero-Carbono, com ilustrações próprias em SVG. Ver [docs/STREAMLIT_UI.md](docs/STREAMLIT_UI.md).
 
