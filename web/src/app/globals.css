@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/* Paleta do logotipo NAPI Energia Zero-Carbono. */
+@theme {
+  --color-forest: #2f4a33;
+  --color-forest-deep: #1a2e20;
+  --color-green: #455b40;
+  --color-moss: #5b8a3a;
+  --color-leaf: #73a535;
+  --color-lime: #a8cf5f;
+  --color-sun: #fcc817;
+  --color-ink: #16231b;
+  --color-muted: #5b6b60;
+  --color-line: #e3eadd;
+  --color-paper: #f5f8f2;
+
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Montserrat", "Inter", system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+/* Fontes da marca: no ambiente do projeto, troque por next/font.
+   Mantido em stack de sistema para a build não depender de rede. */
+
+::selection {
+  background: var(--color-lime);
+  color: var(--color-forest);
+}
+
+*:focus-visible {
+  outline: 3px solid #0b7285;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.scrollbar-slim::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-slim::-webkit-scrollbar-thumb {
+  background: #cbd8c4;
+  border-radius: 999px;
+}
+
+.maplibregl-ctrl-attrib {
+  font-size: 10px;
+}
