@@ -135,11 +135,14 @@ export function Carregando({ altura = "h-64" }: { altura?: string }) {
 }
 
 export function Avisos({ itens }: { itens: string[] }) {
-  if (!itens.length) return null;
+  // A mesma frase pode chegar de duas fontes (nota temporal e lista de
+  // avisos do painel): mostra uma vez só.
+  const unicos = Array.from(new Set(itens.filter(Boolean)));
+  if (!unicos.length) return null;
   return (
     <ul className="space-y-1 rounded-2xl border border-line bg-white px-5 py-4 text-[12px] leading-relaxed text-muted">
-      {itens.map((item) => (
-        <li key={item} className="flex gap-2">
+      {unicos.map((item, i) => (
+        <li key={`${i}-${item.slice(0, 24)}`} className="flex gap-2">
           <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-sun" />
           {item}
         </li>

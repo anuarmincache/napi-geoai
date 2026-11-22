@@ -84,8 +84,8 @@ export default function FontesPagina() {
         {dados && (
           <Card className="mt-4 px-5 py-4">
             <ul className="space-y-1.5 text-sm leading-relaxed text-muted">
-              {dados.regras.slice(3).map((regra) => (
-                <li key={regra} className="flex gap-2">
+              {dados.regras.slice(3).map((regra, i) => (
+                <li key={`${i}-${regra.slice(0, 24)}`} className="flex gap-2">
                   <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-sun" />
                   {regra}
                 </li>

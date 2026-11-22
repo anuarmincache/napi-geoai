@@ -360,8 +360,8 @@ export default function CoberturaPagina() {
             Nenhum hectare foi reescalado para fechar a conta.
           </CardContent>
           <CardFooter>
-            {dados.fontes.map((linha) => (
-              <p key={linha}>{linha}</p>
+            {dados.fontes.map((linha, i) => (
+              <p key={`${i}-${linha.slice(0, 24)}`}>{linha}</p>
             ))}
           </CardFooter>
         </Card>

@@ -310,8 +310,8 @@ export default function AgriculturaPagina() {
             <CardTitle>De onde vêm estes números</CardTitle>
           </CardHeader>
           <CardContent className="space-y-1 text-sm leading-relaxed text-muted">
-            {dados.fontes.map((linha) => (
-              <p key={linha}>{linha}</p>
+            {dados.fontes.map((linha, i) => (
+              <p key={`${i}-${linha.slice(0, 24)}`}>{linha}</p>
             ))}
           </CardContent>
         </Card>
