@@ -58,6 +58,11 @@ Delivered MVP status is documented in the [Portuguese README](README.md). This E
 - Calculators: appliance consumption and preliminary photovoltaic sizing, with user inputs only.
 - Satellite vegetation (NDVI): a list of 97 municipalities and a download plan. Only Maringá has a measured scene and no NDVI map is published.
 
+A second interface is being evaluated: a Next.js prototype in `web/`, built
+with TypeScript, Tailwind CSS, shadcn/ui, MapLibre GL JS, deck.gl, Apache
+ECharts and Motion. It reads the same validated artifacts and does not replace
+the Streamlit portal.
+
 The portal is not deployed publicly. It does not compute solar suitability and does not state economic feasibility. Details, tables and examples are in the [Portuguese README](README.md).
 
 ## Scientific integrity and license
