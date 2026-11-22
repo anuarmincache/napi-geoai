@@ -8,3 +8,7 @@ next-env.d.ts
 # Fora do Git para não duplicar o artefato versionado nem deixá-lo desatualizar.
 public/dados/
 tsconfig.tsbuildinfo
+
+# Copiado de node_modules por scripts/preparar-maplibre.mjs.
+public/maplibre-gl-worker.mjs
+AGENTS.md

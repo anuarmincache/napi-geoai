@@ -13,12 +13,14 @@ from __future__ import annotations
 
 import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
+from geoai.connectors.catalog import list_sources  # noqa: E402
 from geoai.portal import (  # noqa: E402
     load_energy_panel_bundle,
     load_mmgd_panel_bundle,
@@ -26,6 +28,7 @@ from geoai.portal import (  # noqa: E402
 )
 from geoai.portal.agro_panel import (  # noqa: E402
     PPM_LABELS_PT,
+    agro_attribution_lines,
     agro_cell,
     agro_indicator,
     agro_state_summary,
@@ -33,10 +36,13 @@ from geoai.portal.agro_panel import (  # noqa: E402
     load_agro_panel_bundle,
 )
 from geoai.portal.landcover_panel import (  # noqa: E402
+    landcover_attribution_lines,
+    landcover_change,
     landcover_composition,
     landcover_share,
     load_landcover_bundle,
 )
+from geoai.portal.ndvi_panel import STATUS_STYLE, load_ndvi_overview  # noqa: E402
 from geoai.portal.paths import municipalities_geojson_path  # noqa: E402
 from geoai.sentinel.targets import load_ndvi_plan, load_ndvi_targets  # noqa: E402
 
@@ -437,6 +443,327 @@ def main() -> int:
             ]
         fichas[code] = ficha
     write("fichas.json", fichas)
+
+    # --------------------------------------------------------- energia
+    siga_tipos: dict[str, float] = {}
+    energia: dict[str, Any] = {
+        "mmgd": None,
+        "siga": None,
+    }
+    if mmgd.available:
+        energia["mmgd"] = {
+            "periodo": mmgd.panel["periodo_referencia"],
+            "unidade": "MW",
+            "totais": {
+                "instalacoes": mmgd.panel["totals"]["n_empreendimentos"],
+                "mw": round(
+                    float(mmgd.panel["totals"]["potencia_instalada_mw_conhecida"]), 1
+                ),
+                "uc_credito": mmgd.panel["totals"]["qtd_uc_recebe_credito_total"],
+                "por_tipo": mmgd.panel["totals"].get("by_tipo") or {},
+                "por_classe": mmgd.panel["totals"].get("by_classe") or {},
+            },
+            "municipios": [
+                {
+                    "cd": str(r["cd_mun"]),
+                    "nome": r["nome_fonte"],
+                    "n": r["n_empreendimentos"],
+                    "mw": round(float(r["potencia_instalada_mw_conhecida"] or 0), 3),
+                    "uc_credito": r.get("qtd_uc_recebe_credito"),
+                    "por_tipo": r.get("by_tipo") or {},
+                    "por_classe": r.get("by_classe") or {},
+                }
+                for r in mmgd.panel["municipalities"]
+            ],
+            "avisos": mmgd.panel.get("notices_pt") or [],
+            "nota_temporal": mmgd.panel.get("temporal_note_pt"),
+        }
+    if siga.available:
+        municipios_siga = []
+        for r in siga.panel["municipalities"]:
+            por_tipo = {
+                tipo: round(float(m.get("potencia_fiscalizada_mw") or 0), 3)
+                for tipo, m in (r.get("por_tipo") or {}).items()
+            }
+            for tipo, valor in por_tipo.items():
+                siga_tipos[tipo] = siga_tipos.get(tipo, 0.0) + valor
+            municipios_siga.append(
+                {
+                    "cd": str(r["CD_MUN"]),
+                    "nome": r["NM_MUN"],
+                    "status": r.get("status_dados"),
+                    "n": r["n_empreendimentos"],
+                    "mw_fiscalizada": round(
+                        float(r["potencia_fiscalizada_mw"] or 0), 3
+                    ),
+                    "mw_outorgada": round(float(r["potencia_outorgada_mw"] or 0), 3),
+                    "por_tipo": por_tipo,
+                }
+            )
+        energia["siga"] = {
+            "fase": siga.panel.get("phase_filter"),
+            "coleta": "11/11/2026",
+            "unidade": "MW",
+            "totais": {
+                "usinas": siga.panel["totals"]["n_empreendimentos_fase"],
+                "mw": round(
+                    float(
+                        siga.panel["totals"]["potencia_fiscalizada_mw_conhecida_fase"]
+                    ),
+                    1,
+                ),
+                "nao_associados": siga.panel["totals"][
+                    "n_empreendimentos_nao_associados"
+                ],
+                "mw_nao_associados": round(
+                    float(siga.panel["totals"]["potencia_fiscalizada_mw_nao_associados"]),
+                    3,
+                ),
+                "por_tipo": {k: round(v, 1) for k, v in siga_tipos.items()},
+            },
+            "municipios": municipios_siga,
+            "limitacao": siga.panel.get("nao_associados_limitation_pt"),
+            "nota_metrica": siga.panel.get("metric_note"),
+        }
+    write("energia.json", energia)
+
+    # ----------------------------------------------------- agricultura
+    if agro.available:
+        culturas = []
+        for crop in list_agro_crops(agro):
+            ind_area = agro_indicator(agro, "pam", "area_plantada", str(crop["id"]))
+            ind_prod = agro_indicator(agro, "pam", "producao", str(crop["id"]))
+            valores = {}
+            for code in pop_by:
+                area, status_area = agro_cell(agro, code, ind_area)
+                prod, _status_prod = agro_cell(agro, code, ind_prod)
+                if area is None and prod is None:
+                    continue
+                valores[code] = {
+                    "area": area,
+                    "producao": prod,
+                    "status": status_area,
+                }
+            culturas.append(
+                {
+                    "id": str(crop["id"]),
+                    "nome": str(crop["name"]),
+                    "unidade_area": ind_area.unit,
+                    "unidade_producao": ind_prod.unit,
+                    "estado_area": agro_state_summary(agro, ind_area),
+                    "estado_producao": agro_state_summary(agro, ind_prod),
+                    "municipios": valores,
+                }
+            )
+        rebanhos = []
+        for key, rotulo in PPM_LABELS_PT.items():
+            ind = agro_indicator(agro, "ppm", key)
+            valores = {}
+            for code in pop_by:
+                valor, status_cell = agro_cell(agro, code, ind)
+                valores[code] = {"v": valor, "s": status_cell}
+            rebanhos.append(
+                {
+                    "chave": key,
+                    "nome": rotulo,
+                    "unidade": ind.unit,
+                    "fonte": ind.source_pt,
+                    "estado": agro_state_summary(agro, ind),
+                    "municipios": valores,
+                }
+            )
+        write(
+            "agricultura.json",
+            {
+                "ano_pam": agro.panel["pam"]["year"],
+                "ano_ppm": agro.panel["ppm"]["year_rebanho"],
+                "culturas": culturas,
+                "rebanhos": rebanhos,
+                "avisos": agro.panel.get("notices_pt") or [],
+                "fontes": list(agro_attribution_lines(agro)),
+            },
+        )
+
+    # ------------------------------------------------------- cobertura
+    if lc.available:
+        anos = lc.panel["years"]
+        grupos = [
+            {"chave": g["key"], "nome": g["label_pt"], "cor": g["color"]}
+            for g in lc.panel["groups"]
+        ]
+        municipios_lc = {}
+        for code in pop_by:
+            linha = lc.panel["municipalities"][code]
+            por_ano = {}
+            for ano in anos:
+                por_ano[str(ano)] = {
+                    g["chave"]: round(
+                        landcover_share(lc, code, g["chave"], ano) or 0.0, 2
+                    )
+                    for g in grupos
+                }
+            municipios_lc[code] = {
+                "pct": por_ano,
+                "ha_mapeada": linha["mapped_ha_last"],
+                "area_ibge_km2": linha["ibge_area_km2"],
+                "delta_ibge": linha["relative_delta_vs_ibge"],
+            }
+        write(
+            "cobertura.json",
+            {
+                "colecao": lc.panel["collection"],
+                "anos": anos,
+                "ultimo_ano": lc.panel["last_year"],
+                "grupos": grupos,
+                "regra_anos": lc.panel["year_rule_pt"],
+                "estado": {
+                    str(ano): {
+                        g["chave"]: round(
+                            float(
+                                (lc.panel["totals_ha"].get(str(ano)) or {}).get(
+                                    g["chave"], 0
+                                )
+                            )
+                        )
+                        for g in grupos
+                    }
+                    for ano in anos
+                },
+                "mudanca_estado": [
+                    {
+                        "nome": r["label_pt"],
+                        "ha_inicio": round(r["hectares_a"]),
+                        "ha_fim": round(r["hectares_b"]),
+                        "delta_ha": round(r["delta_ha"]),
+                        "delta_pp": round(r["delta_pp"], 2)
+                        if r["delta_pp"] is not None
+                        else None,
+                    }
+                    for r in landcover_change(
+                        lc, None, anos[0], lc.panel["last_year"]
+                    )
+                ],
+                "municipios": municipios_lc,
+                "avisos": lc.panel.get("notices_pt") or [],
+                "fontes": list(landcover_attribution_lines(lc)),
+                "qualidade": lc.quality.get("area_delta_vs_ibge"),
+            },
+        )
+
+    # ------------------------------------------------------------ NDVI
+    visao = load_ndvi_overview(REPO)
+    if visao.get("available"):
+        plano = visao.get("plan") or {}
+        resumo_plano = plano.get("summary") or {}
+        write(
+            "ndvi.json",
+            {
+                "regra": visao["registry"]["rule_pt"],
+                "nota_aoi": visao["registry"]["aoi_note_pt"],
+                "total": visao["registry"]["count"],
+                "area_km2": visao["registry"]["total_area_km2"],
+                "por_zona_utm": visao["registry"]["by_sentinel_utm_epsg"],
+                "situacoes": [
+                    {"codigo": codigo, "rotulo": rotulo, "cor": cor,
+                     "quantidade": visao["counts"][codigo]}
+                    for codigo, (cor, rotulo) in STATUS_STYLE.items()
+                ],
+                "municipios": [
+                    {
+                        "cd": r["cd_mun"],
+                        "nome": r["name"],
+                        "populacao": r["population"],
+                        "area_km2": r["area_km2"],
+                        "zona_utm": r["sentinel_utm_epsg"],
+                        "situacao": r["status"]["code"],
+                        "rotulo": r["status"]["label_pt"],
+                        "passagem": r["status"]["acquisition_id"],
+                        "fracao_valida": r["status"]["valid_fraction"],
+                    }
+                    for r in visao["rows"]
+                ],
+                "plano": {
+                    "janela_dias": plano.get("window_days"),
+                    "consultado_em": plano.get("queried_at_utc"),
+                    "nuvem_maxima": plano.get("max_weighted_cloud"),
+                    "regra_selecao": plano.get("selection_rule_pt"),
+                    "limites": plano.get("limits_pt") or [],
+                    "com_passagem": resumo_plano.get("targets_with_pass"),
+                    "sem_passagem": resumo_plano.get("targets_without_pass") or [],
+                    "cenas": resumo_plano.get("distinct_products"),
+                    "mosaico": resumo_plano.get("targets_needing_mosaic"),
+                    "bytes_mascara": resumo_plano.get("stage1_mask_bytes"),
+                    "bytes_bandas": resumo_plano.get("stage2_bands_bytes_max"),
+                    "anterior": (plano.get("naive_summary") or {}).get(
+                        "official_bytes_known"
+                    ),
+                }
+                if plano
+                else None,
+            },
+        )
+
+    # ---------------------------------------------------------- fontes
+    catalogo = []
+    for fonte in list_sources():
+        item = asdict(fonte)
+        catalogo.append(
+            {
+                "id": item["source_id"],
+                "organizacao": item["organization"],
+                "produto": item["product"],
+                "url": item["entry_url"],
+                "formatos": list(item["formats"]),
+                "licenca": item["license_note"],
+                "cadencia": item["official_update_cadence"],
+                "cobertura": item["spatial_coverage"],
+                "granularidade": item["granularity"],
+                "crs": item["crs_or_coords"],
+                "catalogado_em": item["catalogued_at"],
+                "status": str(getattr(item["status"], "value", item["status"])),
+                "autenticacao": bool(item["auth_required"]),
+                "notas": item["notes"],
+            }
+        )
+    artefatos = []
+    for rotulo, caminho in (
+        ("População IBGE 2026", "ibge_pr_population_2026"),
+        ("Usinas ANEEL SIGA", "siga_pr_energy"),
+        ("Geração distribuída ANEEL MMGD", "mmgd_pr"),
+        ("Lavouras e pecuária IBGE", "agro_pr"),
+        ("Cobertura da terra MapBiomas", "mapbiomas_pr_landcover"),
+    ):
+        proveniencia = REPO / "data" / "derived" / f"{caminho}.provenance.json"
+        if not proveniencia.is_file():
+            continue
+        dados_prov = json.loads(proveniencia.read_text(encoding="utf-8"))
+        artefatos.append(
+            {
+                "rotulo": rotulo,
+                "arquivo": f"{caminho}_panel.json",
+                "preparado_em": dados_prov.get("prepared_at", "")[:10],
+                "organizacao": dados_prov.get("organization"),
+                "produto": dados_prov.get("product"),
+                "sha256": dados_prov.get("content_sha256"),
+                "licenca": dados_prov.get("license_note"),
+            }
+        )
+    write(
+        "fontes.json",
+        {
+            "catalogo": catalogo,
+            "artefatos": artefatos,
+            "regras": [
+                "Dado oficial (classe A): registrado diretamente na fonte.",
+                "Indicador calculado (classe B): conta determinística sobre "
+                "dados oficiais, com fórmula e unidade declaradas.",
+                "Simulação (classe C): estimativa com hipóteses declaradas.",
+                "Zero verdadeiro, dado indisponível, sigilo estatístico e "
+                "município sem registro aparecem de forma diferente.",
+                "Falta de dado é mostrada como falta de dado.",
+            ],
+        },
+    )
     return 0
 
 

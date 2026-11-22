@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "dados": "python3 ../scripts/build_web_data.py"
+    "dados": "python3 ../scripts/build_web_data.py",
+    "predev": "node scripts/preparar-maplibre.mjs",
+    "prebuild": "node scripts/preparar-maplibre.mjs"
   },
   "dependencies": {
     "@deck.gl/layers": "^9.4.1",
