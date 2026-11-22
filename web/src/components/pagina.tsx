@@ -114,8 +114,15 @@ export function Indisponivel({
       <CardHeader>
         <CardTitle>{titulo}</CardTitle>
       </CardHeader>
-      <CardContent className="text-sm leading-relaxed text-muted">
-        {detalhe} Nenhum número é exibido no lugar dele.
+      <CardContent className="space-y-2 text-sm leading-relaxed text-muted">
+        <p>{detalhe} Nenhum número é exibido no lugar dele.</p>
+        <p>
+          Se você acabou de atualizar o projeto, os dados do front precisam ser
+          gerados de novo. Na raiz do repositório:
+        </p>
+        <code className="block rounded-lg bg-paper px-3 py-2 text-[12px] text-forest">
+          python scripts/build_web_data.py
+        </code>
       </CardContent>
     </Card>
   );

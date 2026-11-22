@@ -36,13 +36,7 @@ sendo a interface em uso do projeto. Aqui se avalia se vale migrar.
 
 ## Como rodar
 
-Na raiz do repositório, gere os dados do front (não baixa nada):
-
-```bash
-python scripts/build_web_data.py
-```
-
-Depois, nesta pasta:
+Nesta pasta:
 
 ```bash
 npm install
@@ -50,8 +44,16 @@ npm run dev     # http://localhost:3000
 npm run build   # exportação estática em web/out/
 ```
 
-`npm run dados` repete a geração sem sair daqui. O `predev` e o `prebuild`
-copiam o worker do MapLibre para `public/` automaticamente.
+`dev` e `build` geram os dados do front antes de começar, chamando
+`scripts/build_web_data.py` (que não baixa nada). Se o Python não estiver no
+PATH, eles avisam e seguem com o que já existir; nesse caso rode à mão, na
+raiz do repositório:
+
+```bash
+python scripts/build_web_data.py
+```
+
+`npm run dados` repete só a geração.
 
 ## Decisões
 
@@ -62,6 +64,10 @@ copiam o worker do MapLibre para `public/` automaticamente.
   troque por `next/font` com Inter e Montserrat.
 - **Exportação estática** (`output: "export"`), para publicar como site de
   arquivos. Não há servidor nem banco.
+- **Dados fora do Git.** `public/dados/` é gerado a partir de `data/derived/`,
+  para não duplicar o artefato versionado nem deixá-lo desatualizar. Por isso
+  `git pull` sozinho não traz dado novo: os scripts `predev` e `prebuild`
+  cuidam disso.
 - **Worker do MapLibre em `public/`.** O bundler não resolve o caminho interno
   da biblioteca; `scripts/preparar-maplibre.mjs` copia o arquivo e o mapa o
   carrega por `setWorkerUrl`.
