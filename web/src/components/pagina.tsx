@@ -44,26 +44,30 @@ export function CabecalhoPagina({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-      className="relative overflow-hidden rounded-3xl bg-[linear-gradient(118deg,#1a2e20_0%,#2f4a33_48%,#456b38_100%)] px-7 py-8 text-white lg:px-9"
+      /* Sem overflow-hidden aqui: as sugestões de busca precisam poder sair
+         da faixa. O recorte fica na arte de fundo, logo abaixo. */
+      className="relative rounded-3xl bg-[linear-gradient(118deg,#1a2e20_0%,#2f4a33_48%,#456b38_100%)] px-7 py-8 text-white lg:px-9"
     >
-      <svg
-        aria-hidden
-        className="pointer-events-none absolute inset-0 h-full w-full"
-        viewBox="0 0 1200 220"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <circle cx="1080" cy="24" r="130" fill="#fcc817" fillOpacity="0.1" />
-        {Array.from({ length: 7 }).map((_, i) => (
-          <path
-            key={i}
-            d={`M-40 ${150 + i * 18} Q 500 ${96 + i * 15} 1240 ${130 + i * 17}`}
-            fill="none"
-            stroke="#a8cf5f"
-            strokeOpacity={0.11}
-            strokeWidth="1.5"
-          />
-        ))}
-      </svg>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
+        <svg
+          aria-hidden
+          className="h-full w-full"
+          viewBox="0 0 1200 220"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          <circle cx="1080" cy="24" r="130" fill="#fcc817" fillOpacity="0.1" />
+          {Array.from({ length: 7 }).map((_, i) => (
+            <path
+              key={i}
+              d={`M-40 ${150 + i * 18} Q 500 ${96 + i * 15} 1240 ${130 + i * 17}`}
+              fill="none"
+              stroke="#a8cf5f"
+              strokeOpacity={0.11}
+              strokeWidth="1.5"
+            />
+          ))}
+        </svg>
+      </div>
       <div className="relative z-10">
         <p className="font-display text-[11px] font-bold tracking-[0.18em] text-sun uppercase">
           {secao}

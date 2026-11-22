@@ -70,7 +70,7 @@ export function BuscaMunicipio({
         className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-medium text-ink outline-none placeholder:font-normal placeholder:text-muted/80 focus:border-moss"
       />
       {aberto && sugestoes.length > 0 && (
-        <ul className="absolute z-30 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-line bg-white py-1 shadow-xl">
+        <ul className="absolute z-50 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-line bg-white py-1 shadow-2xl">
           {sugestoes.map((o) => (
             <li key={o.cd}>
               <button
