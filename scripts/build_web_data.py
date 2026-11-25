@@ -304,7 +304,6 @@ def main() -> int:
                     "nome": "MapBiomas",
                     "detalhe": "Coleção 11, cobertura da terra 1985 a 2025",
                 },
-                {"nome": "Copernicus", "detalhe": "Sentinel-2 L2A, catálogo STAC"},
             ],
         },
     )
