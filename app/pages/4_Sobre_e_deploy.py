@@ -20,6 +20,14 @@ page_header(
     "O que é o NAPI GeoAI, quem faz e como a plataforma é construída.",
     art_kind="docs",
     eyebrow="Transparência",
+    banner="banner-sobre.webp",
+    banner_alt="Notebook em um mirante, com o mapa do Paraná em destaque",
+    chips=(
+        "Objetivos",
+        "Quem faz",
+        "Dados e tecnologias",
+        "Como é construída",
+    ),
 )
 st.markdown(
     """

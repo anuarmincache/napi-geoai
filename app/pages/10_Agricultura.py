@@ -52,6 +52,15 @@ page_header(
     "Lavouras, rebanhos e leite nos 399 municípios, com dados do IBGE.",
     art_kind="agro",
     eyebrow="Território",
+    banner="banner-agricultura.webp",
+    banner_alt="Trator em lavoura de soja, silos e rebanho bovino",
+    chips=(
+        "Lavouras",
+        "Rebanhos",
+        "Leite",
+        "Rendimento",
+        "Por município",
+    ),
 )
 agro = cached_agro_panel()
 if agro.available:

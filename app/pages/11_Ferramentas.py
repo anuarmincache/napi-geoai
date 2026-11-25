@@ -27,6 +27,8 @@ page_header(
     "Quanto seus equipamentos consomem e que potência solar compensaria esse consumo.",
     art_kind="tools",
     eyebrow="Energia",
+    banner="banner-calculadoras.webp",
+    banner_alt="Casa com painéis solares ao lado de uma calculadora",
 )
 st.caption(
     "Cálculos determinísticos com as **suas** entradas. Nenhum parâmetro é "

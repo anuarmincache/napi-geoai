@@ -69,7 +69,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible,
 /* ---------- Cabeçalho de página ---------- */
 .ezc-header {
   position: relative; display: flex; align-items: center; gap: 1.2rem;
-  padding: 1.5rem 1.8rem; margin: 0 0 1.1rem 0; border-radius: 18px;
+  padding: 1.5rem 0 1.5rem 1.8rem; margin: 0 0 1.1rem 0; border-radius: 18px;
   color: #f4f8ef; overflow: hidden;
   background:
     radial-gradient(520px 240px at 96% 0%, rgba(252, 200, 23, 0.26), transparent 62%),
@@ -90,7 +90,27 @@ input:focus-visible, select:focus-visible, textarea:focus-visible,
   color: #dfead6; margin: 0.5rem 0 0 0; font-size: 1.04rem; line-height: 1.5;
   max-width: 46rem;
 }
-.ezc-header img.art { flex: 0 0 auto; width: 190px; height: auto; }
+.ezc-header img.art {
+  /* Encosta na borda do cabeçalho, como a arte foi desenhada: a imagem já
+     tem a esquerda desvanecida, então funde no fundo sem emenda visível. */
+  flex: 0 0 auto; align-self: stretch; width: 44%; max-width: 420px;
+  margin: -1.5rem 0; object-fit: cover; object-position: center right;
+}
+/* Etiquetas do que a página cobre. Cada uma afirma algo, então a redação
+   precisa corresponder ao que a página mostra de fato. */
+.ezc-chips {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0 0.85rem; margin: 0.75rem 0 0 0;
+}
+.ezc-chips span {
+  font-size: 0.86rem; font-weight: 600; color: rgba(255,255,255,0.93);
+  padding: 0.1rem 0; white-space: nowrap;
+}
+.ezc-chips span { position: relative; }
+.ezc-chips span + span::before {
+  content: ""; position: absolute; left: -0.47rem; top: 0.18em; bottom: 0.18em;
+  border-left: 1px solid rgba(252,200,23,0.45);
+}
 
 /* ---------- Hero da Home ---------- */
 .napi-hero-xl {

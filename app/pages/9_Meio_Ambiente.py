@@ -43,6 +43,15 @@ page_header(
     "Floresta, agricultura, pastagem e área urbana nos 399 municípios, de 1985 a 2025.",
     art_kind="forest",
     eyebrow="Território",
+    banner="banner-cobertura.webp",
+    banner_alt="Mapa do Paraná com camadas de cobertura da terra sobrepostas",
+    chips=(
+        "Floresta",
+        "Agricultura",
+        "Pastagem",
+        "Área urbana",
+        "De 1985 a 2025",
+    ),
 )
 lc = cached_landcover_panel()
 if lc.available:
