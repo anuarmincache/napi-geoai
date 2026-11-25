@@ -215,8 +215,9 @@ def aggregate_mmgd_by_municipality(
         "rejected_sample": rejected[:50],
         "municipalities": municipalities,
         "temporal_note_pt": (
-            "DthAtualizaCadastralEmpreend é atualização cadastral, "
-            "não data de conexão. AnmPeriodoReferencia é o período do snapshot. "
-            "Não interpretar anos cadastrais como crescimento histórico de conexões."
+            "A data de atualização do cadastro não é a data em que a "
+            "instalação entrou em operação, e o arquivo é um retrato de um "
+            "período de referência. Por isso os anos do cadastro não mostram "
+            "o crescimento histórico das conexões."
         ),
     }

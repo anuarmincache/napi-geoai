@@ -74,6 +74,12 @@ export interface MapaProps {
   selecionado?: string | null;
   onSelecionar?: (cd: string | null) => void;
   altura?: string;
+  /**
+   * "zero" (padrão): raiz quadrada de 0 ao máximo, para contagens e somas.
+   * "faixa": linear do mínimo ao máximo observado, para razões como
+   * rendimento ou densidade, em que o zero não é referência.
+   */
+  escala?: "zero" | "faixa";
 }
 
 export function MapaMunicipios({
@@ -89,6 +95,7 @@ export function MapaMunicipios({
   selecionado = null,
   onSelecionar,
   altura = "h-[520px]",
+  escala = "zero",
 }: MapaProps) {
   const container = useRef<HTMLDivElement>(null);
   const mapa = useRef<MapLibreMap | null>(null);
@@ -100,15 +107,23 @@ export function MapaMunicipios({
     y: number;
   } | null>(null);
 
-  // Escala em raiz quadrada: a distribuição municipal é muito concentrada.
-  const maximo = useMemo(() => {
+  // "zero": raiz quadrada de 0 ao máximo. Serve para contagens e somas, cuja
+  // distribuição municipal é muito concentrada.
+  // "faixa": linear do mínimo ao máximo observado. Serve para razões como
+  // rendimento ou densidade, em que o zero não é referência e toda a
+  // informação está na variação entre municípios.
+  const { minimo, maximo } = useMemo(() => {
     let max = 0;
+    let min = Number.POSITIVE_INFINITY;
     for (const valor of Object.values(valores)) {
       const v = Number(valor);
-      if (Number.isFinite(v) && v > max) max = v;
+      if (!Number.isFinite(v)) continue;
+      if (v > max) max = v;
+      if (v < min) min = v;
     }
-    return max || 1;
-  }, [valores]);
+    if (!Number.isFinite(min)) min = 0;
+    return { minimo: escala === "faixa" ? min : 0, maximo: max || 1 };
+  }, [valores, escala]);
 
   const decimais = casas ?? (maximo < 10 ? 2 : 0);
 
@@ -172,12 +187,18 @@ export function MapaMunicipios({
         if (bruto === null || bruto === undefined || !Number.isFinite(bruto)) {
           return [90, 102, 94, 120];
         }
-        const t = Math.sqrt(Math.max(0, Number(bruto)) / maximo);
+        const amplitude = maximo - minimo;
+        const posicao =
+          amplitude > 0 ? (Number(bruto) - minimo) / amplitude : 0;
+        const t =
+          escala === "faixa"
+            ? Math.min(1, Math.max(0, posicao))
+            : Math.sqrt(Math.max(0, Number(bruto)) / maximo);
         const [r, g, b] = mistura(corBase, corAlvo, t);
         return [r, g, b, 225];
       },
       updateTriggers: {
-        getFillColor: [rotulo, maximo, valores, corPorMunicipio],
+        getFillColor: [rotulo, minimo, maximo, escala, valores, corPorMunicipio],
         getLineColor: [selecionado],
         getLineWidth: [selecionado],
       },
@@ -204,8 +225,10 @@ export function MapaMunicipios({
   }, [
     malha,
     valores,
+    escala,
     rotulo,
     cor,
+    minimo,
     maximo,
     corPorMunicipio,
     selecionado,
@@ -246,7 +269,9 @@ export function MapaMunicipios({
         ) : (
           <>
             <div className="mt-1.5 flex items-center gap-2">
-              <span className="text-[11px] text-white/70">0</span>
+              <span className="text-[11px] text-white/70">
+                {num(minimo, minimo > 0 && minimo < 10 ? 1 : 0)}
+              </span>
               <div
                 className="h-2.5 w-28 rounded-full"
                 style={{ background: `linear-gradient(90deg, #e2ecde, ${cor})` }}

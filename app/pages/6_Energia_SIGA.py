@@ -23,6 +23,7 @@ from geoai.portal.energy_panel import (
     energy_scope_totals,
     project_municipality_metrics,
 )
+from geoai.portal.textos_legados import atualizar
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
@@ -149,7 +150,7 @@ st.caption(
     f"Painel preparado em {notice['prepared_at']}."
 )
 if tipo_filter:
-    st.warning(scope["nao_associados_limitation_pt"])
+    st.warning(atualizar(scope["nao_associados_limitation_pt"]) or "")
 
 c1, c2, c3, c4 = st.columns(4)
 _scope_label = (

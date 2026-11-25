@@ -24,6 +24,7 @@ from geoai.portal.municipal_profile import (
     population_map_html,
     profile_for_code,
 )
+from geoai.portal.textos_legados import atualizar
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
@@ -99,7 +100,7 @@ else:
         "qualidade. Join estrito CD_MUN×malha; QGIS validou a malha no MVP 09."
     )
 
-st.warning(pop.panel.get("nao_associados_limitation_pt") or "")
+st.warning(atualizar(pop.panel.get("nao_associados_limitation_pt")) or "")
 
 all_recs = list_municipalities(mun)
 label_to_code = {municipality_label(r): r.code for r in all_recs}
@@ -231,8 +232,9 @@ if profile:
                 if mw_mmgd is not None and pop_hab > 0
                 else "n/d",
                 help=(
-                    "Indicador derivado (classe B): potência instalada "
-                    "conhecida MMGD em kW ÷ população estimada IBGE 2026."
+                    "Indicador calculado: potência instalada de geração "
+                    "distribuída em kW ÷ população estimada pelo IBGE "
+                    "para 2026."
                 ),
             )
             classes = sorted(

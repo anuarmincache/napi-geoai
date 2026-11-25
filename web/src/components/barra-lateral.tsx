@@ -31,7 +31,6 @@ export const NAVEGACAO: {
     itens: [
       { rotulo: "Agricultura e pecuária", href: "/agricultura" },
       { rotulo: "Cobertura da terra", href: "/cobertura" },
-      { rotulo: "Vegetação por satélite", href: "/ndvi" },
     ],
   },
   {
@@ -113,7 +112,7 @@ export function BarraLateral() {
           <Itens />
         </nav>
         <p className="border-t border-white/10 px-5 py-4 text-[11px] leading-relaxed text-white/45">
-          Protótipo de interface. O portal publicado continua sendo o Streamlit.
+          Versão em desenvolvimento desta interface.
         </p>
       </aside>
 

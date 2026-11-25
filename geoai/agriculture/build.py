@@ -208,8 +208,8 @@ def build_agro_panel(
         "notices_pt": [
             "Efetivo de rebanho não é quantidade de resíduo disponível para "
             "biodigestores.",
-            "Somas estaduais incluem apenas valores municipais publicados; "
-            "sigilo (X) e não disponível (...) ficam de fora.",
+            "Somas estaduais incluem apenas valores municipais publicados. "
+            "Sigilo estatístico e não disponível ficam de fora.",
             "Município sem linha na tabela aparece como sem registro, não "
             "como zero.",
             "Área plantada (PAM) não é área de cobertura do solo (MapBiomas).",

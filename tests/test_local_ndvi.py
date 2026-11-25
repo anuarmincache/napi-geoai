@@ -27,7 +27,7 @@ from geoai.sentinel.ndvi_writer import BLOCK, assert_window_array_budget
 REPO = Path(__file__).resolve().parents[1]
 GT = (300000.0, 10.0, 0.0, 7500040.0, 0.0, -10.0)
 CATALOG = REPO / "data" / "derived" / "sentinel_maringa_pilot.json"
-PAGE = REPO / "app" / "pages" / "8_Sentinel_Piloto.py"
+PAGE = REPO / "research" / "ndvi_congelado" / "portal_8_Sentinel_Piloto.py"
 
 
 def test_local_sources_stay_offline() -> None:

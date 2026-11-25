@@ -89,7 +89,7 @@ export default function FichaPagina() {
           <div className="grid gap-4 lg:grid-cols-2">
             <Card>
               <CardHeader className="flex items-start justify-between gap-3">
-                <CardTitle>🗺️ Território e população</CardTitle>
+                <CardTitle>Território e população</CardTitle>
                 <ClasseBadge classe="A" />
               </CardHeader>
               <CardContent className="grid grid-cols-3 gap-3">
@@ -118,7 +118,7 @@ export default function FichaPagina() {
 
             <Card>
               <CardHeader className="flex items-start justify-between gap-3">
-                <CardTitle>⚡ Geração centralizada</CardTitle>
+                <CardTitle>Geração centralizada</CardTitle>
                 <ClasseBadge classe="A" />
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-3">
@@ -142,7 +142,7 @@ export default function FichaPagina() {
 
             <Card>
               <CardHeader className="flex items-start justify-between gap-3">
-                <CardTitle>☀️ Geração distribuída</CardTitle>
+                <CardTitle>Geração distribuída</CardTitle>
                 <ClasseBadge classe="A" />
               </CardHeader>
               <CardContent className="grid grid-cols-3 gap-3">
@@ -172,7 +172,7 @@ export default function FichaPagina() {
 
             <Card>
               <CardHeader className="flex items-start justify-between gap-3">
-                <CardTitle>🐄 Pecuária</CardTitle>
+                <CardTitle>Pecuária</CardTitle>
                 <ClasseBadge classe="A" />
               </CardHeader>
               <CardContent>
@@ -190,7 +190,12 @@ export default function FichaPagina() {
                               sem dado
                             </span>
                           ) : (
-                            num(p.valor)
+                            <>
+                              {num(p.valor)}
+                              <span className="ml-1 text-xs font-normal lowercase text-muted">
+                                {p.unidade}
+                              </span>
+                            </>
                           )}
                         </span>
                       </li>

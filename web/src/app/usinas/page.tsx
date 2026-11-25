@@ -35,7 +35,12 @@ export default function Usinas() {
   const siga = energia.dados?.siga ?? null;
 
   const escopo = useMemo(() => {
-    if (!siga) return { mw: 0, usinas: 0, valores: {} as Record<string, number | null> };
+    if (!siga)
+      return {
+        mw: 0,
+        usinas: 0,
+        valores: {} as Record<string, number | null>,
+      };
     const valores: Record<string, number | null> = {};
     let mw = 0;
     let usinas = 0;
@@ -43,7 +48,7 @@ export default function Usinas() {
       const valor = tipo ? (m.por_tipo[tipo] ?? 0) : m.mw_fiscalizada;
       valores[m.cd] = valor;
       mw += valor;
-      if (!tipo) usinas += m.n;
+      usinas += m.n;
     }
     return { mw, usinas, valores };
   }, [siga, tipo]);
@@ -88,13 +93,21 @@ export default function Usinas() {
           <div className="grid gap-4 sm:grid-cols-3">
             <Numero
               rotulo={tipo ? `Potência · ${nomeTecnologia(tipo)}` : "Potência fiscalizada"}
-              valor={`${num(escopo.mw / 1000, 2)} GW`}
-              detalhe={`${num(escopo.mw, 1)} MW conhecidos`}
+              valor={`${num((tipo ? escopo.mw : siga.totais.mw) / 1000, 2)} GW`}
+              detalhe={
+                tipo
+                  ? `${num(escopo.mw, 1)} MW somados nos municípios`
+                  : `${num(siga.totais.mw, 1)} MW no estado, dos quais ${num(escopo.mw, 1)} MW aparecem no mapa`
+              }
             />
             <Numero
               rotulo="Usinas em operação"
-              valor={num(siga.totais.usinas)}
-              detalhe="no estado, em todas as tecnologias"
+              valor={num(tipo ? (siga.totais.usinas_por_tipo[tipo] ?? 0) : siga.totais.usinas)}
+              detalhe={
+                tipo
+                  ? "desta tecnologia, vinculadas a um município"
+                  : "no estado, em todas as tecnologias"
+              }
             />
             <Numero
               rotulo="Usinas sem município"
@@ -158,7 +171,7 @@ export default function Usinas() {
           )}
           <CardFooter className="flex flex-wrap items-center justify-between gap-2">
             <span>
-              Potência fiscalizada conhecida das usinas associadas ao
+              Potência fiscalizada das usinas associadas ao
               município, em MW. Não inclui geração distribuída e não é energia
               gerada (MWh). Cinza significa nenhuma usina associada, não
               ausência comprovada.
@@ -196,7 +209,7 @@ export default function Usinas() {
           </ul>
         </CardContent>
         <CardFooter>
-          Potência fiscalizada conhecida, somada a partir dos municípios. Não é
+          Potência fiscalizada, somada a partir dos municípios. Não é
           energia gerada (MWh).
         </CardFooter>
       </Card>
@@ -204,7 +217,7 @@ export default function Usinas() {
       <section>
         <SecaoTitulo
           titulo="Todos os municípios"
-          descricao="Municípios sem usina associada aparecem com zero confirmado pelo cadastro."
+          descricao="Município sem usina associada aparece com zero. Isso significa nenhuma usina georreferenciada e vinculada no cadastro, não ausência comprovada."
         />
         {siga ? (
           <TabelaMunicipios

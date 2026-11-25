@@ -38,6 +38,7 @@ export default function CoberturaPagina() {
   const dados = cob.dados;
   const anoAtual = ano ?? dados?.ultimo_ano ?? 2025;
   const meta = dados?.grupos.find((g) => g.chave === grupo) ?? dados?.grupos[0];
+  const municipio = selecionado ? (dados?.municipios[selecionado] ?? null) : null;
 
   const valores = useMemo(() => {
     const saida: Record<string, number | null> = {};
@@ -77,8 +78,10 @@ export default function CoberturaPagina() {
         axisLabel: {
           color: "#5b6b60",
           fontSize: 11,
-          formatter: (v: number) => `${num(v / 1_000_000, 1)} mi ha`,
+          formatter: (v: number) =>
+            municipio ? `${num(v, 0)}%` : `${num(v / 1_000_000, 1)} mi ha`,
         },
+        max: municipio ? 100 : undefined,
         splitLine: { lineStyle: { color: "#eef3ea" } },
       },
       series: dados.grupos.map((g) => ({
@@ -90,10 +93,34 @@ export default function CoberturaPagina() {
         showSymbol: false,
         emphasis: { focus: "series" },
         itemStyle: { color: g.cor },
-        data: dados.anos.map((a) => dados.estado[String(a)]?.[g.chave] ?? 0),
+        data: dados.anos.map((a) =>
+          municipio
+            ? (municipio.pct[String(a)]?.[g.chave] ?? 0)
+            : (dados.estado[String(a)]?.[g.chave] ?? 0),
+        ),
       })),
     };
-  }, [dados]);
+  }, [dados, municipio]);
+
+  /** Mudança entre o primeiro e o último ano, no escopo em tela. */
+  const mudancaEscopo = useMemo(() => {
+    if (!dados) return [];
+    const primeiro = String(dados.anos[0]);
+    const ultimo = String(dados.ultimo_ano);
+    if (municipio) {
+      return dados.grupos
+        .map((g) => ({
+          nome: g.nome,
+          delta: (municipio.pct[ultimo]?.[g.chave] ?? 0) -
+            (municipio.pct[primeiro]?.[g.chave] ?? 0),
+          unidade: "pontos percentuais",
+        }))
+        .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+    }
+    return [...(dados.mudanca_estado ?? [])]
+      .sort((a, b) => Math.abs(b.delta_ha) - Math.abs(a.delta_ha))
+      .map((m) => ({ nome: m.nome, delta: m.delta_ha, unidade: "ha" }));
+  }, [dados, municipio]);
 
   const composicao = useMemo(() => {
     if (!dados) return [];
@@ -148,7 +175,7 @@ export default function CoberturaPagina() {
       <section>
         <SecaoTitulo
           titulo="Mapa por classe e ano"
-          descricao="O percentual é sobre a área mapeada do município, não sobre a área oficial do IBGE."
+          descricao="O percentual é sobre a área mapeada do município, não sobre a área oficial do IBGE. Clique em um município para ver a trajetória dele de 1985 a 2025 nos dois quadros abaixo."
         />
         <div className="mb-3 flex flex-wrap gap-2">
           {dados?.grupos.map((g) => (
@@ -264,7 +291,11 @@ export default function CoberturaPagina() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader className="flex items-start justify-between gap-3">
-            <CardTitle>O Paraná de {dados?.anos[0]} a {dados?.ultimo_ano}</CardTitle>
+            <CardTitle>
+              {municipio
+                ? `${nomeEscopo} de ${dados?.anos[0]} a ${dados?.ultimo_ano}`
+                : `O Paraná de ${dados?.anos[0]} a ${dados?.ultimo_ano}`}
+            </CardTitle>
             <ClasseBadge classe="A" />
           </CardHeader>
           <CardContent>
@@ -279,35 +310,36 @@ export default function CoberturaPagina() {
 
         <Card>
           <CardHeader className="flex items-start justify-between gap-3">
-            <CardTitle>O que mudou no estado</CardTitle>
+            <CardTitle>
+              {municipio ? `O que mudou em ${nomeEscopo}` : "O que mudou no estado"}
+            </CardTitle>
             <ClasseBadge classe="B" />
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {[...(dados?.mudanca_estado ?? [])]
-                .sort((a, b) => Math.abs(b.delta_ha) - Math.abs(a.delta_ha))
-                .map((m) => (
-                  <li
-                    key={m.nome}
-                    className="flex items-center justify-between gap-3 border-b border-line/60 pb-2 text-sm last:border-0"
+              {mudancaEscopo.map((m) => (
+                <li
+                  key={m.nome}
+                  className="flex items-center justify-between gap-3 border-b border-line/60 pb-2 text-sm last:border-0"
+                >
+                  <span className="text-ink">{m.nome}</span>
+                  <span
+                    className={`font-display font-bold tabular-nums ${
+                      m.delta >= 0 ? "text-moss" : "text-[#b35309]"
+                    }`}
                   >
-                    <span className="text-ink">{m.nome}</span>
-                    <span
-                      className={`font-display font-bold tabular-nums ${
-                        m.delta_ha >= 0 ? "text-moss" : "text-[#b35309]"
-                      }`}
-                    >
-                      {m.delta_ha >= 0 ? "+" : "−"}
-                      {num(Math.abs(m.delta_ha))} ha
-                    </span>
-                  </li>
-                ))}
+                    {m.delta >= 0 ? "+" : "−"}
+                    {num(Math.abs(m.delta), m.unidade === "ha" ? 0 : 1)}{" "}
+                    {m.unidade === "ha" ? "ha" : "p.p."}
+                  </span>
+                </li>
+              ))}
             </ul>
           </CardContent>
           <CardFooter>
-            Diferença de estoque entre {dados?.anos[0]} e {dados?.ultimo_ano}. Não
-            mostra onde a mudança ocorreu e não distingue conversão de
-            regeneração.
+            {municipio
+              ? `Diferença em pontos percentuais da área mapeada do município entre ${dados?.anos[0]} e ${dados?.ultimo_ano}. Não mostra onde a mudança ocorreu e não distingue conversão de regeneração.`
+              : `Diferença de estoque entre ${dados?.anos[0]} e ${dados?.ultimo_ano}. Não mostra onde a mudança ocorreu e não distingue conversão de regeneração.`}
           </CardFooter>
         </Card>
       </div>

@@ -31,6 +31,7 @@ from geoai.portal.agro_panel import (  # noqa: E402
     agro_attribution_lines,
     agro_cell,
     agro_indicator,
+    agro_notices_pt,
     agro_state_summary,
     list_agro_crops,
     load_agro_panel_bundle,
@@ -42,9 +43,8 @@ from geoai.portal.landcover_panel import (  # noqa: E402
     landcover_share,
     load_landcover_bundle,
 )
-from geoai.portal.ndvi_panel import STATUS_STYLE, load_ndvi_overview  # noqa: E402
 from geoai.portal.paths import municipalities_geojson_path  # noqa: E402
-from geoai.sentinel.targets import load_ndvi_plan, load_ndvi_targets  # noqa: E402
+from geoai.portal.textos_legados import atualizar, atualizar_lista  # noqa: E402
 
 OUT = REPO / "web" / "public" / "dados"
 PRECISION = 5  # ~1 m; reduz o GeoJSON sem mudar a leitura do mapa
@@ -197,7 +197,9 @@ def main() -> int:
             "id": "mmgd_mw",
             "rotulo": "Geração distribuída",
             "unidade": "MW",
-            "descricao": "Potência instalada conhecida de MMGD por município.",
+            "descricao": (
+                "Potência instalada de geração distribuída por município."
+            ),
             "cor": "#fcc817",
             "disponivel": mmgd.available,
             "classe": "A",
@@ -209,7 +211,9 @@ def main() -> int:
             "id": "siga_mw",
             "rotulo": "Usinas em operação",
             "unidade": "MW",
-            "descricao": "Potência fiscalizada conhecida das usinas associadas.",
+            "descricao": (
+                "Potência fiscalizada das usinas associadas ao município."
+            ),
             "cor": "#73a535",
             "disponivel": siga.available,
             "classe": "A",
@@ -227,13 +231,17 @@ def main() -> int:
         },
         {
             "id": "mmgd_kw_hab",
-            "rotulo": "MMGD por habitante",
+            "rotulo": "Geração distribuída por habitante",
             "unidade": "kW/hab",
-            "descricao": "Potência MMGD dividida pela população estimada.",
+            "descricao": (
+                "Potência instalada de geração distribuída dividida pela "
+                "população estimada."
+            ),
             "cor": "#a8cf5f",
             "disponivel": mmgd.available,
             "classe": "B",
             "fonte": "ANEEL MMGD ÷ IBGE",
+            "escala": "faixa",
         },
         {
             "id": "lc_formacao_florestal",
@@ -261,8 +269,6 @@ def main() -> int:
         },
     ]
 
-    ndvi_targets = load_ndvi_targets(REPO)
-    ndvi_plan = load_ndvi_plan(REPO)
     write(
         "resumo.json",
         {
@@ -277,15 +283,6 @@ def main() -> int:
                 "Os indicadores apoiam a investigação e não substituem estudo "
                 "de viabilidade, licenciamento ou parecer técnico.",
             ],
-            "ndvi": {
-                "municipios": ndvi_targets["count"] if ndvi_targets else None,
-                "com_passagem": (ndvi_plan or {}).get("summary", {}).get(
-                    "targets_with_pass"
-                ),
-                "cenas": (ndvi_plan or {}).get("summary", {}).get("distinct_products"),
-                "publicados": 0,
-                "medidos": 1,
-            },
             "fontes": [
                 {
                     "nome": "IBGE",
@@ -438,6 +435,7 @@ def main() -> int:
                 {
                     "nome": PPM_LABELS_PT[key],
                     "valor": agro_cell(agro, code, agro_indicator(agro, "ppm", key))[0],
+                    "unidade": agro_indicator(agro, "ppm", key).unit,
                 }
                 for key in PPM_LABELS_PT
             ]
@@ -446,6 +444,7 @@ def main() -> int:
 
     # --------------------------------------------------------- energia
     siga_tipos: dict[str, float] = {}
+    siga_tipos_n: dict[str, int] = {}
     energia: dict[str, Any] = {
         "mmgd": None,
         "siga": None,
@@ -460,6 +459,10 @@ def main() -> int:
                     float(mmgd.panel["totals"]["potencia_instalada_mw_conhecida"]), 1
                 ),
                 "uc_credito": mmgd.panel["totals"]["qtd_uc_recebe_credito_total"],
+                "sem_potencia": sum(
+                    int(r.get("n_potencia_ausente") or 0)
+                    for r in mmgd.panel["municipalities"]
+                ),
                 "por_tipo": mmgd.panel["totals"].get("by_tipo") or {},
                 "por_classe": mmgd.panel["totals"].get("by_classe") or {},
             },
@@ -472,11 +475,12 @@ def main() -> int:
                     "uc_credito": r.get("qtd_uc_recebe_credito"),
                     "por_tipo": r.get("by_tipo") or {},
                     "por_classe": r.get("by_classe") or {},
+                    "por_porte": r.get("by_porte") or {},
                 }
                 for r in mmgd.panel["municipalities"]
             ],
-            "avisos": mmgd.panel.get("notices_pt") or [],
-            "nota_temporal": mmgd.panel.get("temporal_note_pt"),
+            "avisos": atualizar_lista(mmgd.panel.get("notices_pt")),
+            "nota_temporal": atualizar(mmgd.panel.get("temporal_note_pt")),
         }
     if siga.available:
         municipios_siga = []
@@ -487,6 +491,8 @@ def main() -> int:
             }
             for tipo, valor in por_tipo.items():
                 siga_tipos[tipo] = siga_tipos.get(tipo, 0.0) + valor
+            for tipo, m in (r.get("por_tipo") or {}).items():
+                siga_tipos_n[tipo] = siga_tipos_n.get(tipo, 0) + int(m.get("n") or 0)
             municipios_siga.append(
                 {
                     "cd": str(r["CD_MUN"]),
@@ -519,10 +525,14 @@ def main() -> int:
                     float(siga.panel["totals"]["potencia_fiscalizada_mw_nao_associados"]),
                     3,
                 ),
+                "sem_potencia": int(
+                    siga.panel["totals"]["n_potencia_fiscalizada_ausente_fase"]
+                ),
                 "por_tipo": {k: round(v, 1) for k, v in siga_tipos.items()},
+                "usinas_por_tipo": dict(siga_tipos_n),
             },
             "municipios": municipios_siga,
-            "limitacao": siga.panel.get("nao_associados_limitation_pt"),
+            "limitacao": atualizar(siga.panel.get("nao_associados_limitation_pt")),
             "nota_metrica": siga.panel.get("metric_note"),
         }
     write("energia.json", energia)
@@ -532,16 +542,22 @@ def main() -> int:
         culturas = []
         for crop in list_agro_crops(agro):
             ind_area = agro_indicator(agro, "pam", "area_plantada", str(crop["id"]))
+            ind_colhida = agro_indicator(agro, "pam", "area_colhida", str(crop["id"]))
             ind_prod = agro_indicator(agro, "pam", "producao", str(crop["id"]))
+            ind_rend = agro_indicator(agro, "pam", "rendimento", str(crop["id"]))
             valores = {}
             for code in pop_by:
                 area, status_area = agro_cell(agro, code, ind_area)
+                colhida, _s_colhida = agro_cell(agro, code, ind_colhida)
                 prod, _status_prod = agro_cell(agro, code, ind_prod)
-                if area is None and prod is None:
+                rend, _s_rend = agro_cell(agro, code, ind_rend)
+                if area is None and prod is None and rend is None:
                     continue
                 valores[code] = {
                     "area": area,
+                    "colhida": colhida,
                     "producao": prod,
+                    "rendimento": rend,
                     "status": status_area,
                 }
             culturas.append(
@@ -550,7 +566,9 @@ def main() -> int:
                     "nome": str(crop["name"]),
                     "unidade_area": ind_area.unit,
                     "unidade_producao": ind_prod.unit,
+                    "unidade_rendimento": ind_rend.unit,
                     "estado_area": agro_state_summary(agro, ind_area),
+                    "estado_colhida": agro_state_summary(agro, ind_colhida),
                     "estado_producao": agro_state_summary(agro, ind_prod),
                     "municipios": valores,
                 }
@@ -579,7 +597,7 @@ def main() -> int:
                 "ano_ppm": agro.panel["ppm"]["year_rebanho"],
                 "culturas": culturas,
                 "rebanhos": rebanhos,
-                "avisos": agro.panel.get("notices_pt") or [],
+                "avisos": list(agro_notices_pt(agro)),
                 "fontes": list(agro_attribution_lines(agro)),
             },
         )
@@ -647,59 +665,6 @@ def main() -> int:
                 "avisos": lc.panel.get("notices_pt") or [],
                 "fontes": list(landcover_attribution_lines(lc)),
                 "qualidade": lc.quality.get("area_delta_vs_ibge"),
-            },
-        )
-
-    # ------------------------------------------------------------ NDVI
-    visao = load_ndvi_overview(REPO)
-    if visao.get("available"):
-        plano = visao.get("plan") or {}
-        resumo_plano = plano.get("summary") or {}
-        write(
-            "ndvi.json",
-            {
-                "regra": visao["registry"]["rule_pt"],
-                "nota_aoi": visao["registry"]["aoi_note_pt"],
-                "total": visao["registry"]["count"],
-                "area_km2": visao["registry"]["total_area_km2"],
-                "por_zona_utm": visao["registry"]["by_sentinel_utm_epsg"],
-                "situacoes": [
-                    {"codigo": codigo, "rotulo": rotulo, "cor": cor,
-                     "quantidade": visao["counts"][codigo]}
-                    for codigo, (cor, rotulo) in STATUS_STYLE.items()
-                ],
-                "municipios": [
-                    {
-                        "cd": r["cd_mun"],
-                        "nome": r["name"],
-                        "populacao": r["population"],
-                        "area_km2": r["area_km2"],
-                        "zona_utm": r["sentinel_utm_epsg"],
-                        "situacao": r["status"]["code"],
-                        "rotulo": r["status"]["label_pt"],
-                        "passagem": r["status"]["acquisition_id"],
-                        "fracao_valida": r["status"]["valid_fraction"],
-                    }
-                    for r in visao["rows"]
-                ],
-                "plano": {
-                    "janela_dias": plano.get("window_days"),
-                    "consultado_em": plano.get("queried_at_utc"),
-                    "nuvem_maxima": plano.get("max_weighted_cloud"),
-                    "regra_selecao": plano.get("selection_rule_pt"),
-                    "limites": plano.get("limits_pt") or [],
-                    "com_passagem": resumo_plano.get("targets_with_pass"),
-                    "sem_passagem": resumo_plano.get("targets_without_pass") or [],
-                    "cenas": resumo_plano.get("distinct_products"),
-                    "mosaico": resumo_plano.get("targets_needing_mosaic"),
-                    "bytes_mascara": resumo_plano.get("stage1_mask_bytes"),
-                    "bytes_bandas": resumo_plano.get("stage2_bands_bytes_max"),
-                    "anterior": (plano.get("naive_summary") or {}).get(
-                        "official_bytes_known"
-                    ),
-                }
-                if plano
-                else None,
             },
         )
 

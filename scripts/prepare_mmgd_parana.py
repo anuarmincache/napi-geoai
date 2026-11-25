@@ -190,14 +190,17 @@ def main() -> int:
         },
         "municipalities": panel["municipalities"],
         "notices_pt": [
-            "Potência instalada (kW/MW) não é energia gerada (MWh).",
-            "MMGD não é SIGA (geração centralizada).",
-            "Contagem primária = empreendimentos (CodEmpreendimento).",
-            "QtdUCRecebeCredito conta UCs beneficiárias de créditos, "
-            "não empreendimentos.",
+            "Potência instalada (kW e MW) não é energia gerada (MWh).",
+            "Geração distribuída e geração centralizada são dois cadastros "
+            "diferentes da ANEEL e não se somam.",
+            "A contagem principal é de instalações cadastradas, uma por "
+            "empreendimento registrado.",
+            "Unidades que recebem crédito são consumidores beneficiados pela "
+            "energia, não instalações. Um mesmo sistema pode dividir crédito "
+            "com várias unidades.",
             panel["temporal_note_pt"],
-            "Campos pessoais (CPF/CNPJ do titular, nome, CEP, "
-            "coordenadas de subestação) foram excluídos deste artefato.",
+            "Dados pessoais do titular (CPF, CNPJ, nome, CEP e coordenadas "
+            "de subestação) foram excluídos deste arquivo.",
         ],
     }
 

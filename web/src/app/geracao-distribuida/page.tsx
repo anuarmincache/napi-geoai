@@ -23,8 +23,13 @@ import {
 } from "@/components/ui/card";
 import { Badge, ClasseBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Energia, PropsMunicipio, num } from "@/lib/dados";
+import { Energia, PropsMunicipio, nomeTecnologia, num } from "@/lib/dados";
 import { useDados } from "@/lib/usar-dados";
+
+const ROTULO_PORTE: Record<string, string> = {
+  Microgeracao: "Microgeração, até 75 kW",
+  Minigeracao: "Minigeração, acima de 75 kW",
+};
 
 type Malha = FeatureCollection<Geometry, PropsMunicipio>;
 
@@ -57,8 +62,17 @@ export default function GeracaoDistribuida() {
     return saida;
   }, [mmgd, meta.id]);
 
+  /** Município clicado no mapa, quando houver. */
+  const municipio = useMemo(
+    () => mmgd?.municipios.find((m) => m.cd === selecionado) ?? null,
+    [mmgd, selecionado],
+  );
+
+  const nomeEscopo = municipio?.nome ?? "Paraná";
+
   const porClasse: EChartsOption = useMemo(() => {
-    const entradas = Object.entries(mmgd?.totais.por_classe ?? {}).sort(
+    const fonte = municipio ? municipio.por_classe : (mmgd?.totais.por_classe ?? {});
+    const entradas = Object.entries(fonte).sort(
       (a, b) => b[1] - a[1],
     );
     const principais = entradas.slice(0, 6);
@@ -80,7 +94,8 @@ export default function GeracaoDistribuida() {
         axisLabel: {
           color: "#5b6b60",
           fontSize: 11,
-          formatter: (v: number) => `${num(v / 1000)} mil`,
+          formatter: (v: number) =>
+          v >= 1000 ? `${num(v / 1000)} mil` : num(v),
         },
         splitLine: { lineStyle: { color: "#eef3ea" } },
       },
@@ -107,7 +122,21 @@ export default function GeracaoDistribuida() {
         },
       ],
     };
-  }, [mmgd]);
+  }, [mmgd, municipio]);
+
+  /** Microgeração e minigeração no escopo em tela. */
+  const porPorte = useMemo(() => {
+    const fonte = municipio?.por_porte ?? null;
+    if (!fonte) return [];
+    const total = Object.values(fonte).reduce((s, v) => s + v, 0);
+    return Object.entries(fonte)
+      .sort((a, b) => b[1] - a[1])
+      .map(([chave, qtd]) => ({
+        nome: ROTULO_PORTE[chave] ?? chave,
+        qtd,
+        pct: total > 0 ? (qtd / total) * 100 : 0,
+      }));
+  }, [municipio]);
 
   const porTipo = useMemo(
     () =>
@@ -133,13 +162,13 @@ export default function GeracaoDistribuida() {
       <CabecalhoPagina
         secao="Energia"
         titulo="Solar e geração distribuída"
-        descricao="Sistemas pequenos, quase todos solares, instalados em casas, comércios e propriedades rurais. Os números são de potência instalada, não de energia gerada."
+        descricao="Sistemas pequenos, quase todos solares, instalados em casas, comércios e propriedades rurais. A ANEEL chama esse conjunto de micro e minigeração distribuída, abreviado como MMGD. Os números são de potência instalada, não de energia gerada."
       >
         {mmgd && (
           <div className="flex flex-wrap gap-2">
             <Badge variant="escuro">Retrato de {mmgd.periodo}</Badge>
             <Badge variant="escuro">Fonte: ANEEL MMGD</Badge>
-            <Badge variant="escuro">Não se soma às usinas da ANEEL SIGA</Badge>
+            <Badge variant="escuro">Não se soma às usinas de grande porte</Badge>
           </div>
         )}
       </CabecalhoPagina>
@@ -147,9 +176,13 @@ export default function GeracaoDistribuida() {
       {mmgd ? (
         <div className="grid gap-4 sm:grid-cols-3">
           <Numero
-            rotulo="Potência instalada conhecida"
+            rotulo="Potência instalada"
             valor={`${num(mmgd.totais.mw / 1000, 2)} GW`}
-            detalhe={`${num(mmgd.totais.mw, 1)} MW somados`}
+            detalhe={
+              mmgd.totais.sem_potencia > 0
+                ? `${num(mmgd.totais.mw, 1)} MW somados, sem ${num(mmgd.totais.sem_potencia)} registros em que a potência não foi declarada`
+                : `${num(mmgd.totais.mw, 1)} MW somados, com potência declarada em todos os registros`
+            }
           />
           <Numero
             rotulo="Instalações"
@@ -169,7 +202,7 @@ export default function GeracaoDistribuida() {
       <section>
         <SecaoTitulo
           titulo="Onde está instalada"
-          descricao="Escolha o indicador e clique em um município para destacá-lo na tabela."
+          descricao="Escolha o indicador e clique em um município para ver o perfil dele por classe de consumo e por porte."
         />
         <div className="mb-3 flex flex-wrap gap-2">
           {INDICADORES.map((i) => (
@@ -203,18 +236,57 @@ export default function GeracaoDistribuida() {
           )}
           <CardFooter className="flex flex-wrap items-center justify-between gap-2">
             <span>
-              Potência instalada conhecida de MMGD por município. Fonte: ANEEL
-              MMGD, {mmgd?.periodo}. Município sem registro aparece em cinza.
+              Potência instalada de geração distribuída por município. Fonte:
+              ANEEL MMGD, {mmgd?.periodo}. Município sem registro aparece em
+              cinza.
             </span>
             <ClasseBadge classe="A" />
           </CardFooter>
         </Card>
       </section>
 
+      {municipio && porPorte.length > 0 && (
+        <Card>
+          <CardHeader className="flex items-start justify-between gap-3">
+            <CardTitle>Porte das instalações · {municipio.nome}</CardTitle>
+            <ClasseBadge classe="A" />
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3">
+              {porPorte.map((p) => (
+                <li key={p.nome}>
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <span className="font-semibold text-ink">{p.nome}</span>
+                    <span className="font-display font-bold tabular-nums text-forest">
+                      {num(p.qtd)}{" "}
+                      <span className="text-xs font-normal text-muted">
+                        ({num(p.pct, 1)}%)
+                      </span>
+                    </span>
+                  </div>
+                  <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-paper">
+                    <div
+                      className="h-full rounded-full bg-sun"
+                      style={{ width: `${p.pct}%` }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+          <CardFooter>
+            Microgeração e minigeração são as faixas de potência definidas pela
+            ANEEL. A contagem é de instalações, não de potência.
+          </CardFooter>
+        </Card>
+      )}
+
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader className="flex items-start justify-between gap-3">
-            <CardTitle>Instalações por classe de consumo</CardTitle>
+            <CardTitle>
+              Instalações por classe de consumo · {nomeEscopo}
+            </CardTitle>
             <ClasseBadge classe="A" />
           </CardHeader>
           <CardContent>
@@ -225,7 +297,10 @@ export default function GeracaoDistribuida() {
             )}
           </CardContent>
           <CardFooter>
-            Contagem de empreendimentos, não de unidades consumidoras.
+            Contagem de instalações, não de unidades consumidoras. As classes
+            são as que a ANEEL escreve no cadastro. REBR aparece no arquivo
+            oficial sem definição no dicionário de dados publicado, então fica
+            como está, sem tradução.
           </CardFooter>
         </Card>
 
@@ -238,8 +313,8 @@ export default function GeracaoDistribuida() {
             <ul className="space-y-2">
               {porTipo.map(([sigla, qtd]) => (
                 <li key={sigla} className="flex items-center gap-3">
-                  <span className="w-12 shrink-0 font-display text-sm font-bold text-forest">
-                    {sigla}
+                  <span className="w-44 shrink-0 text-sm font-semibold text-forest">
+                    {nomeTecnologia(sigla)}
                   </span>
                   <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-paper">
                     <div
@@ -257,7 +332,7 @@ export default function GeracaoDistribuida() {
             </ul>
           </CardContent>
           <CardFooter>
-            UFV é solar fotovoltaica. Siglas conforme o cadastro da ANEEL.
+            Tecnologia declarada no cadastro da ANEEL. Quase tudo é solar fotovoltaica.
           </CardFooter>
         </Card>
       </div>

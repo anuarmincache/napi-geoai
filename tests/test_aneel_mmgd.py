@@ -140,9 +140,9 @@ def test_aggregate_does_not_treat_uc_credito_as_plant_count() -> None:
     assert panel["municipalities"]["4100202"]["n_empreendimentos"] == 0
     assert panel["municipalities"]["4100202"]["zero_confirmado_no_recorte"] is True
     assert panel["qtd_uc_recebe_credito_total"] == 4
-    assert "conexão" in panel["temporal_note_pt"].lower() or "cadastral" in (
-        panel["temporal_note_pt"].lower()
-    )
+    nota = panel["temporal_note_pt"].lower()
+    assert "cadastro" in nota
+    assert "não é a data" in nota
 
 
 def test_negative_power_and_bad_ibge_rejected() -> None:

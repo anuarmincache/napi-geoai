@@ -31,6 +31,7 @@ from geoai.portal.agro_panel import (
     agro_state_summary,
     list_agro_crops,
 )
+from geoai.portal.textos_legados import atualizar_lista
 
 from _bootstrap import (
     br_num,
@@ -277,7 +278,7 @@ else:
         + (
             "No Paraná, a soma considera apenas valores municipais publicados."
             if selected is None
-            else "Dado oficial observado (classe A)."
+            else "Dado oficial, registrado direto na fonte."
         )
     )
 
@@ -396,7 +397,7 @@ for line in explorer_attribution_lines(bundle):
 if agro.available:
     for line in agro_attribution_lines(agro):
         st.caption(line)
-    for line in agro.panel.get("notices_pt") or []:
+    for line in atualizar_lista(agro.panel.get("notices_pt")):
         st.caption(line)
 else:
     st.caption(

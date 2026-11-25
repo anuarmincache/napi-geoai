@@ -249,10 +249,11 @@ def aggregate_plants_by_municipality(
         "municipalities": municipalities,
         "nao_associados": nao_associados,
         "nao_associados_limitation_pt": (
-            f"{sum_un_n} empreendimentos da fase sem associação municipal "
-            "(coords ausentes/inválidas, fora da malha ou ausentes no join "
-            "QGIS). Municípios 'sem_empreendimento' referem-se apenas a "
-            "usinas georreferenciadas e vinculadas — não são zero absoluto."
+            f"{sum_un_n} usinas desta fase não têm município associado, "
+            "porque a coordenada do cadastro está ausente, é inválida ou cai "
+            "fora da malha municipal. Elas entram no total do estado e ficam "
+            "de fora do mapa. Município sem usina no mapa significa nenhuma "
+            "usina georreferenciada e vinculada, não ausência comprovada."
         ),
         "totals": {
             "n_empreendimentos_municipios": sum_mun_n,

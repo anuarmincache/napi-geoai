@@ -113,6 +113,7 @@ export default function Explorar() {
               rotulo={camada.rotulo}
               unidade={camada.unidade}
               cor={camada.cor}
+              escala={camada.escala ?? "zero"}
               selecionado={a}
               onSelecionar={(cd) => setA(cd)}
               altura="h-[520px] lg:h-[580px]"

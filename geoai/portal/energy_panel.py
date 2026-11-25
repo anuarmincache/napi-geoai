@@ -266,10 +266,11 @@ def energy_scope_totals(
             else "capacidade_fiscalizada_conhecida_mw_parcial"
         ),
         "nao_associados_limitation_pt": (
-            f"{n_un} empreendimento(s) do escopo «{scope}» sem associação "
-            "municipal (coords ausentes/inválidas, fora da malha ou ausentes "
-            "no join QGIS). Municípios sem usina no escopo referem-se apenas "
-            "a usinas georreferenciadas e vinculadas — não são zero absoluto."
+            f"{n_un} usina(s) de {scope} não têm município associado, porque "
+            "a coordenada do cadastro está ausente, é inválida ou cai fora da "
+            "malha municipal. Elas entram no total do estado e ficam de fora "
+            "do mapa. Município sem usina no mapa significa nenhuma usina "
+            "georreferenciada e vinculada, não ausência comprovada."
         ),
         "totals_caveat_pt": (
             None

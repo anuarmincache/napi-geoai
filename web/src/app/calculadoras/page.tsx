@@ -102,7 +102,7 @@ export default function Calculadoras() {
         descricao="Quanto os equipamentos consomem por mês e que potência solar compensaria esse consumo. Todos os valores de entrada são seus; o resultado é uma simulação, não um projeto."
       >
         <div className="flex flex-wrap gap-2">
-          <Badge variant="escuro">Simulação, classe C</Badge>
+          <Badge variant="escuro">Resultado é simulação</Badge>
           <Badge variant="escuro">Sem valor padrão de tarifa ou irradiação</Badge>
         </div>
       </CabecalhoPagina>
@@ -347,10 +347,10 @@ export default function Calculadoras() {
 
       <Avisos
         itens={[
-          "Resultado de simulação (classe C), com as hipóteses que você informou.",
+          "O resultado é uma simulação, feita com as hipóteses que você informou.",
           "Não substitui projeto elétrico, estudo de viabilidade, parecer de acesso nem orçamento.",
           "A irradiação e a tarifa variam por local e por distribuidora: use valores de fonte confiável para o seu caso.",
-          "As fórmulas são as mesmas do motor do projeto, em geoai/tools/energy_calc.py.",
+          "As fórmulas são as mesmas usadas no motor de cálculo do projeto, e aparecem escritas acima de cada calculadora.",
         ]}
       />
     </Pagina>

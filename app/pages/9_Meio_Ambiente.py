@@ -22,6 +22,7 @@ from geoai.portal.landcover_panel import (
     landcover_ranked,
     landcover_share,
 )
+from geoai.portal.textos_legados import atualizar_lista
 
 from _bootstrap import (
     br_num,
@@ -115,8 +116,8 @@ if lc.available:
         )
     st.caption(
         f"No mapa: **{group_labels[lc_group]}** como percentual da área "
-        f"mapeada de cada município em **{lc_year}**. Dado oficial agregado "
-        "(classe A) com percentual derivado (classe B)."
+        f"mapeada de cada município em **{lc_year}**. Hectares são dado "
+        "oficial, e o percentual é calculado sobre a área mapeada."
     )
 
 bundle = cached_municipality_layer()
@@ -369,7 +370,7 @@ for line in explorer_attribution_lines(bundle):
 if lc.available:
     for line in landcover_attribution_lines(lc):
         st.caption(line)
-    for line in lc.panel.get("notices_pt") or []:
+    for line in atualizar_lista(lc.panel.get("notices_pt")):
         st.caption(line)
     st.caption("CNUC/ICMBio e ANA/IAT ainda não foram integrados.")
 else:

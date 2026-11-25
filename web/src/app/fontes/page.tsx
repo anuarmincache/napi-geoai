@@ -17,8 +17,16 @@ import {
 } from "@/components/ui/card";
 import { Badge, ClasseBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Fontes } from "@/lib/dados";
+import { Fontes, dataBr } from "@/lib/dados";
 import { useDados } from "@/lib/usar-dados";
+
+const SITUACAO_FONTE: Record<string, string> = {
+  catalogued: "Catalogada, sem coleta",
+  prototype: "Coletada e em uso",
+  stable: "Coleta estável",
+  blocked: "Coleta bloqueada",
+  active: "Coletada e em uso",
+};
 
 export default function FontesPagina() {
   const fontes = useDados<Fontes>("fontes.json");
@@ -43,7 +51,7 @@ export default function FontesPagina() {
       <CabecalhoPagina
         secao="Transparência"
         titulo="Fontes e qualidade dos dados"
-        descricao="De onde vem cada dado, quando foi coletado e como foi conferido. Esta página não baixa nada: ela descreve o que já está no projeto."
+        descricao="De onde vem cada dado, quando foi coletado, com que licença e como foi conferido."
       />
 
       <section>
@@ -113,7 +121,7 @@ export default function FontesPagina() {
                       {a.organizacao} · {a.produto}
                     </p>
                   </div>
-                  <Badge variant="oficial">Preparado em {a.preparado_em}</Badge>
+                  <Badge variant="oficial">Preparado em {dataBr(a.preparado_em)}</Badge>
                 </div>
                 {a.sha256 && (
                   <p className="mt-2 font-mono text-[11px] break-all text-muted">
@@ -154,9 +162,15 @@ export default function FontesPagina() {
                   </span>
                   <span className="flex shrink-0 items-center gap-2">
                     <Badge
-                      variant={f.status === "active" ? "oficial" : "default"}
+                      variant={
+                        f.status === "prototype" ||
+                        f.status === "stable" ||
+                        f.status === "active"
+                          ? "oficial"
+                          : "default"
+                      }
                     >
-                      {f.status === "active" ? "ativa" : f.status}
+                      {SITUACAO_FONTE[f.status] ?? f.status}
                     </Badge>
                     <span className="text-xs text-muted">
                       {aberta === f.id ? "▲" : "▼"}
@@ -173,7 +187,7 @@ export default function FontesPagina() {
                       <Item rotulo="Atualização oficial" valor={f.cadencia} />
                       <Item
                         rotulo="Catalogada em"
-                        valor={f.catalogado_em}
+                        valor={dataBr(f.catalogado_em)}
                       />
                     </dl>
                     <p className="mt-3 text-[12px] leading-relaxed text-muted">
