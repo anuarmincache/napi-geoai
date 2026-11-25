@@ -379,7 +379,7 @@ st.info(
     "**Ficha do município**, **Explorar o mapa**, **Solar e geração "
     "distribuída** (Energia, MMGD), **Usinas e geração centralizada** "
     "(Energia, SIGA), **Calculadoras**, **Agricultura e pecuária**, "
-    "**Cobertura da terra** (Meio Ambiente), **Vegetação por satélite**, "
-    "**Fontes e qualidade** e **Sobre o projeto**."
+    "**Cobertura da terra** (Meio Ambiente), **Fontes e qualidade** e "
+    "**Sobre o projeto**."
 )
 render_footer()
