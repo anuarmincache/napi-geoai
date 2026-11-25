@@ -106,10 +106,29 @@ def page_header(
     *,
     art_kind: str = "map",
     eyebrow: str = "NAPI GeoAI",
+    banner: str | None = None,
+    banner_alt: str = "",
+    chips: tuple[str, ...] = (),
 ) -> None:
-    """Faixa de título padronizada, com ilustração própria."""
+    """Faixa de título padronizada, com ilustração própria.
+
+    ``banner`` nomeia um arquivo de ``assets/`` com a ilustração da página. O
+    título, o resumo e as etiquetas continuam sendo texto, pelos mesmos
+    motivos do bloco do topo da página inicial: leitor de tela, busca e
+    reorganização no celular. Faltando o arquivo, o desenho vetorial assume.
+
+    ``chips`` são as etiquetas do que a página cobre. Elas afirmam algo, então
+    cada uma precisa corresponder ao que a página realmente mostra.
+    """
 
     lead_html = f'<p class="lead">{lead}</p>' if lead else ""
+    chips_html = ""
+    if chips:
+        itens = "".join(f"<span>{c}</span>" for c in chips)
+        chips_html = f'<p class="ezc-chips">{itens}</p>'
+    fonte = (asset_data_uri(banner) if banner else None) or art.data_uri(
+        art.spot(art_kind)
+    )
     st.markdown(
         f'''
 <div class="ezc-header" role="banner">
@@ -117,8 +136,9 @@ def page_header(
     <p class="eyebrow">{eyebrow}</p>
     <h1>{title}</h1>
     {lead_html}
+    {chips_html}
   </div>
-  <img class="art" alt="" src="{art.data_uri(art.spot(art_kind))}"/>
+  <img class="art" alt="{banner_alt}" src="{fonte}"/>
 </div>
 ''',
         unsafe_allow_html=True,

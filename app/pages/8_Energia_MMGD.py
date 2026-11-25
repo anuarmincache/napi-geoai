@@ -49,6 +49,8 @@ page_header(
     "Instalações de micro e minigeração por município, segundo a ANEEL.",
     art_kind="solar",
     eyebrow="Energia",
+    banner="banner-mmgd.webp",
+    banner_alt="Casas com telhado solar em paisagem rural ao amanhecer",
 )
 st.caption(
     "Potência **instalada** da geração distribuída do Paraná, em MW. A "

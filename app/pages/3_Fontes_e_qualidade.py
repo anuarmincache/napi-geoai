@@ -22,6 +22,14 @@ page_header(
     "De onde vem cada dado, quando foi coletado e como foi conferido.",
     art_kind="docs",
     eyebrow="Transparência",
+    banner="banner-fontes.webp",
+    banner_alt="Notebook mostrando o painel do projeto com o mapa do Paraná",
+    chips=(
+        "Fontes oficiais",
+        "Data da coleta",
+        "Licença",
+        "Impressão digital",
+    ),
 )
 st.caption(
     "Catálogo das fontes oficiais usadas ou previstas, com licença, "

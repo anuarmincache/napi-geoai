@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
 from streamlit.testing.v1 import AppTest
 
 REPO = Path(__file__).resolve().parents[1]
@@ -63,3 +64,47 @@ def test_titulo_do_topo_continua_sendo_texto() -> None:
         cabeca = trecho[:300]
         assert 'alt="' in cabeca and 'alt=""' not in cabeca
         assert "data:image/webp;base64," in cabeca
+
+
+BANNERS_DAS_PAGINAS = {
+    "6_Energia_SIGA.py": "banner-siga.webp",
+    "8_Energia_MMGD.py": "banner-mmgd.webp",
+    "11_Ferramentas.py": "banner-calculadoras.webp",
+    "10_Agricultura.py": "banner-agricultura.webp",
+    "9_Meio_Ambiente.py": "banner-cobertura.webp",
+    "3_Fontes_e_qualidade.py": "banner-fontes.webp",
+    "4_Sobre_e_deploy.py": "banner-sobre.webp",
+}
+
+
+def test_banners_das_paginas_existem_e_somam_pouco() -> None:
+    total = 0.0
+    for arquivo in BANNERS_DAS_PAGINAS.values():
+        caminho = REPO / "assets" / arquivo
+        assert caminho.is_file(), f"falta {arquivo}"
+        total += caminho.stat().st_size / 1024
+    # Cada página embute o seu, mas o repositório carrega todos.
+    assert total < 800, f"os sete somam {total:.0f} KB"
+
+
+@pytest.mark.parametrize(
+    ("pagina", "banner"), sorted(BANNERS_DAS_PAGINAS.items()), ids=lambda v: str(v)
+)
+def test_pagina_usa_o_banner_e_mantem_o_titulo_como_texto(
+    pagina: str, banner: str
+) -> None:
+    """Mesma regra do topo: a arte entra como imagem, o texto fica na página."""
+    sys.path.insert(0, str(REPO / "app"))
+    at = AppTest.from_file(str(REPO / "app" / "pages" / pagina), default_timeout=240)
+    at.run()
+    assert not at.exception
+
+    html = "\n".join(
+        m.value for m in at.markdown if isinstance(getattr(m, "value", None), str)
+    )
+    cabecalho = html[html.index('class="ezc-header"') :][:4000]
+    assert "<h1>" in cabecalho, "o título precisa continuar sendo texto"
+    assert "data:image/webp;base64," in cabecalho, f"{pagina} não carregou {banner}"
+    inicio = cabecalho.index('class="art"')
+    trecho = cabecalho[inicio : inicio + 300]
+    assert 'alt="' in trecho and 'alt=""' not in trecho, "a arte precisa de descrição"

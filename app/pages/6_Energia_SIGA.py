@@ -47,6 +47,14 @@ page_header(
     "Usinas em operação no Paraná por município e tecnologia, segundo a ANEEL.",
     art_kind="grid",
     eyebrow="Energia",
+    banner="banner-siga.webp",
+    banner_alt="Barragem de hidrelétrica, usinas eólicas e painéis solares no Paraná",
+    chips=(
+        "Hidrelétricas",
+        "Eólicas",
+        "Solares",
+        "Termelétricas",
+    ),
 )
 st.caption(
     "Potência **fiscalizada** das usinas de grande porte do Paraná, em MW. "
