@@ -11,6 +11,7 @@ from geoai.portal import (
 )
 
 from _bootstrap import (
+    asset_data_uri,
     cached_agro_panel,
     cached_energy_panel,
     cached_landcover_panel,
@@ -254,11 +255,26 @@ st.markdown(
     "de dados.</p>",
     unsafe_allow_html=True,
 )
+# Ilustrações cedidas pelo projeto. O texto do cartão continua sendo texto na
+# página, pelos mesmos motivos do bloco do topo. Faltando o arquivo, o desenho
+# vetorial assume, para o cartão não abrir com um vão.
+_artes = {
+    "solar": asset_data_uri("card-empreendedores.webp"),
+    "docs": asset_data_uri("card-pesquisadores.webp"),
+    "map": asset_data_uri("card-gestores.webp"),
+}
+
+
+def _arte(chave: str) -> str:
+    return _artes.get(chave) or art.data_uri(art.spot(chave))
+
+
 aud = st.columns(3)
 with aud[0]:
     st.markdown(
         '<div class="napi-card">'
-        f'<img class="art" alt="" src="{art.data_uri(art.spot('solar'))}"/>'
+        '<img class="art" alt="Painéis solares em lavouras ao amanhecer"'
+        f' src="{_arte("solar")}"/>'
         ''
         "<h4>Empreendedores e empresas</h4>"
         "<p>Veja onde a geração solar distribuída já está presente, em quais "
@@ -266,26 +282,33 @@ with aud[0]:
         "</p></div>",
         unsafe_allow_html=True,
     )
-    page_link("pages/8_Energia_MMGD.py", "Explorar MMGD por município", "☀️")
+    page_link(
+        "pages/8_Energia_MMGD.py",
+        "Explorar geração distribuída por município",
+        "☀️",
+    )
     page_link(
         "pages/11_Ferramentas.py", "Simular consumo e sistema solar", "🧮"
     )
 with aud[1]:
     st.markdown(
         '<div class="napi-card">'
-        f'<img class="art" alt="" src="{art.data_uri(art.spot('docs'))}"/>'
+        '<img class="art" alt="Lista de conferência com lupa sobre um gráfico"'
+        f' src="{_arte("docs")}"/>'
         ''
         "<h4>Pesquisadores e universidades</h4>"
-        "<p>Consulte proveniência, hashes, cobertura e limitações de cada "
-        "fonte. Compare municípios com indicadores reprodutíveis.</p></div>",
+        "<p>Veja de onde vem cada dado, quando foi coletado e qual a "
+        "impressão digital do arquivo. Compare municípios com indicadores "
+        "que dão o mesmo resultado a cada consulta.</p></div>",
         unsafe_allow_html=True,
     )
     page_link("pages/3_Fontes_e_qualidade.py", "Fontes e qualidade", "🔎")
-    page_link("pages/6_Energia_SIGA.py", "Usinas por tecnologia (SIGA)", "⚡")
+    page_link("pages/6_Energia_SIGA.py", "Usinas por tecnologia", "⚡")
 with aud[2]:
     st.markdown(
         '<div class="napi-card">'
-        f'<img class="art" alt="" src="{art.data_uri(art.spot('map'))}"/>'
+        '<img class="art" alt="Mapa do Paraná com um marcador de localização"'
+        f' src="{_arte("map")}"/>'
         ''
         "<h4>Gestores públicos e cooperativas</h4>"
         "<p>Abra o perfil do seu município, compare com vizinhos e "

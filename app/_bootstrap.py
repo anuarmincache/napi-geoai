@@ -67,6 +67,23 @@ def logo_data_uri() -> str | None:
     return "data:image/png;base64," + base64.b64encode(raw).decode("ascii")
 
 
+@lru_cache(maxsize=8)
+def asset_data_uri(nome: str) -> str | None:
+    """Imagem de ``assets/`` embutida na página, ou ``None`` se faltar.
+
+    As ilustrações são arquivos cedidos pelo projeto. Entram embutidas porque
+    a Community Cloud não serve estáticos por padrão, e por isso cada uma é
+    mantida pequena: peso aqui vira tempo de carregamento para quem visita.
+    """
+    caminho = REPO_ROOT / "assets" / nome
+    try:
+        raw = caminho.read_bytes()
+    except OSError:
+        return None
+    tipo = "webp" if caminho.suffix == ".webp" else caminho.suffix.lstrip(".")
+    return f"data:image/{tipo};base64," + base64.b64encode(raw).decode("ascii")
+
+
 @lru_cache(maxsize=1)
 def hero_image_data_uri() -> str | None:
     """Ilustração do topo da página inicial, cedida pelo projeto.
