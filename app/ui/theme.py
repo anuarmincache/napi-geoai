@@ -159,12 +159,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible,
   background: var(--ezc-card); border: 1px solid var(--ezc-line);
   border-radius: 16px; padding: 1.15rem 1.2rem; height: 100%;
   margin-bottom: 0.4rem;
+  /* Os três cartões ficam lado a lado com textos de tamanhos diferentes.
+     A altura mínima alinha os links que vêm logo abaixo de cada um. */
+  min-height: 310px;
 }
 .napi-card h4 { margin: 0 0 0.35rem 0; font-size: 1.05rem; padding: 0; }
 .napi-card p { margin: 0; color: var(--ezc-muted); font-size: 0.97rem; line-height: 1.5; }
 .napi-card .icon { font-size: 1.5rem; display: block; margin-bottom: 0.35rem; }
 .napi-card img.art {
-  width: 100%; height: 96px; object-fit: cover; border-radius: 12px;
+  width: 100%; height: 128px; object-fit: cover; border-radius: 12px;
   margin-bottom: 0.7rem;
   background: linear-gradient(120deg, #2f4a33, #547f36);
 }
@@ -270,6 +273,7 @@ section[data-testid="stSidebar"] .napi-side-group {
   .napi-hero-xl { grid-template-columns: 1fr; min-height: 0; }
   .napi-hero-xl .copy { padding: 1.7rem 1.3rem 1.2rem 1.3rem; }
   .napi-hero-xl .scene { min-height: 190px; }
+  .napi-card { min-height: 0; }
   .ezc-header { padding: 1.2rem 1.2rem; }
   .ezc-header img.art { display: none; }
   .napi-kpi .k-value { font-size: 1.6rem; }
