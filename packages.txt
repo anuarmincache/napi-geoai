@@ -1,4 +1,0 @@
-# Pacotes apt opcionais para Streamlit Community Cloud.
-# Geopandas/pyogrio/shapely usam wheels manylinux — lista vazia de propósito.
-# Só acrescentar pacotes do sistema se um wheel falhar na Cloud e for
-# diagnosticado (ex.: libgdal). Não instalar Postgres cliente aqui.
