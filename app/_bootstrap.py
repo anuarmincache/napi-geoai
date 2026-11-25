@@ -33,6 +33,7 @@ from ui import art  # noqa: E402
 from ui.theme import CUSTOM_CSS  # noqa: E402
 
 LOGO_PATH = REPO_ROOT / "assets" / "napi-ezc-logo.png"
+HERO_PATH = REPO_ROOT / "assets" / "hero-parana.webp"
 INSTITUTIONS = ("Universidade Estadual de Maringá (UEM)", "Fundação Araucária")
 _MAP_HTML_CACHE = Path(tempfile.gettempdir()) / "napi_geoai_streamlit_maps"
 
@@ -64,6 +65,22 @@ def logo_data_uri() -> str | None:
     except OSError:
         return None
     return "data:image/png;base64," + base64.b64encode(raw).decode("ascii")
+
+
+@lru_cache(maxsize=1)
+def hero_image_data_uri() -> str | None:
+    """Ilustração do topo da página inicial, cedida pelo projeto.
+
+    A imagem traz só a paisagem. O título e o texto ao lado continuam sendo
+    texto de verdade na página, para serem lidos por leitor de tela, achados
+    pela busca e reorganizados no celular, o que não acontece quando a frase
+    está desenhada dentro do arquivo.
+    """
+    try:
+        raw = HERO_PATH.read_bytes()
+    except OSError:
+        return None
+    return "data:image/webp;base64," + base64.b64encode(raw).decode("ascii")
 
 
 def page_header(
