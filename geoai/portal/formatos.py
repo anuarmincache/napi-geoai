@@ -55,3 +55,64 @@ def numero_br(valor: object, casas: int = 0, *, ausente: str = "n/d") -> str:
         return ausente
     texto = f"{numero:,.{casas}f}"
     return texto.replace(",", "\x00").replace(".", ",").replace("\x00", ".")
+
+
+#: Siglas de tecnologia do cadastro da ANEEL, em forma curta para filtro.
+#: A sigla fica entre parênteses porque é como a fonte nomeia a tecnologia e é
+#: o que alguém do setor procura; o nome vem antes porque é o que permite
+#: escolher a quem não conhece a sigla.
+TECNOLOGIAS: dict[str, str] = {
+    "UFV": "Solar fotovoltaica",
+    "EOL": "Eólica",
+    "UHE": "Hidrelétrica",
+    "PCH": "Pequena central hidrelétrica",
+    "CGH": "Central geradora hidrelétrica",
+    "UTE": "Termelétrica",
+    "CGU": "Central geradora undi-elétrica",
+    "UTN": "Termonuclear",
+}
+
+#: Classes de consumo da geração distribuída, como a ANEEL as escreve.
+#: REBR aparece no arquivo oficial sem definição no dicionário publicado, então
+#: fica como está: inventar o significado seria pior que admitir que falta.
+CLASSES_DE_CONSUMO: dict[str, str] = {
+    "REBR": "REBR (código da ANEEL, sem definição publicada)",
+}
+
+#: Faixas de potência definidas pela ANEEL para a geração distribuída.
+PORTES: dict[str, str] = {
+    "Microgeracao": "Microgeração (até 75 kW)",
+    "Minigeracao": "Minigeração (acima de 75 kW)",
+}
+
+#: Valor que o cadastro traz em branco.
+SEM_INFORMACAO = "Não informada no cadastro"
+
+
+def rotulo_tecnologia(sigla: object) -> str:
+    """«UFV» vira «Solar fotovoltaica (UFV)», para o filtro ser escolhível.
+
+    Sigla sozinha em uma lista suspensa não deixa escolher quem não é do
+    setor, e era o que a página mostrava.
+    """
+    bruto = str(sigla or "").strip()
+    if not bruto or bruto == "(vazio)":
+        return SEM_INFORMACAO
+    nome = TECNOLOGIAS.get(bruto.upper())
+    return f"{nome} ({bruto.upper()})" if nome else bruto
+
+
+def rotulo_classe_consumo(valor: object) -> str:
+    """Classe de consumo como a tela deve mostrar."""
+    bruto = str(valor or "").strip()
+    if not bruto or bruto == "(vazio)":
+        return SEM_INFORMACAO
+    return CLASSES_DE_CONSUMO.get(bruto, bruto)
+
+
+def rotulo_porte(valor: object) -> str:
+    """Faixa de potência com o limite explícito."""
+    bruto = str(valor or "").strip()
+    if not bruto or bruto == "(vazio)":
+        return SEM_INFORMACAO
+    return PORTES.get(bruto, bruto)

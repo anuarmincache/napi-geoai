@@ -120,3 +120,34 @@ def test_pagina_nao_mostra_vocabulario_de_bastidor(pagina: Path) -> None:
     assert not achados, f"{pagina.name} mostra vocabulário de bastidor:\n" + "\n".join(
         sorted(achados)
     )
+
+
+SELETORES_COM_CODIGO = (
+    ("app/pages/6_Energia_SIGA.py", "Tecnologia de geração"),
+    ("app/pages/8_Energia_MMGD.py", "Tecnologia de geração"),
+)
+
+
+@pytest.mark.parametrize(("pagina", "rotulo"), SELETORES_COM_CODIGO)
+def test_filtro_de_tecnologia_nao_oferece_so_a_sigla(pagina: str, rotulo: str) -> None:
+    """Sigla sozinha em lista suspensa não deixa escolher quem não é do setor.
+
+    O filtro mostrava CGH, EOL, PCH, UFV, UHE e UTE, sem nada que dissesse o
+    que cada uma é. A sigla continua, entre parênteses, porque é como a ANEEL
+    nomeia a tecnologia.
+    """
+    sys.path.insert(0, str(REPO / "app"))
+    at = AppTest.from_file(str(REPO / pagina), default_timeout=240)
+    at.run()
+    assert not at.exception
+
+    caixa = next((c for c in at.selectbox if str(c.label) == rotulo), None)
+    assert caixa is not None, f"{pagina} não tem o filtro «{rotulo}»"
+
+    soltas = [
+        str(o) for o in caixa.options if re.fullmatch(r"[A-Z]{3,4}", str(o).strip())
+    ]
+    assert not soltas, (
+        f"{pagina}: {soltas} aparecem só como sigla. Use "
+        "geoai.portal.formatos.rotulo_tecnologia para pôr o nome junto."
+    )
