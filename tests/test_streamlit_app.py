@@ -10,6 +10,7 @@ import pytest
 
 pytest.importorskip("streamlit")
 
+from geoai.portal.formatos import numero_br as br_num  # noqa: E402
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
@@ -150,35 +151,42 @@ def test_energy_kpis_follow_technology_filter(_streamlit_paths: None) -> None:
 
     all_scope = energy_scope_totals(bundle, tipo=None)
     metric_labels = [str(m.label) for m in at.metric]
-    assert any("todas as tecnologias" in lab for lab in metric_labels)
-    assert any("Municípios no catálogo (fixo)" in lab for lab in metric_labels)
+    # Sem filtro, o recorte aparece na legenda abaixo dos indicadores.
+    legenda_inicial = "\n".join(str(c.value) for c in at.caption)
+    assert "todas as tecnologias" in legenda_inicial
+    assert any(lab.startswith("Usinas em operação") for lab in metric_labels)
+    assert any("Municípios no Paraná" in lab for lab in metric_labels)
     values_all = {str(m.label): str(m.value) for m in at.metric}
     assert values_all[
-        next(lab for lab in metric_labels if lab.startswith("Empreendimentos"))
-    ] == str(all_scope["n_empreendimentos_fase"])
+        next(lab for lab in metric_labels if lab.startswith("Usinas em operação"))
+    ] == br_num(all_scope["n_empreendimentos_fase"])
 
     # Primeiro selectbox = tecnologia
     assert at.selectbox
     tech_box = at.selectbox[0]
     options = list(tech_box.options)
     assert "(todas)" in options
-    assert "UFV" in options
+    # O filtro mostra o nome junto da sigla, para ser escolhível por quem não
+    # conhece o código da ANEEL.
+    assert any("UFV" in o and "fotovoltaica" in o.lower() for o in options)
     tech_box.set_value("UFV")
     at.run()
     assert not at.exception, at.exception
 
     ufv_scope = energy_scope_totals(bundle, tipo="UFV")
     labels_ufv = [str(m.label) for m in at.metric]
-    assert any("escopo UFV" in lab for lab in labels_ufv)
     values_ufv = {str(m.label): str(m.value) for m in at.metric}
-    emp_label = next(lab for lab in labels_ufv if lab.startswith("Empreendimentos"))
-    assert values_ufv[emp_label] == str(ufv_scope["n_empreendimentos_fase"])
+    # O recorte em uso fica na legenda, não repetido nos quatro rótulos, que
+    # ficavam longos demais e apareciam cortados no cartão.
+    assert not any("escopo" in lab for lab in labels_ufv)
+    usinas = next(lab for lab in labels_ufv if lab.startswith("Usinas em operação"))
+    assert values_ufv[usinas] == br_num(ufv_scope["n_empreendimentos_fase"])
     assert ufv_scope["n_empreendimentos_fase"] != all_scope["n_empreendimentos_fase"]
     mun_label = next(
         lab for lab in labels_ufv if lab.startswith("Municípios com usinas")
     )
-    assert values_ufv[mun_label] == str(ufv_scope["n_municipios_com_usinas"])
-    fixed = next(lab for lab in labels_ufv if "Municípios no catálogo (fixo)" in lab)
+    assert values_ufv[mun_label] == br_num(ufv_scope["n_municipios_com_usinas"])
+    fixed = next(lab for lab in labels_ufv if "Municípios no Paraná" in lab)
     assert "399" in values_ufv[fixed]
     captions = "\n".join(str(c.value) for c in at.caption)
     # A legenda nomeia a tecnologia filtrada sem expor o código interno.
@@ -229,8 +237,9 @@ def test_mmgd_page_kpis_and_technology_filter(_streamlit_paths: None) -> None:
     # Primeiro selectbox = tecnologia
     assert at.selectbox
     tech = at.selectbox[0]
-    assert "(todas)" in list(tech.options)
-    assert "UFV" in list(tech.options)
+    opcoes = list(tech.options)
+    assert "(todas)" in opcoes
+    assert any("UFV" in o and "fotovoltaica" in o.lower() for o in opcoes)
     tech.set_value("UFV")
     at.run()
     assert not at.exception, at.exception

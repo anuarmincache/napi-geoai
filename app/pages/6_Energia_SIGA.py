@@ -24,6 +24,7 @@ from geoai.portal.energy_panel import (
     escopo_em_portugues,
     project_municipality_metrics,
 )
+from geoai.portal.formatos import data_br, rotulo_tecnologia
 from geoai.portal.textos_legados import atualizar
 from geoai.presentation import AudienceLevel
 
@@ -91,9 +92,11 @@ with f1:
     tipo = st.selectbox(
         "Tecnologia de geração",
         options=["(todas)", *tipos],
+        format_func=lambda v: v if v == "(todas)" else rotulo_tecnologia(v),
         help=(
             "Os indicadores, a lista e o mapa passam a considerar só a "
-            "tecnologia escolhida. A lista de municípios continua com os 399."
+            "tecnologia escolhida. A lista de municípios continua com os 399. "
+            "A sigla entre parênteses é a que a ANEEL usa no cadastro."
         ),
     )
 with f2:
@@ -147,31 +150,26 @@ notice = energy_public_notice(energy)
 st.warning(notice["notice_pt"])
 st.caption(
     "Fonte: ANEEL, cadastro SIGA, sobre a Malha Municipal IBGE 2025. "
-    f"Conjunto de dados: {notice['dat_conjunto']}. "
-    f"Arquivo recuperado em {notice['retrieved_at']}. "
-    f"Painel preparado em {notice['prepared_at']}."
+    f"Conjunto de dados de {data_br(notice['dat_conjunto'])}, "
+    f"baixado em {data_br(notice['retrieved_at'])} e preparado em "
+    f"{data_br(notice['prepared_at'])}."
 )
 if tipo_filter:
     st.warning(atualizar(scope["nao_associados_limitation_pt"]) or "")
 
 c1, c2, c3, c4 = st.columns(4)
-_scope_label = (
-    f"escopo {tipo_filter}" if tipo_filter else "todas as tecnologias"
-)
-c1.metric(
-    f"Empreendimentos ({_scope_label})",
-    f"{scope['n_empreendimentos_fase']}",
-)
+# O recorte em uso não se repete nos quatro rótulos: ele já está na legenda
+# logo abaixo, e repetido aqui estourava a largura do cartão e era cortado.
+c1.metric("Usinas em operação", br_num(scope["n_empreendimentos_fase"]))
 c2.metric(
-    f"MW fiscalizada conhecida ({_scope_label})",
+    "Potência fiscalizada (MW)",
     br_num(scope["potencia_fiscalizada_mw_conhecida_fase"], 1),
 )
 c3.metric(
-    f"Municípios com usinas ({_scope_label})",
-    f"{scope['n_municipios_com_usinas']}",
+    "Municípios com usinas", br_num(scope["n_municipios_com_usinas"])
 )
 c4.metric(
-    "Municípios no catálogo (fixo)",
+    "Municípios no Paraná",
     f"{scope['municipality_count']}/{EXPECTED_PR_MUNICIPALITY_COUNT}",
 )
 st.caption(scope["kpi_caption_pt"])
@@ -351,8 +349,14 @@ if row:
     if not mix:
         st.caption("Nenhuma usina associada neste escopo.")
     else:
-        chart = pd.DataFrame(mix).set_index("tipo")
-        st.bar_chart(chart[["potencia_fiscalizada_mw"]])
+        chart = pd.DataFrame(mix)
+        chart["tipo"] = chart["tipo"].map(rotulo_tecnologia)
+        chart = chart.set_index("tipo")
+        st.bar_chart(
+            chart[["potencia_fiscalizada_mw"]].rename(
+                columns={"potencia_fiscalizada_mw": "Potência fiscalizada (MW)"}
+            )
+        )
         st.caption(
             "A barra mostra só a potência fiscalizada (MW) das usinas "
             "associadas a este município."

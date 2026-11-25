@@ -12,6 +12,11 @@ from geoai.portal import (
     municipality_label,
     search_municipalities,
 )
+from geoai.portal.formatos import (
+    rotulo_classe_consumo,
+    rotulo_porte,
+    rotulo_tecnologia,
+)
 from geoai.portal.mmgd_panel import (
     compare_municipal_mmgd,
     list_mmgd_filter_options,
@@ -94,17 +99,25 @@ with f1:
     tipo_sel = st.selectbox(
         "Tecnologia de geração",
         options=[none, *opts["tipo"]],
-        help="Um filtro categórico por vez. Redefine contagens e mapa.",
+        format_func=lambda v: v if v == none else rotulo_tecnologia(v),
+        help=(
+            "Um filtro por vez. A sigla entre parênteses é a que a ANEEL usa "
+            "no cadastro."
+        ),
     )
 with f2:
     classe_sel = st.selectbox(
         "Classe de consumo",
         options=[none, *opts["classe"]],
+        format_func=lambda v: v if v == none else rotulo_classe_consumo(v),
+        help="Classe do consumidor que recebe a energia, segundo a ANEEL.",
     )
 with f3:
     porte_sel = st.selectbox(
         "Porte",
         options=[none, *opts["porte"]],
+        format_func=lambda v: v if v == none else rotulo_porte(v),
+        help="Faixa de potência definida pela ANEEL para cada instalação.",
     )
 
 tipo_filter = None if tipo_sel == none else str(tipo_sel)
