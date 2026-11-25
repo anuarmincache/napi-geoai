@@ -198,8 +198,7 @@ def landcover_map_html(
     meta = next(g for g in bundle.panel["groups"] if g["key"] == group)
     gdf = mun_bundle.gdf.to_crs(epsg=4326).copy()
     shares = [
-        landcover_share(bundle, code, group, year)
-        for code in gdf["CD_MUN"].astype(str)
+        landcover_share(bundle, code, group, year) for code in gdf["CD_MUN"].astype(str)
     ]
     gdf["lc_value"] = [s if s is not None else 0.0 for s in shares]
     gdf["lc_has"] = [s is not None for s in shares]

@@ -1,4 +1,4 @@
-"""Catálogo de fontes e snapshot de qualidade (contratos existentes)."""
+"""Catálogo de fontes e retrato de qualidade dos dados preparados."""
 
 from __future__ import annotations
 
@@ -25,7 +25,8 @@ page_header(
 )
 st.caption(
     "Catálogo das fontes oficiais usadas ou previstas, com licença, "
-    "periodicidade e situação de cada uma. Esta página não baixa dados."
+    "periodicidade e situação de cada uma. As fontes são conferidas na "
+    "preparação dos dados, não a cada visita."
 )
 
 sources = list_sources()
@@ -48,7 +49,7 @@ with st.expander("Detalhes técnicos: verificação de qualidade do contorno est
     st.json(snap)
     st.markdown(
         """
-    **Escopo:** `validate_tabular_record` avalia atributos do registro, não a
+    **O que esta checagem cobre:** ela avalia os atributos de cada registro, não a
     geometria PostGIS. A validação geométrica já está no artefato
     `parana_uf_2025.validation.json` (MVP 02). Metadados ausentes aparecem como
     qualidade **não determinada** — a UI não inventa datas nem atributos.

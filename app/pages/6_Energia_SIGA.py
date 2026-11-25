@@ -21,6 +21,7 @@ from geoai.portal import (
 )
 from geoai.portal.energy_panel import (
     energy_scope_totals,
+    escopo_em_portugues,
     project_municipality_metrics,
 )
 from geoai.portal.textos_legados import atualizar
@@ -47,9 +48,10 @@ page_header(
     eyebrow="Energia",
 )
 st.caption(
-    "Capacidade **fiscalizada conhecida** (MW) de geração **centralizada** "
-    "no Paraná. Ausência ≠ zero. Não é geração efetiva (MWh), não é MMGD e "
-    "**não** é aptidão solar."
+    "Potência **fiscalizada** das usinas de grande porte do Paraná, em MW. "
+    "Potência é o tamanho da usina, **não** a energia que ela gerou (MWh). "
+    "Município sem usina no mapa não é ausência comprovada, e nada aqui "
+    "indica aptidão solar."
 )
 
 mun = cached_municipality_layer()
@@ -144,7 +146,7 @@ else:
 notice = energy_public_notice(energy)
 st.warning(notice["notice_pt"])
 st.caption(
-    "Fonte: ANEEL/SIGA e malha municipal IBGE municipio_2025. "
+    "Fonte: ANEEL, cadastro SIGA, sobre a Malha Municipal IBGE 2025. "
     f"Conjunto de dados: {notice['dat_conjunto']}. "
     f"Arquivo recuperado em {notice['retrieved_at']}. "
     f"Painel preparado em {notice['prepared_at']}."
@@ -174,11 +176,12 @@ c4.metric(
 )
 st.caption(scope["kpi_caption_pt"])
 st.caption(
-    f"Rótulo da soma: `{scope['soma_rotulo']}` · cobertura: "
-    f"**{scope['soma_cobertura']}** · "
-    f"ausências de potência fiscalizada: "
-    f"{scope['n_potencia_fiscalizada_ausente_fase']} · "
-    f"não associados no escopo: {n_un}"
+    "Todos os registros deste recorte têm potência declarada."
+    if not scope["n_potencia_fiscalizada_ausente_fase"]
+    else (
+        f"{scope['n_potencia_fiscalizada_ausente_fase']} registros deste "
+        "recorte não declaram potência e ficam fora da soma."
+    )
 )
 if scope.get("totals_caveat_pt"):
     st.warning(scope["totals_caveat_pt"])
@@ -414,8 +417,10 @@ else:
             f"n={cmp['b']['display_n']} · {cmp['b']['status_dados']}"
         )
     st.write(
-        f"Δ MW (A−B): **{br_num(cmp['delta_fiscalizada_mw_a_minus_b'], 1)}** · "
-        f"Δ n: **{cmp['delta_n_a_minus_b']}** · escopo `{cmp['metric_scope']}`"
+        "Diferença do primeiro para o segundo: "
+        f"**{br_num(cmp['delta_fiscalizada_mw_a_minus_b'], 1)} MW** e "
+        f"**{br_num(cmp['delta_n_a_minus_b'])} usinas**, em "
+        f"{escopo_em_portugues(cmp['metric_scope'])}."
     )
     st.warning(cmp["disclaimer_pt"])
     st.download_button(

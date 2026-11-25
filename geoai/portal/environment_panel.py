@@ -91,16 +91,15 @@ def environment_source_inventory(
             theme_pt="Limites municipais",
             source_id="ibge.malhas_municipais.pr_municipios_2025",
             organization="IBGE",
-            catalogued=_is_catalogued(
-                "ibge.malhas_municipais.pr_municipios_2025"
-            ),
+            catalogued=_is_catalogued("ibge.malhas_municipais.pr_municipios_2025"),
             local_file=mesh_file,
             validated=mesh_ok,
             integrated=mesh_ok,
             supports_environmental_indicator=False,
             note_pt=(
-                "Malha municipio_2025, 399 municípios, CRS EPSG:4674, "
-                "área oficial AREA_KM2. Serve de moldura territorial. "
+                "Malha Municipal do IBGE de 2025, com os 399 municípios e a "
+                "área oficial de cada um. "
+                "Serve de moldura territorial. "
                 "Não é cobertura do solo."
             ),
         ),
@@ -128,9 +127,7 @@ def environment_source_inventory(
             source_id=None,
             organization="MMA/ICMBio/IAT",
             catalogued=False,
-            local_file=_has_named_file(
-                root, ("cnuc", "icmbio", "unidade_conservacao")
-            ),
+            local_file=_has_named_file(root, ("cnuc", "icmbio", "unidade_conservacao")),
             validated=False,
             integrated=False,
             supports_environmental_indicator=False,

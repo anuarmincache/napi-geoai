@@ -46,10 +46,11 @@ page_header(
     eyebrow="Energia",
 )
 st.caption(
-    "Potência **instalada conhecida** (kW→MW) de empreendimentos MMGD no "
-    "Paraná. Contagem primária = **empreendimentos**. "
-    "UCs que recebem créditos são métrica **secundária**. "
-    "Ausência ≠ zero inventado. Não é SIGA, MWh nem aptidão solar."
+    "Potência **instalada** da geração distribuída do Paraná, em MW. A "
+    "contagem principal é de **instalações**. As unidades que recebem "
+    "crédito são consumidores beneficiados, não instalações, e aparecem "
+    "como número secundário. Potência **não** é energia gerada (MWh), não "
+    "se soma às usinas de grande porte e não indica aptidão solar."
 )
 
 t_load0 = time.perf_counter()
@@ -176,7 +177,7 @@ else:
     )
     uc = scope.get("qtd_uc_recebe_credito_total")
     c3.metric(
-        "UCs crédito (secundário)",
+        "Unidades que recebem crédito",
         f"{uc:,}".replace(",", ".") if uc is not None else "n/d no filtro",
         help=(
             "Consumidores que recebem crédito da energia gerada. Um mesmo "
@@ -353,7 +354,7 @@ else:
         ),
     )
     m3.metric(
-        "UCs crédito (total mun.)",
+        "Unidades que recebem crédito",
         (
             f"{int(raw.get('qtd_uc_recebe_credito') or 0):,}".replace(",", ".")
             if not (tipo_filter or classe_filter or porte_filter)
@@ -409,19 +410,36 @@ if not cmp.get("ok"):
     st.warning(cmp.get("message") or "Comparação indisponível.")
 else:
     a, b = cmp["a"], cmp["b"]
-    st.markdown(
-        f"**{a.get('NM_MUN')}** (`{a.get('CD_MUN')}`) — "
-        f"n={a.get('display_n')} · MW="
-        f"{a.get('display_mw') if a.get('display_mw') is not None else 'n/d'}"
-    )
-    st.markdown(
-        f"**{b.get('NM_MUN')}** (`{b.get('CD_MUN')}`) — "
-        f"n={b.get('display_n')} · MW="
-        f"{b.get('display_mw') if b.get('display_mw') is not None else 'n/d'}"
+    nome_a = a.get("NM_MUN") or "Município A"
+    nome_b = b.get("NM_MUN") or "Município B"
+
+    def _diferenca(valor: object, casas: int) -> str:
+        if valor is None:
+            return "n/d"
+        numero = float(valor)
+        sinal = "+" if numero >= 0 else "−"
+        return f"{sinal}{br_num(abs(numero), casas)}"
+
+    st.dataframe(
+        [
+            {
+                "Indicador": "Instalações",
+                nome_a: br_num(a.get("display_n")),
+                nome_b: br_num(b.get("display_n")),
+                "Diferença": _diferenca(cmp.get("delta_n_a_minus_b"), 0),
+            },
+            {
+                "Indicador": "Potência instalada (MW)",
+                nome_a: br_num(a.get("display_mw"), 1),
+                nome_b: br_num(b.get("display_mw"), 1),
+                "Diferença": _diferenca(cmp.get("delta_mw_a_minus_b"), 1),
+            },
+        ],
+        hide_index=True,
+        width="stretch",
     )
     st.caption(
-        f"Δ n (A−B): {cmp.get('delta_n_a_minus_b')} · "
-        f"Δ MW: {cmp.get('delta_mw_a_minus_b')} · escopo `{cmp.get('metric_scope')}`"
+        f"A diferença é {nome_a} menos {nome_b}, no recorte escolhido acima."
     )
     st.caption(cmp["disclaimer_pt"])
     st.download_button(

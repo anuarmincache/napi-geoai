@@ -149,9 +149,7 @@ metric_choice = st.selectbox(
     format_func={
         "populacao_estimada_2026_hab": "População estimada 2026 (hab)",
         "densidade_demografica_estimada_2026_hab_km2": "Densidade estimada (hab/km²)",
-        "potencia_fiscalizada_conhecida_kw_por_habitante": (
-            "kW/hab SIGA conhecida"
-        ),
+        "potencia_fiscalizada_conhecida_kw_por_habitante": ("kW/hab SIGA conhecida"),
     }.__getitem__,
 )
 
@@ -180,7 +178,8 @@ if profile:
         st.caption(
             "IBGE, estimativa de "
             f"{date_br(profile['populacao_referencia_data'])} (não é Censo) e "
-            "Malha Municipal 2025. " + (profile.get("densidade_note_pt") or "")
+            "Malha Municipal 2025. "
+            + (atualizar(profile.get("densidade_note_pt")) or "")
         )
 
     with card_e.container(border=True):
@@ -200,10 +199,10 @@ if profile:
         st.metric("Status energia SIGA", SIGA_STATUS_PT.get(status, status))
         if profile.get("zero_vinculado"):
             st.info(
-                "Zero vinculado (usinas georreferenciadas associadas) — "
+                "Nenhuma usina localizada e vinculada a este município no "
                 "não interpretar como ausência absoluta de empreendimentos."
             )
-        st.caption(profile.get("energy_scope_pt") or "")
+        st.caption(atualizar(profile.get("energy_scope_pt")) or "")
         if level != AudienceLevel.BASIC:
             st.caption(profile.get("kw_por_habitante_note_pt") or "")
             st.caption(profile.get("unassociated_plants_limitation_pt") or "")
@@ -255,10 +254,12 @@ if profile:
                     + "."
                 )
             st.caption(
-                f"Snapshot ANEEL {mmgd.panel.get('periodo_referencia') or 'n/d'}. "
-                "MMGD ≠ SIGA. Contagem = empreendimentos; "
-                "UCs crédito não substituem essa contagem. Muitas instalações "
-                "não provam saturação de mercado."
+                "Retrato da ANEEL de "
+                f"{mmgd.panel.get('periodo_referencia') or 'data não registrada'}"
+                ". Geração distribuída e usinas de grande porte são cadastros "
+                "diferentes e não se somam. A contagem é de instalações, e as "
+                "unidades que recebem crédito não substituem essa contagem. "
+                "Muitas instalações não provam saturação de mercado."
             )
 
     with card_a.container(border=True):
@@ -345,13 +346,9 @@ else:
             with col_nome:
                 st.markdown(f"**{pos}. {viz.nome}**")
                 if viz.parecido_em:
-                    st.caption(
-                        "Parecido em " + ", ".join(viz.parecido_em).lower()
-                    )
+                    st.caption("Parecido em " + ", ".join(viz.parecido_em).lower())
                 if viz.diferente_em:
-                    st.caption(
-                        "Diferente em " + ", ".join(viz.diferente_em).lower()
-                    )
+                    st.caption("Diferente em " + ", ".join(viz.diferente_em).lower())
             with col_dist:
                 st.metric(
                     "Distância",
@@ -394,33 +391,65 @@ with ca:
 with cb:
     b_lab = st.selectbox("Município B", labels_all, key="ficha_cmp_b")
 
-cmp = compare_municipal_profiles(
-    pop, label_to_code[a_lab], label_to_code[b_lab]
-)
+cmp = compare_municipal_profiles(pop, label_to_code[a_lab], label_to_code[b_lab])
 if not cmp.get("ok"):
     st.warning(cmp.get("message"))
 else:
-    x, y = st.columns(2)
-    for col, side in ((x, "a"), (y, "b")):
-        row = cmp[side]
-        with col:
-            st.markdown(f"**{row['NM_MUN']}** (`{row['CD_MUN']}`)")
-            dens = row.get("densidade_demografica_estimada_2026_hab_km2")
-            kw = row.get("potencia_fiscalizada_conhecida_kw_por_habitante")
-            pop_n = int(row["populacao_estimada_2026_hab"])
-            st.write(
-                f"Pop. 2026: **{pop_n:,}** hab · "
-                f"densidade: **{dens}** hab/km² · kW/hab: **{kw}**"
-            )
-    st.write("Δ (A−B):", cmp["deltas"])
-    st.caption("Unidades: " + json.dumps(cmp["units"], ensure_ascii=False))
+    # Rótulos e casas decimais de cada indicador comparado. A página mostra
+    # uma tabela legível; o conteúdo técnico completo continua no JSON que o
+    # botão abaixo baixa.
+    INDICADORES_COMPARADOS = (
+        ("populacao_estimada_2026_hab", "População estimada", "hab", 0),
+        (
+            "densidade_demografica_estimada_2026_hab_km2",
+            "Densidade demográfica",
+            "hab/km²",
+            1,
+        ),
+        ("area_km2_ibge_2025", "Área", "km²", 1),
+        (
+            "potencia_fiscalizada_conhecida_mw",
+            "Usinas, potência fiscalizada",
+            "MW",
+            1,
+        ),
+        (
+            "potencia_fiscalizada_conhecida_kw_por_habitante",
+            "Usinas por habitante",
+            "kW/hab",
+            3,
+        ),
+    )
+    nome_a, nome_b = cmp["a"]["NM_MUN"], cmp["b"]["NM_MUN"]
+    linhas_cmp = []
+    for chave, rotulo, unidade, casas in INDICADORES_COMPARADOS:
+        valor_a = cmp["a"].get(chave)
+        valor_b = cmp["b"].get(chave)
+        diferenca = cmp["deltas"].get(chave)
+        linhas_cmp.append(
+            {
+                "Indicador": f"{rotulo} ({unidade})",
+                nome_a: br_num(valor_a, casas),
+                nome_b: br_num(valor_b, casas),
+                "Diferença": (
+                    "n/d"
+                    if diferenca is None
+                    else f"{'+' if diferenca >= 0 else '−'}"
+                    f"{br_num(abs(diferenca), casas)}"
+                ),
+            }
+        )
+    st.dataframe(linhas_cmp, hide_index=True, width="stretch")
+    st.caption(
+        f"A diferença é {nome_a} menos {nome_b}. Densidade e potência por "
+        "habitante são indicadores calculados, e misturam anos de referência "
+        "diferentes: população de 2026 com área de 2025."
+    )
     st.warning(cmp["disclaimer_pt"])
     st.download_button(
         "Baixar comparação (JSON)",
         data=json.dumps(cmp, ensure_ascii=False, indent=2),
-        file_name=(
-            f"ficha_cmp_{cmp['a']['CD_MUN']}_{cmp['b']['CD_MUN']}.json"
-        ),
+        file_name=(f"ficha_cmp_{cmp['a']['CD_MUN']}_{cmp['b']['CD_MUN']}.json"),
         mime="application/json",
     )
 

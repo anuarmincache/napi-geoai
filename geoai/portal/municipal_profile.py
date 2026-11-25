@@ -10,6 +10,7 @@ from geoai.population.panel import (
     PopulationPanelBundle,
     load_population_panel_bundle,
 )
+from geoai.portal.formatos import data_br
 from geoai.portal.municipal_explorer import MunicipalityLayerBundle
 
 __all__ = [
@@ -30,11 +31,11 @@ def population_attribution_lines(bundle: PopulationPanelBundle) -> tuple[str, ..
         f"Referência: {prov.get('reference_date') or '2026-07-01'} "
         f"(não é Censo Demográfico)",
         f"Edição: {prov.get('edition_id') or qual.get('edition_id') or 'n/d'}",
-        f"Recuperado em: {prov.get('retrieved_at') or 'indisponível'}",
+        f"Arquivo baixado em {data_br(prov.get('retrieved_at'))}",
         f"SHA XLSX: {(prov.get('content_sha256') or '')[:16]}…",
         f"Municípios: {bundle.panel.get('municipality_count')}/"
         f"{EXPECTED_PR_MUNICIPALITY_COUNT}",
-        "Área: AREA_KM2 malha IBGE municipio_2025",
+        "Área: valor oficial da Malha Municipal do IBGE de 2025",
         "Energia: SIGA/ANEEL MW fiscalizada conhecida (centralizada, Operação); "
         "não MMGD; não MWh",
     ]
@@ -100,10 +101,12 @@ def compare_municipal_profiles(
             "area_km2_ibge_2025": "km²",
         },
         "disclaimer_pt": (
-            "Comparação de estimativa populacional IBGE 2026, área malha 2025 e "
-            "capacidade SIGA conhecida. n/d ≠ zero inventado; zero vinculado "
-            "(sem usina georreferenciada associada) ≠ ausência absoluta. "
-            "Não é Censo, MWh, MMGD nem aptidão solar."
+            "A comparação usa a população estimada pelo IBGE para 2026, a "
+            "área da malha de 2025 e a potência das usinas de grande porte. "
+            "Onde aparece «n/d», o dado não existe na fonte, e isso não é "
+            "zero. Município com zero usinas significa nenhuma usina "
+            "localizada e vinculada no cadastro, não ausência comprovada. "
+            "A população é estimativa, não Censo."
         ),
     }
 
@@ -160,9 +163,7 @@ def population_map_html(
             "kW/hab SIGA conhecida (centralizada; não MMGD/MWh)"
         ),
     }
-    data = population_choropleth_geojson(
-        mun_bundle, pop_bundle, metric=metric
-    )
+    data = population_choropleth_geojson(mun_bundle, pop_bundle, metric=metric)
     values = [
         float(f["properties"].get(metric))
         for f in data.get("features") or []

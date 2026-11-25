@@ -40,7 +40,7 @@ page_header(
     eyebrow="Comece aqui",
 )
 st.caption(
-    "Malha municipal oficial IBGE (`municipio_2025`) — **todos os "
+    "Malha Municipal oficial do IBGE, edição 2025 — **todos os "
     f"{EXPECTED_PR_MUNICIPALITY_COUNT} municípios** disponíveis. "
     "Limite administrativo **não** é aptidão solar nem viabilidade comercial."
 )
