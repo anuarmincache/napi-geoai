@@ -241,7 +241,8 @@ def aggregate_plants_by_municipality(
         "spatial_reference": "qgis",
         "metric_note": (
             "Capacidade fiscalizada/outorgada em MW (kW/1000), apenas valores "
-            "conhecidos e não negativos. Ausência ≠ zero. "
+            "conhecidos e não negativos. Registro sem potência declarada "
+            "não é potência zero. "
             "Não é geração efetiva (MWh). Não inclui MMGD."
         ),
         "municipality_count": len(municipalities),

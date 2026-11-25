@@ -56,15 +56,12 @@ def _assert_energy_covers_mesh(
             f"esperado {EXPECTED_PR_MUNICIPALITY_COUNT}."
         )
     if len(energy_by_code) != len(energy_codes):
-        raise EnergyCoverageError(
-            "Painel SIGA com CD_MUN duplicados — fail-closed."
-        )
+        raise EnergyCoverageError("Painel SIGA com CD_MUN duplicados — fail-closed.")
     if energy_codes != mesh_codes:
         only_e = sorted(energy_codes - mesh_codes)[:5]
         only_m = sorted(mesh_codes - energy_codes)[:5]
         raise EnergyCoverageError(
-            "CD_MUN SIGA ≠ malha: "
-            f"só_siga={only_e} só_malha={only_m}"
+            f"CD_MUN SIGA ≠ malha: só_siga={only_e} só_malha={only_m}"
         )
 
 
@@ -146,7 +143,7 @@ def build_population_energy_panel(
         "nao_associados_limitation_pt": (
             (
                 f"{nao_associados_n} empreendimentos SIGA sem associação "
-                "municipal; sem_empreendimento = zero vinculado "
+                "municipal. Município marcado como sem usina significa zero vinculado "
                 "(georreferenciado/associado), não ausência absoluta."
             )
             if energy_source_available

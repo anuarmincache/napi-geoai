@@ -14,6 +14,7 @@ from typing import Any
 
 import geopandas as gpd
 
+from geoai.portal.formatos import data_br
 from geoai.portal.paths import (
     parana_geojson_path,
     parana_provenance_path,
@@ -206,8 +207,7 @@ def load_parana_layer(repo_root: Path | None = None) -> ParanaLayerBundle:
             geo_path=geo_path,
             root=root,
             reason=(
-                "Arquivo de validação indica geometrias inválidas "
-                "(all_valid=false)."
+                "Arquivo de validação indica geometrias inválidas (all_valid=false)."
             ),
             provenance=provenance,
             validation=validation,
@@ -282,7 +282,7 @@ def attribution_lines(bundle: ParanaLayerBundle) -> tuple[str, ...]:
     else:
         lines.append("Edição: indisponível na proveniência")
     if d.updated_at:
-        lines.append(f"Recuperado em: {d.updated_at}")
+        lines.append(f"Arquivo baixado em {data_br(d.updated_at)}")
     else:
         lines.append("Data de recuperação: indisponível")
     if d.update_policy:
@@ -328,16 +328,10 @@ def quality_snapshot_for_demo(bundle: ParanaLayerBundle) -> dict[str, Any]:
             "missing_provenance_fields": missing,
             "content_sha256_ok": bundle.content_sha256_ok,
             "validation_all_valid": geom_flag,
-            "note": (
-                "Sem simulação de registro tabular nem data de coleta inventada."
-            ),
+            "note": ("Sem simulação de registro tabular nem data de coleta inventada."),
         }
 
-    determined = (
-        bundle.content_sha256_ok is True
-        and not missing
-        and geom_flag is True
-    )
+    determined = bundle.content_sha256_ok is True and not missing and geom_flag is True
     return {
         "status": "valid" if determined else "undetermined",
         "determined": determined,

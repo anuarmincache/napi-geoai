@@ -66,7 +66,9 @@ def test_compare_and_rank() -> None:
     cmp = compare_municipal_mmgd(bundle, "4115200", "4113700")
     assert cmp["ok"] is True
     assert cmp["a"]["CD_MUN"] == "4115200"
-    assert "SIGA" in cmp["disclaimer_pt"] or "MMGD" in cmp["disclaimer_pt"]
+    ressalva = cmp["disclaimer_pt"].lower()
+    assert "geração distribuída" in ressalva
+    assert "não inclui as usinas de grande porte" in ressalva
 
 
 def test_project_metrics_and_options() -> None:

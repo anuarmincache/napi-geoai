@@ -12,7 +12,7 @@ from _bootstrap import (
     sidebar_brand,
 )
 
-configure_page("Sobre e deploy")
+configure_page("Sobre o projeto")
 sidebar_brand()
 
 page_header(

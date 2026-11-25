@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
+from geoai.portal.formatos import data_br
 from geoai.portal.municipal_explorer import MunicipalityLayerBundle
 from geoai.portal.paths import (
     mmgd_panel_path,
@@ -22,6 +23,7 @@ from geoai.portal.paths import (
     mmgd_quality_path,
     repo_root_from_here,
 )
+from geoai.portal.textos_legados import atualizar
 
 __all__ = [
     "MmgdPanelBundle",
@@ -74,9 +76,7 @@ def _as_mun_list(panel: dict[str, Any]) -> list[dict[str, Any]]:
             item = dict(row)
             item.setdefault("cd_mun", str(code))
             item["CD_MUN"] = str(item.get("cd_mun") or code)
-            item["NM_MUN"] = str(
-                item.get("nome_fonte") or item.get("NM_MUN") or code
-            )
+            item["NM_MUN"] = str(item.get("nome_fonte") or item.get("NM_MUN") or code)
             rows.append(item)
         rows.sort(key=lambda r: str(r["CD_MUN"]))
         return rows
@@ -87,12 +87,18 @@ def _as_mun_list(panel: dict[str, Any]) -> list[dict[str, Any]]:
             code = str(item.get("cd_mun") or item.get("CD_MUN") or "").strip()
             item["CD_MUN"] = code
             item["cd_mun"] = code
-            item["NM_MUN"] = str(
-                item.get("nome_fonte") or item.get("NM_MUN") or code
-            )
+            item["NM_MUN"] = str(item.get("nome_fonte") or item.get("NM_MUN") or code)
             rows.append(item)
         return rows
     return []
+
+
+def _recorte_em_portugues(scope: object) -> str:
+    """Nomeia o recorte ativo em linguagem comum, sem o código interno."""
+    bruto = str(scope or "").strip().lower()
+    if bruto in ("", "todas", "todos", "todas_classes"):
+        return "todos os registros"
+    return bruto.replace("_", " ")
 
 
 def mmgd_municipalities_list(bundle: MmgdPanelBundle) -> list[dict[str, Any]]:
@@ -257,8 +263,7 @@ def load_mmgd_panel_bundle(repo_root: Path | None = None) -> MmgdPanelBundle:
             provenance=provenance,
             quality=quality,
             missing_reason_pt=(
-                "Painel MMGD incompatível — chaves ausentes: "
-                + ", ".join(missing)
+                "Painel MMGD incompatível — chaves ausentes: " + ", ".join(missing)
             ),
         )
 
@@ -283,9 +288,7 @@ def load_mmgd_panel_bundle(repo_root: Path | None = None) -> MmgdPanelBundle:
             missing_reason_pt="quality.reconcile_ok ≠ true — painel rejeitado.",
         )
     totals = panel.get("totals") or {}
-    if int(totals.get("n_empreendimentos") or -1) != int(
-        quality.get("n_valid") or -2
-    ):
+    if int(totals.get("n_empreendimentos") or -1) != int(quality.get("n_valid") or -2):
         return MmgdPanelBundle(
             available=False,
             panel=panel,
@@ -359,26 +362,23 @@ def mmgd_scope_totals(
         "municipality_count": EXPECTED_PR_MUNICIPALITY_COUNT,
         "municipality_count_expected": EXPECTED_PR_MUNICIPALITY_COUNT,
         "n_empreendimentos": n,
-        "potencia_instalada_mw_conhecida": (
-            float(mw) if mw is not None else None
-        ),
+        "potencia_instalada_mw_conhecida": (float(mw) if mw is not None else None),
         "qtd_uc_recebe_credito_total": int(uc) if uc is not None else None,
         "n_municipios_com_registros": n_mun,
         "mw_available_in_scope": mw_ok,
         "kpi_caption_pt": (
-            f"KPIs no escopo «{scope}» · catálogo municipal fixo "
-            f"{EXPECTED_PR_MUNICIPALITY_COUNT}/{EXPECTED_PR_MUNICIPALITY_COUNT}"
+            f"Números acima: {_recorte_em_portugues(scope)}, somados sobre "
+            f"os {EXPECTED_PR_MUNICIPALITY_COUNT} municípios do Paraná"
             + (
-                ""
+                "."
                 if mw_ok
-                else " · MW/UC não desagregados no filtro (contagem apenas)"
+                else ". Neste filtro a ANEEL não separa potência nem unidades "
+                "beneficiadas, então só a contagem de instalações aparece."
             )
         ),
         "filter_note_pt": None
         if mw_ok
-        else (
-            projected[0].get("filter_note_pt") if projected else None
-        ),
+        else (projected[0].get("filter_note_pt") if projected else None),
     }
 
 
@@ -417,9 +417,7 @@ def compare_municipal_mmgd(
     classe: str | None = None,
     porte: str | None = None,
 ) -> dict[str, Any]:
-    by_code = {
-        str(r["CD_MUN"]): r for r in mmgd_municipalities_list(bundle)
-    }
+    by_code = {str(r["CD_MUN"]): r for r in mmgd_municipalities_list(bundle)}
     raw_a = by_code.get(str(code_a).strip())
     raw_b = by_code.get(str(code_b).strip())
     if raw_a is None or raw_b is None:
@@ -445,9 +443,10 @@ def compare_municipal_mmgd(
         "metric_scope": scope,
         "delta_n_a_minus_b": na - nb,
         "disclaimer_pt": (
-            "Comparação MMGD de empreendimentos (contagem primária). "
-            "Não é SIGA, MWh nem aptidão solar. "
-            "UCs crédito são métrica secundária e só entram no escopo total."
+            "A comparação usa a contagem de instalações de geração "
+            "distribuída. Não inclui as usinas de grande porte, não é energia "
+            "gerada e não indica aptidão solar. As unidades que recebem "
+            "crédito são número secundário e só aparecem no total."
         ),
     }
     if a.get("mw_available_in_scope") and b.get("mw_available_in_scope"):
@@ -470,34 +469,37 @@ def mmgd_attribution_lines(bundle: MmgdPanelBundle) -> tuple[str, ...]:
         "Fonte: ANEEL — MMGD (Mini e Microgeração Distribuída)",
         f"Licença: {prov.get('license_note') or 'ODbL (Dados Abertos ANEEL)'}",
         f"URL do recurso: {prov.get('url') or 'n/d'}",
-        f"Recuperado em: {prov.get('retrieved_at') or 'indisponível'}",
+        f"Arquivo baixado em {data_br(prov.get('retrieved_at'))}",
         "Preparação do painel: "
-        f"{prov.get('prepared_at') or qual.get('prepared_at') or 'n/d'}",
-        "DatGeracaoConjuntoDados: "
-        f"{panel.get('dat_conjunto') or prov.get('dat_conjunto') or 'n/d'}",
-        "AnmPeriodoReferencia (snapshot): "
-        f"{panel.get('periodo_referencia') or prov.get('periodo_referencia') or 'n/d'}",
-        f"SHA-256 do ZIP: {prov.get('content_sha256') or 'n/d'}",
-        "Unidade primária: "
-        f"{panel.get('unit_primary') or qual.get('unit_primary')}",
-        "Unidade secundária: "
+        f"{data_br(prov.get('prepared_at') or qual.get('prepared_at'))}",
+        "Conjunto de dados gerado pela ANEEL em "
+        f"{data_br(panel.get('dat_conjunto') or prov.get('dat_conjunto'))}",
+        "Período de referência do retrato: "
         + str(
-            panel.get("unit_secondary_uc_credito")
-            or qual.get("unit_secondary_uc_credito")
-            or ""
+            panel.get("periodo_referencia")
+            or prov.get("periodo_referencia")
+            or "não registrado"
         ),
-        "Potência = MdaPotenciaInstaladaKW (kW→MW). Não é geração em MWh.",
-        "MMGD ≠ SIGA (geração centralizada).",
+        f"Impressão digital do arquivo: {prov.get('content_sha256') or 'n/d'}",
+        "A contagem principal é de instalações. As unidades que recebem "
+        "crédito são consumidores beneficiados e aparecem como número "
+        "secundário.",
+        "A potência vem em quilowatts no cadastro e é somada em megawatts "
+        "nesta página. Potência não é energia gerada em MWh.",
+        "Geração distribuída e usinas de grande porte são cadastros diferentes "
+        "da ANEEL e não se somam.",
         str(
-            panel.get("temporal_note_pt")
-            or qual.get("temporal_note_pt")
+            atualizar(panel.get("temporal_note_pt") or qual.get("temporal_note_pt"))
             or ""
         ),
-        f"Rejeitados no PR: {qual.get('n_rejected')} "
-        f"({qual.get('reject_reasons') or {}})",
-        f"Municípios: {panel.get('municipality_count')}/"
-        f"{EXPECTED_PR_MUNICIPALITY_COUNT} · reconcile_ok="
-        f"{qual.get('reconcile_ok')}",
+        f"Registros do Paraná descartados na checagem: {qual.get('n_rejected')}",
+        f"Municípios no painel: {panel.get('municipality_count')} de "
+        f"{EXPECTED_PR_MUNICIPALITY_COUNT}"
+        + (
+            ", conferidos contra a malha oficial."
+            if qual.get("reconcile_ok")
+            else ", com divergência na conferência contra a malha oficial."
+        ),
     ]
     excluded = qual.get("personal_fields_excluded") or []
     if excluded:
@@ -519,9 +521,9 @@ def mmgd_public_notice(bundle: MmgdPanelBundle) -> dict[str, Any]:
         or prov.get("periodo_referencia"),
         "dat_conjunto": panel.get("dat_conjunto") or prov.get("dat_conjunto"),
         "retrieved_at": str(prov.get("retrieved_at") or "")[:10] or "n/d",
-        "prepared_at": str(
-            prov.get("prepared_at") or qual.get("prepared_at") or ""
-        )[:10]
+        "prepared_at": str(prov.get("prepared_at") or qual.get("prepared_at") or "")[
+            :10
+        ]
         or "n/d",
         "n_rejected": n_rej,
         "reject_reasons": reasons,
@@ -547,9 +549,7 @@ def mmgd_choropleth_geojson(
     if not mun_bundle.available or not mmgd.available:
         raise FileNotFoundError("malha ou painel MMGD indisponível")
     by_code = {
-        str(r["CD_MUN"]): project_mmgd_metrics(
-            r, tipo=tipo, classe=classe, porte=porte
-        )
+        str(r["CD_MUN"]): project_mmgd_metrics(r, tipo=tipo, classe=classe, porte=porte)
         for r in mmgd_municipalities_list(mmgd)
     }
     gdf = mun_bundle.gdf.copy()
@@ -564,9 +564,7 @@ def mmgd_choropleth_geojson(
         status.append(str(hit.get("status_dados") or "zero_no_cadastro_pr"))
         n_vals.append(int(hit.get("display_n") or 0))
         mw_vals.append(
-            float(hit["display_mw"])
-            if hit.get("display_mw") is not None
-            else None
+            float(hit["display_mw"]) if hit.get("display_mw") is not None else None
         )
         scopes.append(str(hit.get("metric_scope") or "todas"))
         map_metric = str(hit.get("map_metric") or map_metric)
@@ -581,9 +579,7 @@ def mmgd_choropleth_geojson(
     if map_metric == "n_empreendimentos":
         gdf["choropleth_value"] = n_vals
     else:
-        gdf["choropleth_value"] = [
-            float(v) if v is not None else 0.0 for v in mw_vals
-        ]
+        gdf["choropleth_value"] = [float(v) if v is not None else 0.0 for v in mw_vals]
     return json.loads(gdf.to_crs(epsg=4326).to_json())
 
 

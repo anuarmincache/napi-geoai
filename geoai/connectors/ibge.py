@@ -27,7 +27,7 @@ IBGE_PR_MUNICIPIOS_2025_URL = (
 )
 
 IBGE_LICENSE_NOTE = (
-    "Arquivos públicos do IBGE/Geociências (geoftp). Uso sujeito às condições "
+    "Arquivos públicos do IBGE, diretoria de Geociências. Uso sujeito às condições "
     "institucionais do IBGE; citar a origem e a edição da malha."
 )
 

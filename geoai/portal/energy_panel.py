@@ -12,6 +12,7 @@ from geoai.energy.siga_aggregate import (
     EnergyPanelBundle,
     load_energy_panel_bundle,
 )
+from geoai.portal.formatos import data_br, numero_br
 from geoai.portal.municipal_explorer import MunicipalityLayerBundle
 from geoai.portal.paths import derived_dir, repo_root_from_here
 
@@ -41,9 +42,10 @@ def energy_attribution_lines(bundle: EnergyPanelBundle) -> tuple[str, ...]:
     lines = [
         "Fonte: ANEEL — SIGA (Sistema de Informações de Geração)",
         f"Licença: {prov.get('license_note') or 'ODbL (Dados Abertos ANEEL)'}",
-        f"Recuperado em: {prov.get('retrieved_at') or 'indisponível'}",
+        f"Arquivo baixado em {data_br(prov.get('retrieved_at'))}",
         f"DatGeracaoConjuntoDados (amostra): {dat}",
-        "Métrica: capacidade fiscalizada conhecida (MW) — ausente ≠ zero; "
+        "O número somado é a potência fiscalizada, em MW. Registro sem "
+        "potência declarada fica fora da soma e não vira zero. "
         "não é geração em MWh.",
         "Escopo: geração centralizada SIGA. MMGD é pipeline/painel "
         "separado — não misturar métricas.",
@@ -67,9 +69,16 @@ def energy_attribution_lines(bundle: EnergyPanelBundle) -> tuple[str, ...]:
     recon = qual.get("spatial_reconciliation") or {}
     if recon:
         lines.append(
-            "Reconciliação CodCEG→CD_MUN QGIS↔GeoPandas: "
-            f"ok={recon.get('ok')} · divergências="
-            f"{(recon.get('agreement') or {}).get('cd_mun_divergences')}"
+            "A associação de cada usina ao seu município foi conferida por "
+            "dois caminhos independentes: "
+            + (
+                "os dois concordaram em todos os casos."
+                if recon.get("ok")
+                else (
+                    f"{(recon.get('agreement') or {}).get('cd_mun_divergences')} "
+                    "usinas ficaram com município divergente entre eles."
+                )
+            )
         )
     return tuple(lines)
 
@@ -174,9 +183,7 @@ def municipality_generation_mix(
                 "potencia_fiscalizada_mw": _known_mw(
                     metrics, "potencia_fiscalizada_mw"
                 ),
-                "potencia_outorgada_mw": _known_mw(
-                    metrics, "potencia_outorgada_mw"
-                ),
+                "potencia_outorgada_mw": _known_mw(metrics, "potencia_outorgada_mw"),
             }
         )
     return tuple(items)
@@ -200,10 +207,11 @@ def energy_public_notice(bundle: EnergyPanelBundle) -> dict[str, Any]:
         "retrieved_at": retrieved,
         "prepared_at": prepared,
         "notice_pt": (
-            f"{unassigned} usinas em Operação não estão associadas ao mapa "
-            f"municipal ({unassigned_mw:.3f} MW fiscalizados). Elas entram no "
-            "total da fase e não no município. Potência em MW não é energia "
-            "gerada em MWh."
+            f"{unassigned} usinas em operação não aparecem no mapa porque a "
+            "coordenada do cadastro está ausente, é inválida ou cai fora da "
+            f"malha municipal. Elas somam {numero_br(unassigned_mw, 1)} MW e "
+            "entram no total do estado, não no de um município. Potência em "
+            "MW não é energia gerada em MWh."
         ),
     }
 
@@ -239,9 +247,7 @@ def energy_scope_totals(
         for p in nao
         if p.get("potencia_fiscalizada_conhecida")
     )
-    aus_un = sum(
-        1 for p in nao if not p.get("potencia_fiscalizada_conhecida")
-    )
+    aus_un = sum(1 for p in nao if not p.get("potencia_fiscalizada_conhecida"))
     aus_fase = aus_mun + aus_un
     n_fase = n_mun_assoc + n_un
     mw_fase = round(mw_mun + mw_un, 6)
@@ -281,12 +287,41 @@ def energy_scope_totals(
             )
         ),
         "kpi_caption_pt": (
-            f"KPIs no escopo «{scope}» · cobertura "
-            f"{'completa' if completa else 'parcial'} · "
-            f"catálogo municipal fixo {n_mun_catalog}/"
-            f"{EXPECTED_PR_MUNICIPALITY_COUNT}"
+            f"Números acima: {escopo_em_portugues(scope)}, somados sobre os "
+            f"{n_mun_catalog} municípios do Paraná"
+            + (
+                "."
+                if completa
+                else ", com cobertura parcial do cadastro neste recorte."
+            )
         ),
     }
+
+
+def escopo_em_portugues(scope: object) -> str:
+    """Converte o código interno do recorte em texto para a tela.
+
+    Os códigos («todas_tecnologias», «ufv», «uhe»…) são chaves do cadastro da
+    ANEEL e servem ao motor, não a quem lê a página.
+    """
+    bruto = str(scope or "").strip()
+    if not bruto or bruto.lower() in ("todas", "todas_tecnologias"):
+        return "todas as tecnologias"
+    # O cadastro identifica o recorte por tipo como «tipo:UFV».
+    sigla = bruto.split(":", 1)[1].strip().upper() if ":" in bruto else bruto.upper()
+    nomes = {
+        "UFV": "usinas solares fotovoltaicas",
+        "UHE": "usinas hidrelétricas",
+        "PCH": "pequenas centrais hidrelétricas",
+        "CGH": "centrais geradoras hidrelétricas",
+        "UTE": "usinas termelétricas",
+        "EOL": "usinas eólicas",
+        "CGU": "centrais geradoras undi-elétricas",
+    }
+    nome = nomes.get(sigla)
+    if nome:
+        return f"{nome} ({sigla})"
+    return bruto.replace("_", " ")
 
 
 def municipalities_ranked(
@@ -319,9 +354,7 @@ def compare_municipal_energy(
     *,
     tipo: str | None = None,
 ) -> dict[str, Any]:
-    by_code = {
-        str(r["CD_MUN"]): r for r in (bundle.panel.get("municipalities") or [])
-    }
+    by_code = {str(r["CD_MUN"]): r for r in (bundle.panel.get("municipalities") or [])}
     raw_a = by_code.get(str(code_a).strip())
     raw_b = by_code.get(str(code_b).strip())
     if raw_a is None or raw_b is None:
@@ -344,9 +377,11 @@ def compare_municipal_energy(
         "delta_n_a_minus_b": int(a.get("display_n") or 0)
         - int(b.get("display_n") or 0),
         "disclaimer_pt": (
-            "Comparação de capacidade fiscalizada SIGA conhecida (MW) e "
-            f"contagem no escopo «{scope}». Não é geração MWh, MMGD "
-            "nem aptidão solar. Ausência de potência ≠ zero."
+            "A comparação usa a potência fiscalizada e a contagem de usinas "
+            f"de {escopo_em_portugues(scope)}. Potência não é energia "
+            "gerada, não inclui a geração distribuída e não indica aptidão "
+            "solar. Registro sem potência declarada fica fora da soma, e isso "
+            "não quer dizer que a potência seja zero."
         ),
     }
 
@@ -404,9 +439,7 @@ def energy_map_html(
     except ImportError as exc:  # pragma: no cover
         raise RuntimeError("folium necessário: pip install 'napi-geoai[ui]'") from exc
 
-    data = energy_choropleth_geojson(
-        mun_bundle, energy, metric=metric, tipo=tipo
-    )
+    data = energy_choropleth_geojson(mun_bundle, energy, metric=metric, tipo=tipo)
     values = [
         float(f["properties"].get(metric) or 0)
         for f in data.get("features") or []
@@ -418,9 +451,7 @@ def energy_map_html(
         colors=["#f7fbff", "#6baed6", "#08306b"],
         vmin=0.0,
         vmax=vmax if vmax > 0 else 1.0,
-        caption=(
-            f"Capacidade fiscalizada conhecida (MW) — escopo: {scope}"
-        ),
+        caption=(f"Capacidade fiscalizada conhecida (MW) — escopo: {scope}"),
     )
 
     import geopandas as gpd

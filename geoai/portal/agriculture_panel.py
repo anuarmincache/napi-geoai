@@ -91,16 +91,15 @@ def agriculture_source_inventory(
             theme_pt="Limites municipais",
             source_id="ibge.malhas_municipais.pr_municipios_2025",
             organization="IBGE",
-            catalogued=_is_catalogued(
-                "ibge.malhas_municipais.pr_municipios_2025"
-            ),
+            catalogued=_is_catalogued("ibge.malhas_municipais.pr_municipios_2025"),
             local_file=mesh_file,
             validated=mesh_ok,
             integrated=mesh_ok,
             supports_agricultural_indicator=False,
             note_pt=(
-                "Malha municipio_2025, 399 municípios, CRS EPSG:4674, "
-                "área oficial AREA_KM2. Serve de moldura. Não é área "
+                "Malha Municipal do IBGE de 2025, com os 399 municípios e a "
+                "área oficial de cada um. "
+                "Serve de moldura. Não é área "
                 "plantada, colhida nem produção."
             ),
         ),

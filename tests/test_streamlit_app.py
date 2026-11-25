@@ -181,10 +181,13 @@ def test_energy_kpis_follow_technology_filter(_streamlit_paths: None) -> None:
     fixed = next(lab for lab in labels_ufv if "Municípios no catálogo (fixo)" in lab)
     assert "399" in values_ufv[fixed]
     captions = "\n".join(str(c.value) for c in at.caption)
-    assert "tipo:UFV" in captions or "escopo «tipo:UFV»" in captions
-    assert "não associados no escopo" in captions.lower() or "não associados" in (
-        "\n".join(str(w.value) for w in at.warning).lower()
-    )
+    # A legenda nomeia a tecnologia filtrada sem expor o código interno.
+    assert "solares fotovoltaicas" in captions
+    assert "tipo:" not in captions
+    # A página precisa dizer quantas usinas ficam fora do mapa, em palavras.
+    avisos = "\n".join(str(w.value) for w in at.warning).lower()
+    assert "não aparecem no mapa" in avisos
+    assert "coordenada" in avisos
 
 
 def test_home_lists_energy_page(_streamlit_paths: None) -> None:
@@ -261,7 +264,7 @@ def test_energy_page_searches_any_municipality(_streamlit_paths: None) -> None:
     captions = "\n".join(str(item.value) for item in at.caption)
     assert "34" in warnings
     assert "MWh" in warnings
-    assert "ANEEL/SIGA" in captions
+    assert "ANEEL" in captions and "SIGA" in captions
     assert "IBGE" in captions
     assert any(len(list(box.options)) == 399 for box in at.selectbox)
     at.text_input[0].set_value("Virmond")

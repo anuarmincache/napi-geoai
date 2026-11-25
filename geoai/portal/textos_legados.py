@@ -40,6 +40,19 @@ SUBSTITUICOES: tuple[tuple[str, str], ...] = (
         "subestação) foram excluídos deste arquivo.",
     ),
     (
+        "AREA_KM2",
+        "Densidade estimada = população do IBGE em 01/07/2026 dividida pela "
+        "área oficial da Malha Municipal do IBGE de 2025. As duas referências "
+        "são de anos diferentes, então este número não é a densidade "
+        "censitária oficial.",
+    ),
+    (
+        "fase Operação; MMGD excluído",
+        "Usinas de grande porte em operação, no cadastro da ANEEL. Não inclui "
+        "a geração distribuída. Potência em MW não é energia gerada em MWh, e "
+        "zero significa nenhuma usina localizada e vinculada ao município.",
+    ),
+    (
         "MMGD não é SIGA",
         "Geração distribuída e geração centralizada são dois cadastros "
         "diferentes da ANEEL e não se somam.",

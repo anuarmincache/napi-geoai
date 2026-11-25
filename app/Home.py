@@ -161,7 +161,7 @@ if siga.available:
             f"{_int_br(tot['n_empreendimentos_fase'])} usinas em operação",
             "ANEEL · SIGA · coleta "
             f"{_date_br(siga.provenance.get('retrieved_at'))} · potência "
-            "fiscalizada conhecida",
+            "fiscalizada",
             "#2f4a33",
         )
     )
@@ -182,7 +182,7 @@ st.caption(
 # ---------------------------------------------------------------- Mapa
 st.markdown(
     '<h2 class="napi-section-title">O Paraná em um mapa</h2>'
-    '<p class="napi-section-sub">Potência instalada conhecida de geração '
+    '<p class="napi-section-sub">Potência instalada de geração '
     "distribuída por município. Passe o cursor para ver os valores.</p>",
     unsafe_allow_html=True,
 )
@@ -229,7 +229,7 @@ with side_col:
         st.caption("Busca indisponível sem a malha municipal.")
 
     if mmgd.available:
-        st.markdown("#### Maior potência MMGD instalada")
+        st.markdown("#### Maior potência instalada de geração distribuída")
         for pos, row in enumerate(mmgd_ranked(mmgd, limit=5), start=1):
             name = row.get("NM_MUN") or row.get("nome_fonte") or row.get("CD_MUN")
             st.markdown(
@@ -261,7 +261,9 @@ with aud[0]:
         unsafe_allow_html=True,
     )
     page_link("pages/8_Energia_MMGD.py", "Explorar MMGD por município", "☀️")
-    page_link("pages/11_Ferramentas.py", "Simular consumo e sistema FV", "🧮")
+    page_link(
+        "pages/11_Ferramentas.py", "Simular consumo e sistema solar", "🧮"
+    )
 with aud[1]:
     st.markdown(
         '<div class="napi-card">'
@@ -358,7 +360,7 @@ with s3:
         "- Biogás e biometano em níveis de evidência\n"
         "- Observatório dinâmico Paraná Agora\n"
         "- Radar exploratório de oportunidades\n"
-        "- Assistente com consulta às fontes"
+        "- Comparação automática entre municípios semelhantes"
     )
 
 with st.expander("Como classificamos cada número"):

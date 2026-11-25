@@ -82,9 +82,7 @@ def ndvi_targets_map_html(
         for code in codes
     ]
     gdf["ndvi_pop"] = [
-        f"{by_code[code]['population']:,}".replace(",", ".")
-        if code in by_code
-        else "—"
+        f"{by_code[code]['population']:,}".replace(",", ".") if code in by_code else "—"
         for code in codes
     ]
     minx, miny, maxx, maxy = gdf.total_bounds

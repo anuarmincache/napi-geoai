@@ -13,6 +13,7 @@ import geopandas as gpd
 
 from geoai.boundaries.validate import crs_equals
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT, EXPECTED_SOURCE_CRS
+from geoai.portal.formatos import data_br, edicao_da_malha
 from geoai.portal.paths import (
     municipalities_geojson_path,
     municipalities_provenance_path,
@@ -92,7 +93,6 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _empty() -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(geometry=[], crs=None)
-
 
 
 def area_km2_values_ok(values: Any) -> bool:
@@ -218,8 +218,7 @@ def load_municipality_layer(repo_root: Path | None = None) -> MunicipalityLayerB
             geojson_path=geo_path,
             available=False,
             missing_reason_pt=(
-                f"CRS divergente: esperado {EXPECTED_SOURCE_CRS}, "
-                f"obtido {gdf.crs}."
+                f"CRS divergente: esperado {EXPECTED_SOURCE_CRS}, obtido {gdf.crs}."
             ),
             content_sha256_ok=sha_ok,
         )
@@ -351,11 +350,7 @@ def search_municipalities(
     if not q:
         hits = rows
     else:
-        hits = tuple(
-            rec
-            for rec in rows
-            if q in _norm_name(rec.name) or q in rec.code
-        )
+        hits = tuple(rec for rec in rows if q in _norm_name(rec.name) or q in rec.code)
     if limit is not None:
         hits = hits[: max(0, int(limit))]
     return tuple(hits)
@@ -479,9 +474,7 @@ def municipality_map_html(
         style_function=style_fn,
         tooltip=folium.GeoJsonTooltip(
             fields=[
-                c
-                for c in ("NM_MUN", "CD_MUN", "AREA_KM2")
-                if c in gdf_plot.columns
+                c for c in ("NM_MUN", "CD_MUN", "AREA_KM2") if c in gdf_plot.columns
             ],
             aliases=["Município", "Código IBGE", "Área (km² IBGE)"],
         ),
@@ -519,21 +512,23 @@ def municipality_map_html(
 
 def explorer_attribution_lines(bundle: MunicipalityLayerBundle) -> tuple[str, ...]:
     lines = [
-        "Fonte: IBGE — Malhas Territoriais / Malhas Municipais",
-        f"Edição: {bundle.provenance.get('edition') or 'indisponível'}",
-        f"Feições: {bundle.feature_count} (esperado {EXPECTED_PR_MUNICIPALITY_COUNT})",
+        "Fonte: IBGE, Malhas Territoriais Municipais",
+        f"Edição: {edicao_da_malha(bundle.provenance.get('edition'))}",
+        (
+            f"Municípios no arquivo: {bundle.feature_count} de "
+            f"{EXPECTED_PR_MUNICIPALITY_COUNT} esperados"
+        ),
+        f"Arquivo baixado em {data_br(bundle.provenance.get('retrieved_at'))}",
     ]
-    retrieved = bundle.provenance.get("retrieved_at")
-    if retrieved:
-        lines.append(f"Recuperado em: {retrieved}")
-    else:
-        lines.append("Data de recuperação: indisponível")
-    tol = bundle.provenance.get("presentation_simplify_tolerance_deg")
-    if tol is not None:
-        lines.append(f"Simplificação de apresentação: {tol}° (preserve_topology)")
+    if bundle.provenance.get("presentation_simplify_tolerance_deg") is not None:
+        lines.append(
+            "O contorno dos municípios foi simplificado para desenhar o mapa "
+            "mais rápido. As fronteiras entre municípios continuam fechadas, e "
+            "nenhum cálculo usa o contorno simplificado."
+        )
     lines.append(
-        "Área (km²): atributo oficial AREA_KM2 da malha IBGE — "
-        "não é aptidão solar nem viabilidade comercial."
+        "A área em km² é o valor oficial da malha do IBGE. Área não indica "
+        "aptidão solar nem viabilidade comercial."
     )
     license_note = bundle.provenance.get("license_note")
     if license_note:

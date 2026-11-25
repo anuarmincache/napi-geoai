@@ -9,7 +9,7 @@ STATUS_AGREGADO = "agregado"
 STATUS_ENERGIA_INDISPONIVEL = "energia_indisponivel"
 
 DENSITY_NOTE_PT = (
-    "Densidade estimada = população IBGE 01/07/2026 ÷ AREA_KM2 da malha "
+    "Densidade estimada = população do IBGE em 01/07/2026 ÷ área oficial da malha "
     "municipal IBGE 2025. Mistura referências temporais; não é a densidade "
     "censitária oficial do Censo."
 )
@@ -19,11 +19,11 @@ KW_PER_HAB_NOTE_PT = (
     "MMGD nem consumo."
 )
 MW_PER_KM2_NOTE_PT = (
-    "MW/km² = potência fiscalizada conhecida SIGA ÷ AREA_KM2 (malha 2025). "
+    "MW/km² = potência fiscalizada das usinas ÷ área oficial da malha de 2025. "
     "Não é aptidão energética."
 )
 ZERO_VINCULADO_NOTE_PT = (
-    "Zero vinculado: nenhuma usina SIGA georreferenciada associada a este "
+    "Nenhuma usina do cadastro foi localizada e vinculada a este "
     "polígono na fase Operação. Não é zero absoluto — podem existir "
     "empreendimentos sem associação municipal no painel."
 )
@@ -118,10 +118,11 @@ def build_municipality_indicators(
     dens = density_hab_km2(population, area_km2)
     limitation = (
         f"{nao_associados_n} empreendimento(s) SIGA sem associação municipal "
-        "no painel. Zero vinculado ≠ ausência absoluta de usinas no município."
+        "no painel. Nenhuma usina vinculada não é o mesmo que ausência "
+        "comprovada de usinas no município."
         if nao_associados_n
         else (
-            "Município sem usina associada ≠ prova de ausência absoluta de "
+            "Município sem usina associada não é prova de ausência de "
             "empreendimentos (depende da cobertura do join espacial SIGA)."
         )
     )
@@ -209,18 +210,15 @@ def build_municipality_indicators(
             "usinas_por_100mil_hab": plants_per_100k_hab(0, population),
             "energy_scope_pt": (
                 "SIGA/ANEEL geração centralizada, fase Operação; MMGD excluído; "
-                "MW ≠ MWh. Zero = usinas georreferenciadas associadas."
+                "Potência em MW não é energia gerada em MWh. Zero significa "
+                "nenhuma usina localizada e vinculada ao município."
             ),
             "unassociated_plants_limitation_pt": limitation,
             "zero_vinculado": True,
         }
 
-    kw_hab, kw_note = kw_per_inhabitant(
-        mw_f, population, potencia_completa=completa
-    )
-    mw_km2, mw_km2_note = mw_per_km2(
-        mw_f, area_km2, potencia_completa=completa
-    )
+    kw_hab, kw_note = kw_per_inhabitant(mw_f, population, potencia_completa=completa)
+    mw_km2, mw_km2_note = mw_per_km2(mw_f, area_km2, potencia_completa=completa)
     return {
         "CD_MUN": cd_mun,
         "NM_MUN": nm_mun,
@@ -241,7 +239,7 @@ def build_municipality_indicators(
         "usinas_por_100mil_hab": plants_per_100k_hab(n_plants, population),
         "energy_scope_pt": (
             "SIGA/ANEEL geração centralizada, fase Operação; MMGD excluído; "
-            "MW ≠ MWh."
+            "Potência em MW não é energia gerada em MWh."
         ),
         "unassociated_plants_limitation_pt": limitation,
         "zero_vinculado": False,

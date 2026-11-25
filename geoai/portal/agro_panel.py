@@ -340,6 +340,7 @@ def agro_map_html(
     fmap.fit_bounds(bounds, padding=(20, 20))
     return fmap.get_root().render()
 
+
 #: Notas de leitura dos indicadores, acrescentadas pelo portal aos avisos
 #: gravados no artefato. Ficam aqui, e não no artefato, porque descrevem
 #: como a tela apresenta o número, não o contrato do dado.

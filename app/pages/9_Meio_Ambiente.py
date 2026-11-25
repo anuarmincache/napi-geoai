@@ -230,7 +230,7 @@ else:
     else:
         c3.metric("Indicador ambiental", "indisponível")
     st.caption(
-        "AREA_KM2 é o campo oficial da Malha Municipal IBGE 2025. "
+        "A área é o valor oficial da Malha Municipal do IBGE de 2025. "
         "Não representa vegetação, desmatamento nem aptidão ambiental."
     )
 
@@ -361,7 +361,10 @@ else:
         st.markdown(f"**{compared['b']['name']}**")
         st.write(f"Área oficial: **{br_num(compared['b']['area_km2'], 1)} km²**")
     delta = compared["area_km2_delta_a_minus_b"]
-    st.write(f"Δ área oficial (A−B): **{br_num(delta, 1)} km²**")
+    st.write(
+        f"Diferença de área oficial: **{br_num(abs(delta), 1)} km²** "
+        + ("a mais no primeiro" if delta >= 0 else "a mais no segundo")
+    )
     st.warning(compared["disclaimer_pt"])
 
 st.subheader("Fonte, referência e método")

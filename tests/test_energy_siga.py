@@ -234,7 +234,12 @@ def test_energy_scope_totals_recalculate_for_technology() -> None:
         ufv["n_empreendimentos_municipios"] + ufv["n_empreendimentos_nao_associados"]
         == ufv["n_empreendimentos_fase"]
     )
-    assert "tipo:UFV" in ufv["kpi_caption_pt"]
+    # A legenda precisa nomear a tecnologia em uso, em linguagem de tela.
+    # Antes exigia o código interno «tipo:UFV», o que travava a redação.
+    legenda = ufv["kpi_caption_pt"]
+    assert "UFV" in legenda
+    assert "solares fotovoltaicas" in legenda
+    assert "tipo:" not in legenda
 
 
 def test_technology_filter_changes_mw_not_just_presence() -> None:
@@ -292,9 +297,10 @@ def test_compare_energy_disclaimer() -> None:
         bundle, ranked[0]["CD_MUN"], ranked[1]["CD_MUN"]
     )
     assert cmp["ok"] is True
-    assert "MWh" in cmp["disclaimer_pt"]
-    assert "MMGD" in cmp["disclaimer_pt"]
-    assert "Ausência" in cmp["disclaimer_pt"] or "ausência" in cmp["disclaimer_pt"]
+    ressalva = cmp["disclaimer_pt"].lower()
+    assert "não é energia gerada" in ressalva
+    assert "geração distribuída" in ressalva
+    assert "não quer dizer que a potência seja zero" in ressalva
 
 
 def test_generation_mix_keeps_fiscalizada_and_outorgada_apart() -> None:
@@ -348,7 +354,7 @@ def test_real_panel_mix_uses_only_associated_plants() -> None:
         pytest.skip("painel ausente")
     notice = energy_public_notice(bundle)
     assert notice["n_nao_associados_operacao"] == 34
-    assert "MWh" in notice["notice_pt"]
+    assert "não é energia gerada em mwh" in notice["notice_pt"].lower()
     assert "2026-11-01" in notice["dat_conjunto"]
     fiscal = 0.0
     granted = 0.0

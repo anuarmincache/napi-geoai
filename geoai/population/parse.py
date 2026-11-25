@@ -175,8 +175,7 @@ def parse_municipality_populations(
         )
     if uf_total is not None and uf_total != EXPECTED_PR_POPULATION_UF_TOTAL:
         raise ValidationConnectorError(
-            f"Total UF PR ({uf_total}) ≠ esperado "
-            f"{EXPECTED_PR_POPULATION_UF_TOTAL}"
+            f"Total UF PR ({uf_total}) ≠ esperado {EXPECTED_PR_POPULATION_UF_TOTAL}"
         )
     return records, quality
 

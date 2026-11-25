@@ -225,7 +225,9 @@ def test_compare_profiles_disclaimer() -> None:
     cmp = compare_municipal_profiles(bundle, "4115200", "4113700")
     assert cmp["ok"] is True
     assert "Censo" in cmp["disclaimer_pt"] or "censo" in cmp["disclaimer_pt"].lower()
-    assert "MMGD" in cmp["disclaimer_pt"]
+    ressalva = cmp["disclaimer_pt"].lower()
+    assert "usinas de grande porte" in ressalva
+    assert "estimativa, não censo" in ressalva
     assert cmp["deltas"]["populacao_estimada_2026_hab"] is not None
 
 
