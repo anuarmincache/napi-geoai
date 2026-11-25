@@ -18,6 +18,7 @@ from _bootstrap import (
     cached_municipality_layer,
     cached_population_panel,
     configure_page,
+    hero_image_data_uri,
     page_link,
     render_footer,
     render_html_map,
@@ -66,6 +67,10 @@ agro = cached_agro_panel()
 landcover = cached_landcover_panel()
 
 # ---------------------------------------------------------------- Hero
+# Se a imagem faltar, o desenho vetorial original entra no lugar, para a
+# página não abrir com um bloco vazio no topo.
+_hero_fundo = hero_image_data_uri() or art.data_uri(art.hero_landscape())
+
 st.markdown(
     f"""
 <div class="napi-hero-xl" role="banner">
@@ -82,8 +87,9 @@ st.markdown(
     datados, não tempo real</span>
   </div>
   <div class="scene" role="img"
-       aria-label="Paisagem ilustrada com energia solar e eólica"
-       style="background-image:url('{art.data_uri(art.hero_landscape())}')"></div>
+       aria-label="Ilustração do Paraná com usinas eólicas, painéis solares e
+       lavouras, sob um sol nascente"
+       style="background-image:url('{_hero_fundo}')"></div>
 </div>
 """,
     unsafe_allow_html=True,
