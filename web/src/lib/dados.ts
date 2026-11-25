@@ -74,6 +74,18 @@ export interface Ficha {
   mmgd?: { n: number; mw: number | null };
   cobertura?: { nome: string; cor: string; pct: number | null }[];
   pecuaria?: { nome: string; valor: number | null; unidade: string }[];
+  parecidos?: {
+    metodo: string;
+    variaveis: string[];
+    aviso: string | null;
+    lista: {
+      cd: string;
+      nome: string;
+      distancia: number;
+      parecido_em: string[];
+      diferente_em: string[];
+    }[];
+  };
 }
 
 const NOMES_TECNOLOGIA: Record<string, string> = {

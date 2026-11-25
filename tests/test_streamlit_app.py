@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -151,9 +152,7 @@ def test_energy_kpis_follow_technology_filter(_streamlit_paths: None) -> None:
     metric_labels = [str(m.label) for m in at.metric]
     assert any("todas as tecnologias" in lab for lab in metric_labels)
     assert any("Municípios no catálogo (fixo)" in lab for lab in metric_labels)
-    values_all = {
-        str(m.label): str(m.value) for m in at.metric
-    }
+    values_all = {str(m.label): str(m.value) for m in at.metric}
     assert values_all[
         next(lab for lab in metric_labels if lab.startswith("Empreendimentos"))
     ] == str(all_scope["n_empreendimentos_fase"])
@@ -179,15 +178,14 @@ def test_energy_kpis_follow_technology_filter(_streamlit_paths: None) -> None:
         lab for lab in labels_ufv if lab.startswith("Municípios com usinas")
     )
     assert values_ufv[mun_label] == str(ufv_scope["n_municipios_com_usinas"])
-    fixed = next(
-        lab for lab in labels_ufv if "Municípios no catálogo (fixo)" in lab
-    )
+    fixed = next(lab for lab in labels_ufv if "Municípios no catálogo (fixo)" in lab)
     assert "399" in values_ufv[fixed]
     captions = "\n".join(str(c.value) for c in at.caption)
     assert "tipo:UFV" in captions or "escopo «tipo:UFV»" in captions
     assert "não associados no escopo" in captions.lower() or "não associados" in (
         "\n".join(str(w.value) for w in at.warning).lower()
     )
+
 
 def test_home_lists_energy_page(_streamlit_paths: None) -> None:
     at = AppTest.from_file(str(HOME), default_timeout=60)
@@ -284,6 +282,7 @@ def test_energy_page_searches_any_municipality(_streamlit_paths: None) -> None:
     focus = "\n".join(str(item.value) for item in at.markdown)
     assert "Virmond" in focus
 
+
 def test_environment_page_withholds_invented_indicators(
     _streamlit_paths: None,
 ) -> None:
@@ -368,3 +367,39 @@ def test_ndvi_page_reports_progress_without_inventing(_streamlit_paths: None) ->
     assert "não é biomassa" in text
     if counts["publicado"] == 0:
         assert "Nenhum mapa de NDVI está publicado" in text
+
+
+def test_texto_do_menu_na_home_bate_com_a_navegacao() -> None:
+    """A Home lista as áreas em prosa. Essa lista precisa seguir o menu real.
+
+    Esta foi a brecha que deixou «Vegetação por satélite» na tela depois que a
+    página saiu da navegação: o nome estava escrito à mão em um st.info, longe
+    de NAV_GROUPS, e nenhuma busca por «NDVI» o encontrava. O teste lê o texto
+    renderizado, não o código, porque no código a frase vem quebrada em linhas.
+    """
+    import sys
+
+    sys.path.insert(0, str(REPO / "app"))
+    from _bootstrap import NAV_GROUPS
+
+    at = AppTest.from_file(str(REPO / "app" / "Home.py"), default_timeout=240)
+    at.run()
+    assert not at.exception
+    trecho = next(
+        (i.value for i in at.info if "menu lateral" in i.value),
+        "",
+    )
+    assert trecho, "a Home não lista mais as áreas do menu"
+
+    rotulos = {
+        rotulo
+        for _grupo, itens in NAV_GROUPS
+        for _caminho, rotulo, _icone in itens
+        if rotulo != "Início"
+    }
+    for rotulo in rotulos:
+        assert rotulo in trecho, f"«{rotulo}» está no menu e falta no texto da Home"
+
+    for citado in re.findall(r"\*\*([^*]+)\*\*", trecho):
+        nome = citado.split(" (")[0].strip()
+        assert nome in rotulos, f"«{nome}» aparece no texto da Home e não está no menu"

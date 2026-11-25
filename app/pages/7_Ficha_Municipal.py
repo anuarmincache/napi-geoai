@@ -24,6 +24,12 @@ from geoai.portal.municipal_profile import (
     population_map_html,
     profile_for_code,
 )
+from geoai.portal.similaridade import (
+    FORMULA_PT,
+    VARIAVEIS,
+    municipios_parecidos,
+    nota_isolamento_pt,
+)
 from geoai.portal.textos_legados import atualizar
 from geoai.presentation import AudienceLevel
 
@@ -33,6 +39,7 @@ from _bootstrap import (
     cached_mmgd_panel,
     cached_municipality_layer,
     cached_population_panel,
+    cached_similaridade,
     configure_page,
     date_br,
     page_header,
@@ -312,6 +319,64 @@ with left:
             render_html_map(html, height=620)
         except Exception as exc:  # noqa: BLE001
             st.error(f"Falha no mapa: {exc}")
+
+st.subheader("Municípios parecidos")
+indice = cached_similaridade()
+if indice is None:
+    st.info(
+        "A comparação por semelhança precisa dos painéis de população, "
+        "cobertura da terra e geração distribuída. Algum deles não está "
+        "disponível agora."
+    )
+else:
+    vizinhos = municipios_parecidos(indice, code, quantidade=5)
+    if not vizinhos:
+        st.info("Este município não entrou no índice por falta de alguma variável.")
+    else:
+        aviso = nota_isolamento_pt(vizinhos)
+        if aviso:
+            st.warning(aviso)
+        st.caption(
+            "Os cinco municípios mais próximos do Paraná em sete variáveis "
+            "oficiais. Quanto menor a distância, mais parecido."
+        )
+        for pos, viz in enumerate(vizinhos, start=1):
+            col_nome, col_dist = st.columns([4, 1])
+            with col_nome:
+                st.markdown(f"**{pos}. {viz.nome}**")
+                if viz.parecido_em:
+                    st.caption(
+                        "Parecido em " + ", ".join(viz.parecido_em).lower()
+                    )
+                if viz.diferente_em:
+                    st.caption(
+                        "Diferente em " + ", ".join(viz.diferente_em).lower()
+                    )
+            with col_dist:
+                st.metric(
+                    "Distância",
+                    br_num(viz.distancia, 2),
+                    label_visibility="collapsed",
+                )
+        with st.expander("Como a semelhança é calculada"):
+            st.markdown(
+                "Cada município vira um ponto em um espaço de "
+                f"{len(VARIAVEIS)} variáveis ("
+                + ", ".join(v.rotulo_pt.lower() for v in VARIAVEIS)
+                + "), todas padronizadas para pesarem igual. A semelhança é a "
+                f"{FORMULA_PT}.\n\n"
+                "População, área e densidade entram em logaritmo, porque variam "
+                "por ordens de grandeza e sem isso Curitiba sozinha dominaria a "
+                "conta.\n\n"
+                "A potência de usinas da ANEEL SIGA fica de fora de propósito: "
+                "276 municípios aparecem como sem empreendimento, que no "
+                "cadastro significa nenhuma usina georreferenciada e vinculada, "
+                "não ausência comprovada. Tratar isso como zero inventaria "
+                "informação.\n\n"
+                "O resultado é indicador calculado, não ranking de aptidão. "
+                "Dois municípios parecidos nestas variáveis podem ser muito "
+                "diferentes em tudo o que não está aqui."
+            )
 
 st.subheader("Comparação A/B (população e indicadores)")
 if "ficha_cmp_a" not in st.session_state:

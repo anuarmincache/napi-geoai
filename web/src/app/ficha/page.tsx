@@ -261,6 +261,74 @@ export default function FichaPagina() {
             </section>
           )}
 
+          {ficha.parecidos && (
+            <section>
+              <SecaoTitulo
+                titulo="Municípios parecidos"
+                descricao="Os mais próximos do Paraná em sete variáveis oficiais. Clique em um deles para abrir a ficha."
+              />
+              {ficha.parecidos.aviso && (
+                <p className="mb-3 rounded-2xl border border-sun/40 bg-sun/10 px-5 py-3 text-sm leading-relaxed text-[#5c4500]">
+                  {ficha.parecidos.aviso}
+                </p>
+              )}
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {ficha.parecidos.lista.map((p, i) => (
+                  <button
+                    key={p.cd}
+                    type="button"
+                    onClick={() => setCd(p.cd)}
+                    className="rounded-2xl border border-line bg-white px-4 py-3.5 text-left transition hover:border-moss hover:shadow-sm"
+                  >
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-display font-bold text-forest">
+                        {i + 1}. {p.nome}
+                      </span>
+                      <span
+                        className="text-[11px] font-semibold text-muted tabular-nums"
+                        title="Distância no espaço padronizado. Quanto menor, mais parecido."
+                      >
+                        {num(p.distancia, 2)}
+                      </span>
+                    </div>
+                    {p.parecido_em.length > 0 && (
+                      <p className="mt-1.5 text-[12px] leading-snug text-muted">
+                        <span className="font-semibold text-moss">
+                          Parecido em
+                        </span>{" "}
+                        {p.parecido_em.join(", ").toLowerCase()}
+                      </p>
+                    )}
+                    {p.diferente_em.length > 0 && (
+                      <p className="mt-1 text-[12px] leading-snug text-muted">
+                        <span className="font-semibold text-[#b35309]">
+                          Diferente em
+                        </span>{" "}
+                        {p.diferente_em.join(", ").toLowerCase()}
+                      </p>
+                    )}
+                  </button>
+                ))}
+              </div>
+              <Card className="mt-3 px-5 py-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <p className="max-w-3xl text-[12px] leading-relaxed text-muted">
+                    Cada município vira um ponto em um espaço de{" "}
+                    {ficha.parecidos.variaveis.length} variáveis (
+                    {ficha.parecidos.variaveis.join(", ").toLowerCase()}), todas
+                    padronizadas para pesarem igual, e a semelhança é a{" "}
+                    {ficha.parecidos.metodo}. A potência de usinas fica de fora
+                    de propósito, porque município sem usina no cadastro não é
+                    ausência comprovada e virar zero inventaria informação. Isto
+                    não é ranking de aptidão e não diz que um município deveria
+                    seguir o outro.
+                  </p>
+                  <ClasseBadge classe="B" />
+                </div>
+              </Card>
+            </section>
+          )}
+
           <div className="flex flex-wrap gap-2">
             <Badge>Dados oficiais em retratos datados</Badge>
             <Badge>Não é tempo real</Badge>
