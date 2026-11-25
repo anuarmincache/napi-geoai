@@ -1,7 +1,7 @@
 /**
- * Cálculos das calculadoras. Mesmas fórmulas de geoai/tools/energy_calc.py.
+ * Cálculos das calculadoras. Mesmas fórmulas do motor do projeto.
  *
- * Resultado é simulação (classe C): não considera custo de disponibilidade,
+ * Resultado é simulação: não considera custo de disponibilidade,
  * sombreamento, orientação, degradação, limites de conexão nem economia.
  */
 

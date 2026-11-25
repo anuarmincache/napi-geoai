@@ -152,7 +152,8 @@ def test_missing_catalog_is_not_zero_ndvi(tmp_path: Path) -> None:
 
 
 def test_streamlit_pilot_does_not_process() -> None:
-    text = (REPO / "app" / "pages" / "8_Sentinel_Piloto.py").read_text(encoding="utf-8")
+    pagina = REPO / "research" / "ndvi_congelado" / "portal_8_Sentinel_Piloto.py"
+    text = pagina.read_text(encoding="utf-8")
     for token in ("import qgis", "from osgeo", "execute_job", "urlopen", "gdal.Warp"):
         assert token not in text
     assert "Pinhais" not in text
@@ -160,7 +161,7 @@ def test_streamlit_pilot_does_not_process() -> None:
 
 
 def test_streamlit_pilot_page_reads_the_repository_catalog() -> None:
-    page = REPO / "app" / "pages" / "8_Sentinel_Piloto.py"
+    page = REPO / "research" / "ndvi_congelado" / "portal_8_Sentinel_Piloto.py"
     text = page.read_text(encoding="utf-8")
     assert "REPO = Path(__file__).resolve().parents[2]" in text
     resolved = page.resolve().parents[2]

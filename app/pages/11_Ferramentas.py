@@ -157,7 +157,8 @@ with tab_consumo:
             "do regime de carga do equipamento.\n"
             "- Não inclui demanda contratada, bandeiras tarifárias, "
             "iluminação pública nem tarifas horárias.\n"
-            "- Classe do resultado: **C, simulação** com entradas do usuário."
+            "- O resultado é uma **simulação**, feita com as entradas "
+            "que você informou."
         )
 
 with tab_fv:
@@ -259,7 +260,7 @@ with tab_fv:
             "- Não avalia conexão à rede, parecer de acesso, licenciamento, "
             "preço de equipamentos nem retorno financeiro.\n"
             "- Potência (kWp) não é energia (kWh): a geração varia mês a mês.\n"
-            "- Classe do resultado: **C, simulação**. Um projeto exige "
+            "- O resultado é uma **simulação**. Um projeto exige "
             "responsável técnico habilitado."
         )
 

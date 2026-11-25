@@ -22,6 +22,7 @@ from geoai.portal.mmgd_panel import (
     mmgd_scope_totals,
     project_mmgd_metrics,
 )
+from geoai.portal.textos_legados import atualizar, atualizar_lista
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
@@ -145,7 +146,7 @@ if level == AudienceLevel.BASIC:
 else:
     st.warning(notice["notice_pt"])
     st.warning(
-        str(notice.get("temporal_note_pt") or "")
+        str(atualizar(notice.get("temporal_note_pt")) or "")
     + " Anos em `by_cadastral_update_year` **não** são apresentados como "
     "crescimento de conexões."
 )
@@ -177,7 +178,11 @@ else:
     c3.metric(
         "UCs crédito (secundário)",
         f"{uc:,}".replace(",", ".") if uc is not None else "n/d no filtro",
-        help="QtdUCRecebeCredito — não confundir com empreendimentos.",
+        help=(
+            "Consumidores que recebem crédito da energia gerada. Um mesmo "
+            "sistema pode dividir crédito com várias unidades, então este "
+            "número não conta instalações."
+        ),
     )
     c4.metric(
         "Municípios com registros",
@@ -374,7 +379,7 @@ else:
 with st.expander("Fonte e metodologia", expanded=False):
     for line in mmgd_attribution_lines(mmgd):
         st.markdown(f"- {line}")
-    for note in mmgd.panel.get("notices_pt") or []:
+    for note in atualizar_lista(mmgd.panel.get("notices_pt")):
         st.caption(str(note))
 
 st.subheader("Comparação municipal (MMGD)")
@@ -432,7 +437,7 @@ export_panel = {
     "source_id": mmgd.panel.get("source_id"),
     "periodo_referencia": mmgd.panel.get("periodo_referencia"),
     "totals": mmgd.panel.get("totals"),
-    "notices_pt": mmgd.panel.get("notices_pt"),
+    "notices_pt": atualizar_lista(mmgd.panel.get("notices_pt")),
     "municipality_count": mmgd.panel.get("municipality_count"),
 }
 # Garantir ausência de PII no export agregado

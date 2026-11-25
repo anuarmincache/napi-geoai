@@ -47,7 +47,11 @@ export default function Sobre() {
             conhecer o território e a escolher o que merece um estudo mais
             profundo.
           </p>
-          <div className="mt-5 flex flex-wrap gap-2">
+          <p className="mt-4 text-sm font-semibold text-forest">
+            O caminho que a plataforma apoia, do primeiro olhar até o estudo
+            técnico:
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
             {ETAPAS.map((etapa, i) => (
               <span
                 key={etapa}
@@ -139,8 +143,7 @@ export default function Sobre() {
               <p>Idealização e liderança técnica: Anuar José Mincache.</p>
             </CardContent>
             <CardFooter>
-              A vinculação institucional depende de definição e autorização
-              apropriadas.
+              Universidade Estadual de Maringá e Fundação Araucária.
             </CardFooter>
           </Card>
 
@@ -150,8 +153,9 @@ export default function Sobre() {
             </CardHeader>
             <CardContent className="text-sm leading-relaxed text-muted">
               O código, os testes e a documentação de cada etapa ficam no
-              repositório do projeto. Esta interface é um protótipo: o portal em
-              uso continua sendo o Streamlit.
+              repositório público do projeto. Qualquer número desta plataforma
+              pode ser conferido lá, com o arquivo de origem e a impressão
+              digital que o identifica.
             </CardContent>
             <CardFooter>
               <Button asChild size="sm" variant="outline">

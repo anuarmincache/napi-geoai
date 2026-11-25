@@ -22,6 +22,8 @@ export interface Camada {
   disponivel: boolean;
   classe: Classe;
   fonte: string;
+  /** "faixa" quando o indicador é uma razão e o zero não é referência. */
+  escala?: "zero" | "faixa";
 }
 
 export interface Resumo {
@@ -29,13 +31,6 @@ export interface Resumo {
   kpis: Kpi[];
   camadas: Camada[];
   avisos: string[];
-  ndvi: {
-    municipios: number | null;
-    com_passagem: number | null;
-    cenas: number | null;
-    publicados: number;
-    medidos: number;
-  };
   fontes: { nome: string; detalhe: string }[];
 }
 
@@ -78,7 +73,7 @@ export interface Ficha {
   siga?: { usinas: number; mw: number | null };
   mmgd?: { n: number; mw: number | null };
   cobertura?: { nome: string; cor: string; pct: number | null }[];
-  pecuaria?: { nome: string; valor: number | null }[];
+  pecuaria?: { nome: string; valor: number | null; unidade: string }[];
 }
 
 const NOMES_TECNOLOGIA: Record<string, string> = {
@@ -91,7 +86,17 @@ const NOMES_TECNOLOGIA: Record<string, string> = {
 };
 
 export function nomeTecnologia(sigla: string) {
-  return NOMES_TECNOLOGIA[sigla] ?? sigla;
+  const limpa = (sigla ?? "").trim();
+  if (!limpa || limpa === "(vazio)")
+    return "Tecnologia não informada no cadastro";
+  return NOMES_TECNOLOGIA[limpa] ?? limpa;
+}
+
+/** Converte 2026-11-12 em 12/11/2026. Deixa passar o que não for data ISO. */
+export function dataBr(valor: string | null | undefined) {
+  if (!valor) return "n/d";
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(valor.trim());
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : valor;
 }
 
 export function num(valor: number | null | undefined, casas = 0) {
@@ -130,6 +135,7 @@ export interface MunicipioMmgd {
   uc_credito: number | null;
   por_tipo: Record<string, number>;
   por_classe: Record<string, number>;
+  por_porte: Record<string, number>;
 }
 
 export interface MunicipioSiga {
@@ -150,6 +156,7 @@ export interface Energia {
       instalacoes: number;
       mw: number;
       uc_credito: number;
+      sem_potencia: number;
       por_tipo: Record<string, number>;
       por_classe: Record<string, number>;
     };
@@ -166,7 +173,9 @@ export interface Energia {
       mw: number;
       nao_associados: number;
       mw_nao_associados: number;
+      sem_potencia: number;
       por_tipo: Record<string, number>;
+      usinas_por_tipo: Record<string, number>;
     };
     municipios: MunicipioSiga[];
     limitacao: string | null;
@@ -184,11 +193,19 @@ export interface Cultura {
   nome: string;
   unidade_area: string;
   unidade_producao: string;
+  unidade_rendimento: string;
+  estado_colhida: ResumoEstadual;
   estado_area: ResumoEstadual;
   estado_producao: ResumoEstadual;
   municipios: Record<
     string,
-    { area: number | null; producao: number | null; status: string }
+    {
+      area: number | null;
+      colhida: number | null;
+      producao: number | null;
+      rendimento: number | null;
+      status: string;
+    }
   >;
 }
 
@@ -239,45 +256,6 @@ export interface Cobertura {
     median_abs: number;
     max_abs: number;
     municipalities_above_1_percent: number;
-  } | null;
-}
-
-export interface Ndvi {
-  regra: string;
-  nota_aoi: string;
-  total: number;
-  area_km2: number;
-  por_zona_utm: Record<string, number>;
-  situacoes: {
-    codigo: string;
-    rotulo: string;
-    cor: string;
-    quantidade: number;
-  }[];
-  municipios: {
-    cd: string;
-    nome: string;
-    populacao: number;
-    area_km2: number;
-    zona_utm: number;
-    situacao: string;
-    rotulo: string;
-    passagem: string | null;
-    fracao_valida: number | null;
-  }[];
-  plano: {
-    janela_dias: number;
-    consultado_em: string;
-    nuvem_maxima: number;
-    regra_selecao: string;
-    limites: string[];
-    com_passagem: number;
-    sem_passagem: string[];
-    cenas: number;
-    mosaico: number;
-    bytes_mascara: number;
-    bytes_bandas: number;
-    anterior: number | null;
   } | null;
 }
 

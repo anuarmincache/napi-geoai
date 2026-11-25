@@ -25,7 +25,6 @@ PAGES = (
     REPO / "app" / "pages" / "9_Meio_Ambiente.py",
     REPO / "app" / "pages" / "10_Agricultura.py",
     REPO / "app" / "pages" / "11_Ferramentas.py",
-    REPO / "app" / "pages" / "12_NDVI_Cidades.py",
 )
 
 
@@ -349,7 +348,7 @@ def test_agriculture_page_withholds_invented_indicators(
 
 
 def test_ndvi_page_reports_progress_without_inventing(_streamlit_paths: None) -> None:
-    page = REPO / "app" / "pages" / "12_NDVI_Cidades.py"
+    page = REPO / "research" / "ndvi_congelado" / "portal_12_NDVI_Cidades.py"
     at = AppTest.from_file(str(page), default_timeout=120)
     at.run()
     assert not at.exception, at.exception

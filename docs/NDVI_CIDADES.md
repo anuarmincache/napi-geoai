@@ -1,5 +1,10 @@
 # NDVI por satélite nos municípios acima de 20 mil habitantes
 
+> **Congelado em 25/11/2026.** O NDVI saiu da navegação do portal e do
+> protótipo web. O motor de cálculo, o plano de ciclo e o piloto medido de
+> Maringá continuam no repositório. Motivos da decisão e caminho de reativação
+> em `research/ndvi_congelado/LEIA-ME.md`.
+
 Data: 2026-11-19. Continuação da Issue #42. Esta etapa não baixou cena, não
 mediu pixel e não publicou NDVI.
 

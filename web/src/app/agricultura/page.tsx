@@ -26,6 +26,42 @@ import { useDados } from "@/lib/usar-dados";
 
 type Malha = FeatureCollection<Geometry, PropsMunicipio>;
 
+type IndicadorLavoura = "area" | "colhida" | "producao" | "rendimento";
+
+const INDICADORES: Record<
+  IndicadorLavoura,
+  { rotulo: string; curto: string; cor: string; casas: number; nota: string }
+> = {
+  area: {
+    rotulo: "Área plantada",
+    curto: "área plantada",
+    cor: "#fcc817",
+    casas: 0,
+    nota: "Área plantada ou destinada à colheita, em hectares. Não é área mapeada por satélite.",
+  },
+  colhida: {
+    rotulo: "Área colhida",
+    curto: "área colhida",
+    cor: "#e09f1c",
+    casas: 0,
+    nota: "Área efetivamente colhida, em hectares. A diferença em relação à área plantada indica perda de safra.",
+  },
+  producao: {
+    rotulo: "Quantidade produzida",
+    curto: "produção",
+    cor: "#5b8a3a",
+    casas: 0,
+    nota: "Quantidade produzida no ano de referência, em toneladas.",
+  },
+  rendimento: {
+    rotulo: "Rendimento médio",
+    curto: "rendimento",
+    cor: "#2f6b4f",
+    casas: 0,
+    nota: "Produção dividida pela área colhida, em quilogramas por hectare. É o indicador que separa município grande de município produtivo. Não se soma entre municípios.",
+  },
+};
+
 const ROTULO_STATUS: Record<string, string> = {
   valor: "valor publicado",
   zero: "zero publicado",
@@ -39,6 +75,7 @@ export default function AgriculturaPagina() {
   const malha = useDados<Malha>("municipios.geojson");
   const [aba, setAba] = useState<"lavoura" | "pecuaria">("lavoura");
   const [culturaId, setCulturaId] = useState<string | null>(null);
+  const [indicador, setIndicador] = useState<IndicadorLavoura>("area");
   const [rebanhoKey, setRebanhoKey] = useState<string | null>(null);
   const [selecionado, setSelecionado] = useState<string | null>(null);
 
@@ -54,7 +91,7 @@ export default function AgriculturaPagina() {
     const saida: Record<string, number | null> = {};
     if (aba === "lavoura" && cultura) {
       for (const [cd, v] of Object.entries(cultura.municipios)) {
-        saida[cd] = v.area;
+        saida[cd] = v[indicador];
       }
     } else if (rebanho) {
       for (const [cd, v] of Object.entries(rebanho.municipios)) {
@@ -62,7 +99,14 @@ export default function AgriculturaPagina() {
       }
     }
     return saida;
-  }, [aba, cultura, rebanho]);
+  }, [aba, cultura, rebanho, indicador]);
+
+  const rendimentoEstadual = useMemo(() => {
+    const prod = cultura?.estado_producao.soma_publicada ?? null;
+    const colhida = cultura?.estado_colhida.soma_publicada ?? null;
+    if (prod === null || colhida === null || colhida <= 0) return null;
+    return Math.round((prod / colhida) * 1000);
+  }, [cultura]);
 
   const statusAtual =
     aba === "lavoura"
@@ -103,13 +147,13 @@ export default function AgriculturaPagina() {
           variant={aba === "lavoura" ? "default" : "outline"}
           onClick={() => setAba("lavoura")}
         >
-          🌾 Lavouras
+          Lavouras
         </Button>
         <Button
           variant={aba === "pecuaria" ? "default" : "outline"}
           onClick={() => setAba("pecuaria")}
         >
-          🐄 Pecuária
+          Pecuária
         </Button>
       </div>
 
@@ -117,8 +161,8 @@ export default function AgriculturaPagina() {
         <>
           <section>
             <SecaoTitulo
-              titulo="Área plantada por município"
-              descricao="Escolha a cultura. O mapa mostra a área plantada ou destinada à colheita."
+              titulo={`${INDICADORES[indicador].rotulo} por município`}
+              descricao="Escolha a cultura e o indicador. O rendimento mostra quanto cada hectare produziu, e não depende do tamanho do município."
             />
             <div className="mb-3 flex flex-wrap gap-2">
               {dados?.culturas.map((c) => (
@@ -133,16 +177,39 @@ export default function AgriculturaPagina() {
               ))}
             </div>
 
+            <div className="mb-3 flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-paper px-3 py-2">
+              <span className="text-[10px] font-bold tracking-wider text-muted uppercase">
+                Indicador
+              </span>
+              {(Object.keys(INDICADORES) as IndicadorLavoura[]).map((k) => (
+                <Button
+                  key={k}
+                  size="sm"
+                  variant={k === indicador ? "default" : "outline"}
+                  onClick={() => setIndicador(k)}
+                >
+                  {INDICADORES[k].rotulo}
+                </Button>
+              ))}
+            </div>
+
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
               <Card className="overflow-hidden p-0">
                 {malha.dados && cultura ? (
                   <MapaMunicipios
                     malha={malha.dados}
                     valores={valores}
-                    rotulo={`${cultura.nome.split(" (")[0]} · área plantada`}
-                    unidade="ha"
-                    cor="#fcc817"
-                    casas={0}
+                    rotulo={`${cultura.nome.split(" (")[0]} · ${INDICADORES[indicador].curto}`}
+                    unidade={
+                      indicador === "producao"
+                        ? "t"
+                        : indicador === "rendimento"
+                          ? "kg/ha"
+                          : "ha"
+                    }
+                    cor={INDICADORES[indicador].cor}
+                    escala={indicador === "rendimento" ? "faixa" : "zero"}
+                    casas={INDICADORES[indicador].casas}
                     selecionado={selecionado}
                     onSelecionar={setSelecionado}
                   />
@@ -151,8 +218,8 @@ export default function AgriculturaPagina() {
                 )}
                 <CardFooter className="flex flex-wrap items-center justify-between gap-2">
                   <span>
-                    IBGE, Produção Agrícola Municipal {dados?.ano_pam}. Área
-                    plantada não é área mapeada por satélite.
+                    IBGE, Produção Agrícola Municipal {dados?.ano_pam}.{" "}
+                    {INDICADORES[indicador].nota}
                   </span>
                   <ClasseBadge classe="A" />
                 </CardFooter>
@@ -177,6 +244,17 @@ export default function AgriculturaPagina() {
                     </div>
                     <div>
                       <dt className="text-[10px] font-bold tracking-wider text-muted uppercase">
+                        Área colhida no Paraná
+                      </dt>
+                      <dd className="font-display text-xl font-bold text-forest">
+                        {num(cultura.estado_colhida.soma_publicada)}{" "}
+                        <span className="text-xs font-semibold text-muted">
+                          {cultura.unidade_area.toLowerCase()}
+                        </span>
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] font-bold tracking-wider text-muted uppercase">
                         Quantidade produzida
                       </dt>
                       <dd className="font-display text-xl font-bold text-forest">
@@ -186,6 +264,24 @@ export default function AgriculturaPagina() {
                         </span>
                       </dd>
                     </div>
+                    {rendimentoEstadual !== null && (
+                      <div>
+                        <dt className="text-[10px] font-bold tracking-wider text-muted uppercase">
+                          Rendimento médio no estado
+                        </dt>
+                        <dd className="font-display text-xl font-bold text-forest">
+                          {num(rendimentoEstadual)}{" "}
+                          <span className="text-xs font-semibold text-muted">
+                            kg/ha
+                          </span>
+                        </dd>
+                        <p className="mt-1 text-[11px] leading-snug text-muted">
+                          Produção dividida pela área colhida do estado. É uma
+                          média ponderada calculada aqui, não um número
+                          publicado pelo IBGE.
+                        </p>
+                      </div>
+                    )}
                   </dl>
                   <Situacoes contagem={statusAtual} />
                 </Card>
@@ -205,11 +301,19 @@ export default function AgriculturaPagina() {
                       ?.properties.nome ?? cd,
                   valores: {
                     "Área plantada (ha)": v.area,
-                    "Produção": v.producao,
+                    "Área colhida (ha)": v.colhida,
+                    "Produção (t)": v.producao,
+                    "Rendimento (kg/ha)": v.rendimento,
                     "Situação": ROTULO_STATUS[v.status] ?? v.status,
                   },
                 }))}
-                colunas={["Área plantada (ha)", "Produção", "Situação"]}
+                colunas={[
+                  "Área plantada (ha)",
+                  "Área colhida (ha)",
+                  "Produção (t)",
+                  "Rendimento (kg/ha)",
+                  "Situação",
+                ]}
                 selecionado={selecionado}
                 onSelecionar={setSelecionado}
                 nomeArquivo={`napi_geoai_${cultura.nome.split(" (")[0].toLowerCase()}`}

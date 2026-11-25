@@ -85,6 +85,14 @@ class AgroIndicator:
     summable: bool
 
 
+def _data_br(valor: object) -> str:
+    """Converte 2026-11-19 em 19/11/2026. Devolve n/d quando não houver data."""
+    texto = str(valor or "")[:10]
+    if len(texto) == 10 and texto[4] == "-" and texto[7] == "-":
+        return f"{texto[8:10]}/{texto[5:7]}/{texto[0:4]}"
+    return texto or "n/d"
+
+
 def _fail(reason: str, **kw: dict[str, Any]) -> AgroPanelBundle:
     return AgroPanelBundle(
         available=False,
@@ -233,7 +241,7 @@ def agro_attribution_lines(bundle: AgroPanelBundle) -> tuple[str, ...]:
         f"ano {panel['ppm']['year_rebanho']}. PPM produtos: tabela "
         f"{((resolved.get('ppm') or {}).get('produto') or {}).get('table')}, "
         f"ano {panel['ppm']['year_produto']}.",
-        f"Coleta e preparação: {str(prov.get('prepared_at') or '')[:10] or 'n/d'}. "
+        f"Coleta e preparação: {_data_br(prov.get('prepared_at'))}. "
         f"{prov.get('license_note') or ''}",
         str(panel["pam"].get("crop_selection_rule_pt") or ""),
     ]
@@ -331,3 +339,25 @@ def agro_map_html(
             bounds = [[b[1], b[0]], [b[3], b[2]]]
     fmap.fit_bounds(bounds, padding=(20, 20))
     return fmap.get_root().render()
+
+#: Notas de leitura dos indicadores, acrescentadas pelo portal aos avisos
+#: gravados no artefato. Ficam aqui, e não no artefato, porque descrevem
+#: como a tela apresenta o número, não o contrato do dado.
+PORTAL_NOTICES_PT: tuple[str, ...] = (
+    "Rendimento médio é quilogramas por hectare e não se soma entre "
+    "municípios. O valor do estado é a produção dividida pela área colhida, "
+    "ou seja, uma média ponderada calculada aqui, não um número publicado "
+    "pelo IBGE.",
+    "A diferença entre área plantada e área colhida indica perda de safra no "
+    "ano de referência.",
+)
+
+
+def agro_notices_pt(bundle: AgroPanelBundle) -> tuple[str, ...]:
+    """Avisos do artefato seguidos das notas de leitura do portal, sem repetir."""
+    vistos: list[str] = []
+    for texto in list(bundle.panel.get("notices_pt") or []) + list(PORTAL_NOTICES_PT):
+        limpo = str(texto).strip()
+        if limpo and limpo not in vistos:
+            vistos.append(limpo)
+    return tuple(vistos)

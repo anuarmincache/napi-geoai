@@ -29,7 +29,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge, ClasseBadge } from "@/components/ui/badge";
+import { ClasseBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Camada,
@@ -109,12 +109,6 @@ export default function Painel() {
         <Carregando altura="h-32" />
       )}
 
-      {resumo.dados && (
-        <p className="text-xs leading-relaxed text-muted">
-          {resumo.dados.avisos[0]} {resumo.dados.avisos[1]}
-        </p>
-      )}
-
       <section>
         <SecaoTitulo
           titulo="O Paraná município a município"
@@ -149,6 +143,7 @@ export default function Painel() {
                 rotulo={camada.rotulo}
                 unidade={camada.unidade}
                 cor={camada.cor}
+                escala={camada.escala ?? "zero"}
                 selecionado={selecionado}
                 onSelecionar={setSelecionado}
                 altura="h-[460px] lg:h-[560px]"
@@ -244,7 +239,7 @@ export default function Painel() {
 
           <PainelGrafico
             titulo="Usinas em operação por tecnologia"
-            rodape="ANEEL SIGA, 11/11/2026. Potência fiscalizada conhecida, não é energia gerada."
+            rodape="ANEEL SIGA, 11/11/2026. Potência fiscalizada, não é energia gerada."
             href="/usinas"
           >
             {series.dados ? (
@@ -263,57 +258,6 @@ export default function Painel() {
           </PainelGrafico>
         </div>
       </section>
-
-      {resumo.dados && (
-        <motion.section
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.5 }}
-        >
-          <Card className="overflow-hidden border-0 bg-[linear-gradient(120deg,#16231b,#2f4a33_60%,#3f6a2f)] text-white">
-            <div className="grid gap-6 p-7 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-              <div>
-                <Badge variant="escuro">Em andamento</Badge>
-                <h3 className="mt-3 font-display text-2xl font-bold">
-                  Vegetação por satélite
-                </h3>
-                <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/75">
-                  O índice de vegetação (NDVI) virá de imagens Sentinel-2 para os
-                  municípios acima de 20 mil habitantes. Hoje o portal mostra o
-                  andamento real: nenhum mapa foi publicado ainda, e a página não
-                  preenche o que falta.
-                </p>
-                <Link
-                  href="/ndvi"
-                  className="mt-4 inline-flex rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20"
-                >
-                  Ver o andamento
-                </Link>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <Metrica
-                  rotulo="Municípios na lista"
-                  valor={num(resumo.dados.ndvi.municipios)}
-                />
-                <Metrica
-                  rotulo="Com passagem útil"
-                  valor={num(resumo.dados.ndvi.com_passagem)}
-                />
-                <Metrica
-                  rotulo="Cenas por ciclo"
-                  valor={num(resumo.dados.ndvi.cenas)}
-                />
-                <Metrica
-                  rotulo="NDVI publicado"
-                  valor={num(resumo.dados.ndvi.publicados)}
-                  alerta
-                />
-              </div>
-            </div>
-          </Card>
-        </motion.section>
-      )}
 
       {resumo.dados && <Avisos itens={resumo.dados.avisos} />}
     </Pagina>
@@ -352,36 +296,5 @@ function PainelGrafico({
         <CardFooter>{rodape}</CardFooter>
       </Card>
     </motion.div>
-  );
-}
-
-function Metrica({
-  rotulo,
-  valor,
-  alerta = false,
-}: {
-  rotulo: string;
-  valor: string;
-  alerta?: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        "rounded-xl border border-white/12 bg-white/8 px-4 py-3",
-        alerta && "border-sun/40 bg-sun/10",
-      )}
-    >
-      <p className="text-[10px] font-bold tracking-[0.14em] text-white/55 uppercase">
-        {rotulo}
-      </p>
-      <p
-        className={cn(
-          "mt-1 font-display text-2xl font-bold",
-          alerta ? "text-sun" : "text-white",
-        )}
-      >
-        {valor}
-      </p>
-    </div>
   );
 }

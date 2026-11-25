@@ -139,10 +139,10 @@ if mmgd.available:
         _kpi(
             "Geração distribuída",
             f"{_dec_br(float(tot['potencia_instalada_mw_conhecida']) / 1e3, 2)} GW",
-            f"{_int_br(tot['n_empreendimentos'])} empreendimentos MMGD",
-            "ANEEL · MMGD · snapshot "
+            f"{_int_br(tot['n_empreendimentos'])} instalações",
+            "ANEEL · geração distribuída · retrato de "
             f"{mmgd.panel.get('periodo_referencia') or 'n/d'} · potência "
-            "instalada conhecida",
+            "instalada",
             "#fcc817",
         )
     )
@@ -237,8 +237,8 @@ with side_col:
                 f"{_dec_br(float(row.get('display_mw') or 0.0), 1)} MW"
             )
         st.caption(
-            "Ordenação descritiva do snapshot. Muitas instalações não provam "
-            "saturação, demanda futura nem rentabilidade."
+            "Ordenação descritiva deste retrato. Muitas instalações não "
+            "provam saturação, demanda futura nem rentabilidade."
         )
 
 # ------------------------------------------------------------- Públicos
@@ -349,9 +349,6 @@ with s2:
             if landcover.available
             else "- Meio ambiente: cobertura e uso da terra (MapBiomas)\n"
         )
-        +
-        "- NDVI por satélite: 97 municípios listados, Maringá medida, "
-        "nenhum mapa publicado"
     )
     st.caption("Nessas páginas, indicador sem fonte aparece como indisponível.")
 with s3:
