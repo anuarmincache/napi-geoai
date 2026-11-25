@@ -28,7 +28,9 @@ def test_cloud_requirements_next_to_entrypoint() -> None:
         for ln in body.splitlines()
         if ln.strip() and not ln.strip().startswith("#")
     ]
-    assert dep_lines == ["-e ..[ui]"], dep_lines
+    # «.» e não «..»: o pip resolve o caminho a partir do diretório de
+    # trabalho, e a Cloud executa o pip na raiz do repositório.
+    assert dep_lines == ["-e .[ui]"], dep_lines
     assert not any("psycopg" in ln.lower() for ln in dep_lines)
     assert not any("supabase" in ln.lower() for ln in dep_lines)
     # pyproject da raiz (não de app/) é o alvo do editável.
@@ -107,7 +109,13 @@ def test_deploy_docs_exist() -> None:
 
 
 def test_editable_ui_extra_resolves_from_app_requirements() -> None:
-    """Sanidade: pip interpreta -e ..[ui] a partir de app/requirements.txt."""
+    """O pip precisa resolver o editável rodando na raiz, como faz a Cloud.
+
+    A versão anterior deste teste executava o pip com cwd=app/, onde «..» de
+    fato apontava para a raiz, e por isso aprovou o manifesto que quebrou o
+    primeiro deploy. O diretório de trabalho é parte da condição que se quer
+    testar, não um detalhe de conveniência.
+    """
 
     import subprocess
     import sys
@@ -123,7 +131,7 @@ def test_editable_ui_extra_resolves_from_app_requirements() -> None:
             "-r",
             str(req),
         ],
-        cwd=REPO / "app",
+        cwd=REPO,
         capture_output=True,
         text=True,
         check=False,

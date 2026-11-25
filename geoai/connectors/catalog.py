@@ -231,6 +231,37 @@ SOURCE_CATALOG: tuple[SourceSpec, ...] = (
         connector_module=None,
     ),
     SourceSpec(
+        source_id="mapbiomas.brazil.lulc.statistics",
+        organization="MapBiomas",
+        product=(
+            "Estatísticas de cobertura por município — Coleção 11 (planilha)"
+        ),
+        access_mode=AccessMode.HTTP_FILE,
+        entry_url="https://brasil.mapbiomas.org/downloads/estatisticas/",
+        download_url="https://brasil.mapbiomas.org/downloads/estatisticas/",
+        formats=("xlsx",),
+        license_note=(
+            "MapBiomas: uso público com citação obrigatória (termos de uso "
+            "declaram Creative Commons CC-BY). Citar projeto, coleção e versão."
+        ),
+        official_update_cadence="Coleções anuais",
+        verification_policy=(
+            "Baixado e conferido: SHA-256 do conteúdo, aba COVERAGE_11, filtro "
+            "por Paraná e comparação da área mapeada com a área oficial do IBGE"
+        ),
+        catalogued_at=CATALOGUED_AT,
+        spatial_coverage="Brasil, com recorte por município",
+        crs_or_coords="tabular, sem geometria; junção pelo código IBGE",
+        granularity="município, por classe e por ano (Landsat, 30 m)",
+        auth_required=False,
+        status=SourceStatus.PROTOTYPE,
+        notes=(
+            "Esta é a rota efetivamente usada no portal. A entrada de raster "
+            "acima descreve a via GEE/GeoTIFF, que segue apenas catalogada."
+        ),
+        connector_module="geoai.landcover.mapbiomas_load",
+    ),
+    SourceSpec(
         source_id="ons.dados_abertos.capacidade_geracao",
         organization="ONS",
         product="Capacidade Instalada de Geração (Dados Abertos)",

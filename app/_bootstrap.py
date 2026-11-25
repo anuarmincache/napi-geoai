@@ -4,12 +4,23 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import sys
 import tempfile
 from functools import lru_cache
 from pathlib import Path
 
-import streamlit as st
-from geoai.portal import (
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+# O pacote geoai vive na raiz do repositório e não é instalado na Streamlit
+# Community Cloud, onde entram apenas as dependências de app/requirements.txt.
+# Garantir a raiz em sys.path antes do primeiro import de geoai faz a aplicação
+# subir igual na Cloud, na execução local e nos testes, sem depender de qual é
+# o diretório de trabalho.
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+import streamlit as st  # noqa: E402
+from geoai.portal import (  # noqa: E402
     list_domain_cards,
     load_energy_panel_bundle,
     load_mmgd_panel_bundle,
@@ -18,10 +29,9 @@ from geoai.portal import (
     load_population_panel_bundle,
 )
 
-from ui import art
-from ui.theme import CUSTOM_CSS
+from ui import art  # noqa: E402
+from ui.theme import CUSTOM_CSS  # noqa: E402
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 LOGO_PATH = REPO_ROOT / "assets" / "napi-ezc-logo.png"
 INSTITUTIONS = ("Universidade Estadual de Maringá (UEM)", "Fundação Araucária")
 _MAP_HTML_CACHE = Path(tempfile.gettempdir()) / "napi_geoai_streamlit_maps"
