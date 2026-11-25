@@ -44,6 +44,14 @@ from geoai.portal.landcover_panel import (  # noqa: E402
     load_landcover_bundle,
 )
 from geoai.portal.paths import municipalities_geojson_path  # noqa: E402
+from geoai.portal.similaridade import (  # noqa: E402
+    FORMULA_PT,
+    VARIAVEIS,
+    construir_indice,
+    linhas_dos_paineis,
+    municipios_parecidos,
+    nota_isolamento_pt,
+)
 from geoai.portal.textos_legados import atualizar, atualizar_lista  # noqa: E402
 
 OUT = REPO / "web" / "public" / "dados"
@@ -402,6 +410,14 @@ def main() -> int:
     write("series.json", series)
 
     # ------------------------------------------------------- ficha por município
+    # Municípios parecidos: vizinho mais próximo em um espaço declarado.
+    # Município sem alguma variável fica fora do índice, não entra com zero.
+    indice_parecidos = None
+    if lc.available and mmgd.available:
+        indice_parecidos = construir_indice(
+            linhas_dos_paineis(populacao=pop, cobertura=lc, mmgd=mmgd)
+        )
+
     fichas = {}
     for code, row in pop_by.items():
         ficha: dict[str, Any] = {
@@ -430,6 +446,24 @@ def main() -> int:
                 }
                 for r in landcover_composition(lc, code, lc.panel["last_year"])
             ]
+        if indice_parecidos is not None:
+            vizinhos = municipios_parecidos(indice_parecidos, code, quantidade=5)
+            if vizinhos:
+                ficha["parecidos"] = {
+                    "metodo": FORMULA_PT,
+                    "variaveis": [v.rotulo_pt for v in VARIAVEIS],
+                    "aviso": nota_isolamento_pt(vizinhos),
+                    "lista": [
+                        {
+                            "cd": v.cd_mun,
+                            "nome": v.nome,
+                            "distancia": v.distancia,
+                            "parecido_em": list(v.parecido_em),
+                            "diferente_em": list(v.diferente_em),
+                        }
+                        for v in vizinhos
+                    ],
+                }
         if agro.available:
             ficha["pecuaria"] = [
                 {

@@ -47,11 +47,13 @@ O portal ajuda a priorizar investigações. Ele não substitui projeto, licencia
 | Energia | Calculadoras | Consumo e custo de equipamentos, dimensionamento fotovoltaico preliminar | Entradas do usuário | Disponível |
 | Território | Agricultura e pecuária | Lavouras, rebanhos e leite por município, com mapa e CSV | IBGE PAM e PPM, 2025 | Disponível |
 | Território | Cobertura da terra | Floresta, agricultura, pastagem e área urbana, de 1985 a 2025 | MapBiomas Coleção 11 | Disponível |
-| Território | Vegetação por satélite | Lista de 97 municípios e plano do ciclo de NDVI | Copernicus Sentinel-2 | Parcial: nenhum mapa de NDVI publicado |
+| Território | Municípios parecidos | Os cinco mais próximos do Paraná em sete variáveis, com a conta aberta variável a variável | IBGE, MapBiomas, ANEEL MMGD | Disponível, dentro da ficha |
 | Transparência | Fontes e qualidade | Catálogo de fontes, licenças e situação de cada uma | Catálogo do projeto | Disponível |
 | Transparência | Sobre o projeto | O que é, quem faz e detalhes técnicos | Projeto | Disponível |
 
-Ainda indisponível: unidades de conservação, recursos hídricos, recurso solar e aptidão territorial, biogás, observatório em tempo quase real, radar de oportunidades e assistente de IA. Veja o [ROADMAP.md](ROADMAP.md).
+Ainda indisponível: unidades de conservação, recursos hídricos, recurso solar e aptidão territorial, biogás, observatório em tempo quase real e radar de oportunidades. Veja o [ROADMAP.md](ROADMAP.md).
+
+O NDVI por satélite saiu da navegação em 25/11/2026. O motor de cálculo, o plano de ciclo e o piloto medido de Maringá continuam no repositório como artefato de pesquisa, em [`research/ndvi_congelado/`](research/ndvi_congelado/LEIA-ME.md).
 
 ## Tecnologias
 
@@ -203,11 +205,12 @@ Identidade visual: paleta e logotipo do NAPI Energia Zero-Carbono, com ilustraç
 ## Limites conhecidos
 
 - **Sem publicação pública.** O portal roda localmente. A publicação no Streamlit Community Cloud depende de aprovação.
-- **NDVI sem imagens.** Só Maringá tem cena medida (73,1% de pixels válidos). Nenhum mapa de NDVI está publicado. O motor ainda está fixo em Maringá.
+- **NDVI fora do portal.** Saiu da navegação em 25/11/2026. Só Maringá chegou a ter cena medida (73,1% de pixels válidos) e nenhum mapa foi publicado. O motor continua no repositório, congelado, em `research/ndvi_congelado/`.
 - **Cobertura da terra e área IBGE não coincidem exatamente.** Diferença mediana de 0,22% e máxima de 4,82%. Os hectares não são reescalados.
 - **Mudança de cobertura não é desmatamento.** A página mostra diferença de estoque por classe entre dois anos.
 - **Potência não é energia.** MW e GW são potência instalada, não geração em MWh.
 - **MMGD e SIGA não se somam.** São cadastros diferentes.
+- **Municípios parecidos é descritivo.** A semelhança vale só nas sete variáveis declaradas. Não é ranking de aptidão e não considera nada fora dessa lista.
 - **Efetivo de rebanho não é resíduo disponível** para biodigestores.
 
 ## Equipe e reconhecimento
@@ -335,14 +338,21 @@ Exemplo de preenchimento. Todos os valores de entrada são do usuário.
 
 Fórmulas: `E = P × h × d × n ÷ 1000` e `P = E ÷ (HSP × 30 × PR)`. A irradiação e a tarifa não têm valor padrão: o usuário informa. Resultado de simulação (classe C), não é projeto.
 
-### 8. Plano do ciclo de NDVI
+### 8. Municípios parecidos: quem é como Maringá
 
-| Item | Valor |
-|---|---:|
-| Municípios acima de 20 mil habitantes | 97 |
-| Com passagem aproveitável na quinzena | 83 |
-| Cenas Sentinel-2 distintas | 34 |
-| Estágio 1, só máscara de nuvem | 60 MB |
-| Estágio 2, bandas do NDVI, no máximo | 7,6 GB |
+| # | Município | Distância | Parecido em |
+|---:|---|---:|---|
+| 1 | Arapongas | 1,65 | área, agricultura, floresta, pastagem, geração distribuída por habitante |
+| 2 | Apucarana | 1,94 | área, agricultura, pastagem, geração distribuída por habitante |
+| 3 | Cambé | 2,09 | área, floresta, pastagem, geração distribuída por habitante |
+| 4 | Londrina | 2,13 | população, agricultura, pastagem, geração distribuída por habitante |
+| 5 | Araucária | 2,20 | área, agricultura, floresta, pastagem |
 
-Fonte: catálogo STAC do Copernicus Data Space, consulta de 19/11/2026, janela de 15 dias. Plano de catálogo: nenhuma imagem foi baixada.
+Vizinho mais próximo em sete variáveis padronizadas: população, área, densidade, agricultura, floresta, pastagem e geração distribuída por habitante. População, área e densidade entram em logaritmo, porque variam por ordens de grandeza.
+
+A potência de usinas fica de fora de propósito. No cadastro da ANEEL SIGA, 276 municípios aparecem como sem empreendimento, que significa nenhuma usina georreferenciada e vinculada, não ausência comprovada. Tratar isso como zero inventaria informação.
+
+A distância também informa quando não há semelhante. Curitiba tem 3,08 para o vizinho mais próximo, contra 1,65 de Maringá, e a tela avisa que a lista traz os menos distantes, não equivalentes.
+
+Indicador calculado. Não é ranking de aptidão e não diz que um município deveria seguir o outro.
+

@@ -226,6 +226,36 @@ def cached_mmgd_panel():
     return load_mmgd_panel_bundle(REPO_ROOT)
 
 
+@st.cache_resource(show_spinner="Montando o espaço de comparação…")
+def cached_similaridade():
+    """Índice de municípios parecidos. Conta determinística, uma vez por processo.
+
+    Devolve ``None`` quando falta algum painel, para a página omitir a seção
+    em vez de mostrar uma vizinhança calculada sobre dado incompleto.
+    """
+    from geoai.portal.landcover_panel import load_landcover_bundle
+    from geoai.portal.similaridade import (
+        DadosInsuficientes,
+        construir_indice,
+        linhas_dos_paineis,
+    )
+
+    cobertura = load_landcover_bundle(REPO_ROOT)
+    mmgd = load_mmgd_panel_bundle(REPO_ROOT)
+    if not (cobertura.available and mmgd.available):
+        return None
+    try:
+        return construir_indice(
+            linhas_dos_paineis(
+                populacao=load_population_panel_bundle(REPO_ROOT),
+                cobertura=cobertura,
+                mmgd=mmgd,
+            )
+        )
+    except DadosInsuficientes:
+        return None
+
+
 @st.cache_resource(show_spinner="Carregando cobertura e uso da terra…")
 def cached_landcover_panel():
     from geoai.portal.landcover_panel import load_landcover_bundle
