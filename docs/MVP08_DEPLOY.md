@@ -84,7 +84,7 @@ monorepo (pai de `app/`).
 |---|---|
 | Recursos | App sleep após inatividade (plano free); cold start |
 | Rede | Cloud **não** alcança Postgres WSL `:5433` |
-| Binários | Wheels manylinux de geopandas/pyogrio — `packages.txt` vazio de propósito |
+| Binários | Wheels manylinux; `packages.txt` deve estar **vazio** (a Cloud NÃO ignora comentários com # neste arquivo) |
 | Uso | Free tier: adequado a demo institucional leve; monitorar minutos/recursos |
 | Analytics | `gatherUsageStats = false` em `.streamlit/config.toml` |
 
