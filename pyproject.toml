@@ -8,8 +8,10 @@ version = "0.1.0"
 description = "Motor científico Python do NAPI GeoAI para análise geoespacial e planejamento energético."
 readme = "README.md"
 requires-python = ">=3.12"
-# Licença ainda não definida (ver README). Campo omitido de propósito:
-# evita metadados ambíguos e alinha com PEP 639 / Hatchling até haver SPDX.
+# MIT cobre o código. Os dados de data/derived seguem LICENSE-DADOS.md (ODbL),
+# por causa da cláusula share-alike dos dados abertos da ANEEL.
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
   { name = "Anuar Mincache" },
 ]

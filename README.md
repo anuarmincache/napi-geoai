@@ -222,7 +222,18 @@ Veja [AUTHORS.md](AUTHORS.md). O projeto está hospedado nesta conta pessoal. Ev
 
 ## Licença
 
-**Ainda não definida.** O repositório é público para consulta, mas não há licença de reutilização concedida neste momento. Os dados seguem as licenças das fontes: ANEEL (ODbL), IBGE (uso livre com citação) e MapBiomas (uso público com citação obrigatória).
+O projeto usa duas licenças, porque código e dados têm donos diferentes.
+
+| O quê | Licença | Arquivo |
+|---|---|---|
+| Código, testes e documentação | MIT | [`LICENSE`](LICENSE) |
+| Arquivos de `data/derived/` | ODbL 1.0 | [`LICENSE-DADOS.md`](LICENSE-DADOS.md) |
+
+A ODbL nos dados não é escolha de estilo. Os dados abertos da ANEEL são
+publicados sob ODbL, que tem cláusula de compartilhamento pelas mesmas
+condições, então base derivada precisa sair sob ODbL. IBGE pede citação da
+fonte e MapBiomas pede citação obrigatória. A aba Fontes e qualidade mostra a
+licença de cada arquivo preparado, com data de coleta e impressão digital.
 
 ## Exemplos do que o portal entrega
 
