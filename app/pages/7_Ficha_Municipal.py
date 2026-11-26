@@ -56,6 +56,18 @@ page_header(
     "Território, população, energia e agropecuária de um município em um só lugar.",
     art_kind="map",
     eyebrow="Comece aqui",
+    banner="banner-ficha.webp",
+    banner_alt=(
+        "Ficha ilustrada de um município sobre o mapa do Paraná, com um "
+        "marcador de localização"
+    ),
+    chips=(
+        "Território",
+        "População",
+        "Energia",
+        "Agropecuária",
+        "Municípios parecidos",
+    ),
 )
 st.caption(
     "Território, população, energia e agropecuária de um município em um só "

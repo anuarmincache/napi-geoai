@@ -74,6 +74,7 @@ BANNERS_DAS_PAGINAS = {
     "9_Meio_Ambiente.py": "banner-cobertura.webp",
     "3_Fontes_e_qualidade.py": "banner-fontes.webp",
     "4_Sobre_e_deploy.py": "banner-sobre.webp",
+    "7_Ficha_Municipal.py": "banner-ficha.webp",
 }
 
 
@@ -84,7 +85,7 @@ def test_banners_das_paginas_existem_e_somam_pouco() -> None:
         assert caminho.is_file(), f"falta {arquivo}"
         total += caminho.stat().st_size / 1024
     # Cada página embute o seu, mas o repositório carrega todos.
-    assert total < 800, f"os sete somam {total:.0f} KB"
+    assert total < 800, f"os banners somam {total:.0f} KB"
 
 
 @pytest.mark.parametrize(

@@ -23,12 +23,21 @@ page_header(
     art_kind="docs",
     eyebrow="Transparência",
     banner="banner-fontes.webp",
-    banner_alt="Notebook mostrando o painel do projeto com o mapa do Paraná",
+    banner_alt=(
+        "Logos de IBGE, ANEEL, INPE, MapBiomas, ONS e Governo do Paraná sobre "
+        "um notebook com o painel do projeto"
+    ),
+    # Os logos ficam à esquerda da arte: sem isso o recorte da tela estreita
+    # corta justamente as instituições que fornecem o dado.
+    banner_pos="center left",
+    # As três primeiras alimentam o site hoje. INPE e ONS estão catalogadas e
+    # ainda não foram coletadas, e a tabela desta página diz isso em detalhe.
     chips=(
-        "Fontes oficiais",
-        "Data da coleta",
-        "Licença",
-        "Impressão digital",
+        "IBGE",
+        "ANEEL",
+        "MapBiomas",
+        "INPE (previsto)",
+        "ONS (previsto)",
     ),
 )
 st.caption(
