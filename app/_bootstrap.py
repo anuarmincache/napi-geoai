@@ -108,6 +108,7 @@ def page_header(
     eyebrow: str = "NAPI GeoAI",
     banner: str | None = None,
     banner_alt: str = "",
+    banner_pos: str = "center right",
     chips: tuple[str, ...] = (),
 ) -> None:
     """Faixa de título padronizada, com ilustração própria.
@@ -119,6 +120,10 @@ def page_header(
 
     ``chips`` são as etiquetas do que a página cobre. Elas afirmam algo, então
     cada uma precisa corresponder ao que a página realmente mostra.
+
+    ``banner_pos`` escolhe que parte da ilustração fica visível quando a
+    largura aperta. O padrão mostra a direita; use ``center left`` quando o que
+    importa na arte estiver do lado esquerdo dela.
     """
 
     lead_html = f'<p class="lead">{lead}</p>' if lead else ""
@@ -138,7 +143,8 @@ def page_header(
     {lead_html}
     {chips_html}
   </div>
-  <img class="art" alt="{banner_alt}" src="{fonte}"/>
+  <img class="art" alt="{banner_alt}" src="{fonte}"
+       style="object-position: {banner_pos}"/>
 </div>
 ''',
         unsafe_allow_html=True,
