@@ -11,6 +11,8 @@ from geoai.portal import (
 )
 
 from _bootstrap import (
+    REPOSITORIO_URL,
+    VERSAO_PUBLICA,
     asset_data_uri,
     cached_agro_panel,
     cached_energy_panel,
@@ -84,7 +86,7 @@ st.markdown(
       regiões merecem um estudo mais profundo, com a fonte e o limite de cada
       número sempre à vista.
     </p>
-    <span class="pill">Em desenvolvimento · dados oficiais em retratos
+    <span class="pill">Versão {VERSAO_PUBLICA} · dados oficiais em retratos
     datados, não tempo real</span>
   </div>
   <div class="scene" role="img"
@@ -334,6 +336,45 @@ st.markdown(
     "</div>",
     unsafe_allow_html=True,
 )
+
+# ---------------------------------------------------------------- Beta
+# O aviso de beta aqui é específico, não genérico: diz o que já se pode citar,
+# o que ainda muda e o que ainda não foi feito. Um «pode conter erros» solto
+# não ajudaria ninguém a decidir se usa o número.
+st.markdown(
+    '<h2 class="napi-section-title">Em que pé está a plataforma</h2>'
+    f'<p class="napi-section-sub">Esta é a versão {VERSAO_PUBLICA}. '
+    "Um site em evolução, e vale dizer em que parte.</p>",
+    unsafe_allow_html=True,
+)
+b1, b2, b3 = st.columns(3)
+with b1:
+    st.markdown(
+        '<div class="napi-beta-card ok"><h4>Já é firme</h4>'
+        "<p>Cada número traz a fonte, a data em que foi coletado e a "
+        "impressão digital do arquivo de origem. O que não existe aparece "
+        "como não existe, nunca como zero. Os cálculos são determinísticos e "
+        "estão escritos na própria página.</p></div>",
+        unsafe_allow_html=True,
+    )
+with b2:
+    st.markdown(
+        '<div class="napi-beta-card muda"><h4>Ainda muda</h4>'
+        "<p>A interface, os textos e quais indicadores aparecem. Fontes já "
+        "catalogadas entram quando forem coletadas, e indicador que não se "
+        "sustentar sai. Se algo mudar de lugar entre uma visita e outra, é "
+        "isso.</p></div>",
+        unsafe_allow_html=True,
+    )
+with b3:
+    st.markdown(
+        '<div class="napi-beta-card falta"><h4>Ainda não aconteceu</h4>'
+        "<p>Revisão independente dos números por alguém de fora do projeto. "
+        "Até lá, confira na fonte o que for usar em decisão ou publicação. "
+        f'Encontrou divergência? <a href="{REPOSITORIO_URL}/issues">Abra uma '
+        "questão no repositório</a>.</p></div>",
+        unsafe_allow_html=True,
+    )
 
 # -------------------------------------------------------------- Status
 st.markdown(

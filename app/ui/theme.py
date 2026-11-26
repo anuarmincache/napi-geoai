@@ -175,6 +175,25 @@ input:focus-visible, select:focus-visible, textarea:focus-visible,
 .napi-kpi .k-sub { font-size: 0.96rem; color: var(--ezc-ink); margin: 0 0 0.45rem 0; }
 .napi-kpi .k-src { font-size: 0.78rem; color: #6b7a70; margin: 0; line-height: 1.35; }
 
+/* Cartões do bloco de versão. A faixa colorida no topo separa o que já se
+   pode citar do que ainda muda, sem precisar ler para notar a diferença. */
+.napi-beta-card {
+  border: 1px solid var(--ezc-line); border-top: 3px solid var(--ezc-line);
+  border-radius: 14px; padding: 1rem 1.1rem; height: 100%;
+  background: #fff; margin-bottom: 0.4rem;
+}
+.napi-beta-card.ok { border-top-color: #4f7a3a; }
+.napi-beta-card.muda { border-top-color: var(--ezc-sun); }
+.napi-beta-card.falta { border-top-color: #b35309; }
+.napi-beta-card h4 {
+  font-family: "Montserrat", sans-serif; font-size: 0.95rem; font-weight: 700;
+  color: var(--ezc-forest); margin: 0 0 0.4rem 0;
+}
+.napi-beta-card p {
+  font-size: 0.88rem; line-height: 1.55; color: var(--ezc-ink); margin: 0;
+}
+.napi-beta-card a { color: #2f6b4f; }
+
 .napi-card {
   background: var(--ezc-card); border: 1px solid var(--ezc-line);
   border-radius: 16px; padding: 1.15rem 1.2rem; height: 100%;
@@ -279,7 +298,16 @@ section[data-testid="stSidebar"] .napi-side-brand {
 section[data-testid="stSidebar"] .napi-side-brand em {
   font-style: normal; color: var(--ezc-leaf);
 }
-section[data-testid="stSidebar"] .napi-side-tag {
+section[data-testid="stSidebar"] /* Marca de versão ao lado do nome. Pequena de propósito: informa sem virar
+   aviso, porque o detalhe do que é beta fica logo abaixo, no menu. */
+.napi-beta {
+  display: inline-block; margin-left: 0.45rem; vertical-align: 0.22em;
+  font-family: "Montserrat", sans-serif; font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #2f4a33; background: var(--ezc-sun);
+  padding: 0.08rem 0.36rem; border-radius: 999px;
+}
+.napi-side-tag {
   font-size: 0.86rem; color: var(--ezc-muted); margin: 0.1rem 0 0.4rem 0;
   line-height: 1.35;
 }
