@@ -32,6 +32,11 @@ from geoai.portal import (  # noqa: E402
 from ui import art  # noqa: E402
 from ui.theme import CUSTOM_CSS  # noqa: E402
 
+#: Versão pública da plataforma. A data acompanha a rodada de trabalho, não a
+#: data de coleta de cada fonte, que fica em Fontes e qualidade.
+VERSAO_PUBLICA = "beta · novembro de 2026"
+REPOSITORIO_URL = "https://github.com/anuarmincache/napi-geoai"
+
 LOGO_PATH = REPO_ROOT / "assets" / "napi-ezc-logo.png"
 HERO_PATH = REPO_ROOT / "assets" / "hero-parana.webp"
 INSTITUTIONS = ("Universidade Estadual de Maringá (UEM)", "Fundação Araucária")
@@ -230,7 +235,8 @@ def sidebar_brand() -> None:
             unsafe_allow_html=True,
         )
     sb.markdown(
-        '<p class="napi-side-brand">NAPI Geo<em>AI</em></p>'
+        '<p class="napi-side-brand">NAPI Geo<em>AI</em>'
+        f'<span class="napi-beta" title="{VERSAO_PUBLICA}">beta</span></p>'
         '<p class="napi-side-tag">Inteligência territorial e energética '
         "do Paraná</p>",
         unsafe_allow_html=True,
@@ -243,11 +249,20 @@ def sidebar_brand() -> None:
             for path, label, icon in items:
                 page_link(path, label, icon)
     sb.divider()
-    with sb.expander("Sobre os dados desta versão"):
+    with sb.expander("O que significa a versão beta"):
         st.caption(
-            "Dados oficiais em retratos datados (não é tempo real). Cada "
-            "número traz a fonte e a data. Quando um dado não existe, a "
-            "página diz que não existe."
+            "**Já é firme.** Cada número traz a fonte, a data da coleta e a "
+            "impressão digital do arquivo. O que não existe aparece como não "
+            "existe, nunca como zero."
+        )
+        st.caption(
+            "**Ainda muda.** A interface, os textos e quais indicadores "
+            "aparecem. As fontes já catalogadas entram quando forem coletadas."
+        )
+        st.caption(
+            "**Ainda não aconteceu.** Revisão independente dos números por "
+            f"alguém de fora do projeto. Se encontrar divergência, abra uma "
+            f"questão em [{REPOSITORIO_URL.split('//')[1]}]({REPOSITORIO_URL})."
         )
 
 
