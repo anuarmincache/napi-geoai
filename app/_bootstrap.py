@@ -119,7 +119,10 @@ def page_header(
     reorganização no celular. Faltando o arquivo, o desenho vetorial assume.
 
     ``chips`` são as etiquetas do que a página cobre. Elas afirmam algo, então
-    cada uma precisa corresponder ao que a página realmente mostra.
+    cada uma precisa corresponder ao que a página realmente mostra. Mantenha a
+    linha curta, até umas cinco palavras somadas por etiqueta: quando a lista
+    quebra em duas linhas, o divisor da primeira etiqueta da linha de baixo
+    fica solto, e CSS não tem como detectar início de linha para escondê-lo.
 
     ``banner_pos`` escolhe que parte da ilustração fica visível quando a
     largura aperta. O padrão mostra a direita; use ``center left`` quando o que

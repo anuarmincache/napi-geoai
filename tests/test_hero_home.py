@@ -75,6 +75,7 @@ BANNERS_DAS_PAGINAS = {
     "3_Fontes_e_qualidade.py": "banner-fontes.webp",
     "4_Sobre_e_deploy.py": "banner-sobre.webp",
     "7_Ficha_Municipal.py": "banner-ficha.webp",
+    "5_Explorador_Territorial.py": "banner-explorador.webp",
 }
 
 
