@@ -38,6 +38,16 @@ page_header(
     "Os 399 municípios em um mapa, com busca por nome ou código IBGE.",
     art_kind="map",
     eyebrow="Comece aqui",
+    banner="banner-explorador.webp",
+    banner_alt=(
+        "Mapa do Paraná com a divisa de todos os municípios desenhada, sobre "
+        "uma paisagem de lavouras ao entardecer"
+    ),
+    chips=(
+        "Os 399 municípios",
+        "Busca por nome ou código",
+        "Comparação entre dois",
+    ),
 )
 st.caption(
     "Malha Municipal oficial do IBGE, edição 2025 — **todos os "
