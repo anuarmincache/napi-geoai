@@ -42,18 +42,21 @@ if not bundle.validated_for_map:
     render_footer()
     st.stop()
 
-level_label = st.radio(
+level = st.radio(
     "Nível didático",
     options=[
-        (AudienceLevel.BASIC, "Básico"),
-        (AudienceLevel.INTERMEDIATE, "Intermediário"),
-        (AudienceLevel.TECHNICAL, "Técnico"),
+        AudienceLevel.BASIC,
+        AudienceLevel.INTERMEDIATE,
+        AudienceLevel.TECHNICAL,
     ],
-    format_func=lambda item: item[1],
+    format_func={
+        AudienceLevel.BASIC: "Básico",
+        AudienceLevel.INTERMEDIATE: "Intermediário",
+        AudienceLevel.TECHNICAL: "Técnico",
+    }.__getitem__,
     horizontal=True,
     help="Altera apenas o texto didático, não a geometria.",
 )
-level = level_label[0]
 title, description = didactic_copy_text(bundle, level)
 if title.strip().casefold() != "mapa do paraná":
     st.subheader(title)

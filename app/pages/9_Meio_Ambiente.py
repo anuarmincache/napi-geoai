@@ -22,7 +22,7 @@ from geoai.portal.landcover_panel import (
     landcover_ranked,
     landcover_share,
 )
-from geoai.portal.textos_legados import atualizar_lista
+from geoai.portal.textos_legados import atualizar, atualizar_lista
 
 from _bootstrap import (
     br_num,
@@ -131,7 +131,7 @@ if lc.available:
 
 bundle = cached_municipality_layer()
 if not bundle.validated_for_map:
-    st.error(bundle.missing_reason_pt or "Malha municipal indisponível.")
+    st.error(atualizar(bundle.missing_reason_pt) or "Malha municipal indisponível.")
     render_footer()
     st.stop()
 

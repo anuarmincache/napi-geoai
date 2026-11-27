@@ -15,7 +15,11 @@ from pathlib import Path
 from typing import Any
 
 from geoai.connectors.ibge import EXPECTED_PR_MUNICIPALITY_COUNT
-from geoai.portal.formatos import data_br
+from geoai.portal.formatos import (
+    data_br,
+    motivos_de_recusa_pt,
+    numero_br,
+)
 from geoai.portal.municipal_explorer import MunicipalityLayerBundle
 from geoai.portal.paths import (
     mmgd_panel_path,
@@ -530,10 +534,12 @@ def mmgd_public_notice(bundle: MmgdPanelBundle) -> dict[str, Any]:
         "temporal_note_pt": panel.get("temporal_note_pt")
         or qual.get("temporal_note_pt"),
         "notice_pt": (
-            f"{n_rej} registro(s) PR rejeitados na preparação "
-            f"({reasons}). Contagem primária = empreendimentos válidos. "
-            "Potência instalada (MW) ≠ energia gerada (MWh). "
-            "MMGD ≠ SIGA."
+            f"{numero_br(n_rej)} registros do Paraná foram recusados na "
+            f"preparação do arquivo: {motivos_de_recusa_pt(reasons)}. A "
+            "contagem principal considera apenas os registros válidos. "
+            "Potência instalada, medida em MW, não é energia gerada, que se "
+            "mede em MWh. Este cadastro de geração distribuída não se soma ao "
+            "cadastro de usinas."
         ),
     }
 

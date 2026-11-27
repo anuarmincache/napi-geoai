@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import streamlit as st
 from geoai.connectors.catalog import list_sources
-from geoai.portal import quality_snapshot_for_demo
+from geoai.portal.formatos import modo_de_acesso, situacao_da_fonte
+from geoai.portal.relatorios import relatorios_tecnicos
 
 from _bootstrap import (
-    cached_parana_layer,
     configure_page,
     page_header,
     render_footer,
@@ -43,34 +43,54 @@ page_header(
 st.caption(
     "Catálogo das fontes oficiais usadas ou previstas, com licença, "
     "periodicidade e situação de cada uma. As fontes são conferidas na "
-    "preparação dos dados, não a cada visita."
+    "preparação dos dados, não a cada visita. Em uso no site significa que a "
+    "fonte alimenta alguma página hoje; catalogada significa que ela está "
+    "prevista e ainda não foi coletada."
 )
 
 sources = list_sources()
 rows = [
     {
-        "source_id": s.source_id,
-        "organização": s.organization,
-        "produto": s.product,
-        "status": s.status.value,
-        "modo": s.access_mode.value,
-        "cobertura": s.spatial_coverage,
+        "Organização": s.organization,
+        "Produto": s.product,
+        "Situação": situacao_da_fonte(s.status.value),
+        "Como é obtida": modo_de_acesso(s.access_mode.value),
+        "Cobertura": s.spatial_coverage,
     }
     for s in sources
 ]
 st.dataframe(rows, width="stretch", hide_index=True)
 
-with st.expander("Detalhes técnicos: verificação de qualidade do contorno estadual"):
-    bundle = cached_parana_layer()
-    snap = quality_snapshot_for_demo(bundle)
-    st.json(snap)
-    st.markdown(
-        """
-    **O que esta checagem cobre:** ela avalia os atributos de cada registro, não a
-    geometria PostGIS. A validação geométrica já está no artefato
-    `parana_uf_2025.validation.json` (MVP 02). Metadados ausentes aparecem como
-    qualidade **não determinada** — a UI não inventa datas nem atributos.
-    """
-    )
+st.markdown("### Relatórios técnicos")
+st.caption(
+    "As duas verificações que sustentam os números das outras páginas. O "
+    "arquivo original de cada uma fica disponível para quem quiser conferir "
+    "fora daqui."
+)
+
+for relatorio in relatorios_tecnicos():
+    with st.expander(relatorio.titulo):
+        st.write(relatorio.resumo)
+        st.dataframe(
+            [
+                {"O que foi verificado": rotulo, "Resultado": valor}
+                for rotulo, valor in relatorio.linhas
+            ],
+            width="stretch",
+            hide_index=True,
+        )
+        st.caption(
+            f"Gerado em {relatorio.gerado_em} com {relatorio.motor}. As versões "
+            "ficam registradas porque mudança de biblioteca pode alterar "
+            "resultado de reprojeção."
+        )
+        if relatorio.arquivo is not None and relatorio.arquivo.exists():
+            st.download_button(
+                "Baixar o relatório completo",
+                data=relatorio.arquivo.read_bytes(),
+                file_name=relatorio.nome_do_arquivo,
+                mime="application/json",
+                key=f"baixar-{relatorio.nome_do_arquivo}",
+            )
 
 render_footer()
