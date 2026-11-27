@@ -13,6 +13,7 @@ from geoai.portal import (
     search_municipalities,
 )
 from geoai.portal.formatos import (
+    numero_br,
     rotulo_classe_consumo,
     rotulo_porte,
     rotulo_tecnologia,
@@ -163,9 +164,9 @@ else:
     st.warning(notice["notice_pt"])
     st.warning(
         str(atualizar(notice.get("temporal_note_pt")) or "")
-    + " Anos em `by_cadastral_update_year` **não** são apresentados como "
-    "crescimento de conexões."
-)
+        + " O ano de atualização do cadastro não é apresentado como "
+        "crescimento de conexões."
+    )
 
 if not scope.get("filter_ok", True):
     st.error(scope.get("kpi_caption_pt") or "Filtros incompatíveis.")
@@ -186,7 +187,7 @@ else:
     )
     mw = scope.get("potencia_instalada_mw_conhecida")
     c2.metric(
-        f"MW instalada conhecida ({scope_lab})",
+        f"Potência instalada conhecida em MW ({scope_lab})",
         br_num(mw, 1) if mw is not None else "n/d no filtro",
         help="Disponível no escopo total; ausente nos filtros categóricos.",
     )
@@ -358,10 +359,10 @@ else:
     n_disp = proj.get("display_n")
     m1.metric(
         "Empreendimentos (escopo)",
-        n_disp if n_disp is not None else "n/d",
+        numero_br(n_disp) if n_disp is not None else "n/d",
     )
     m2.metric(
-        "MW instalada conhecida",
+        "Potência instalada conhecida (MW)",
         (
             br_num(proj["display_mw"], 2)
             if proj.get("display_mw") is not None
@@ -377,20 +378,49 @@ else:
         ),
     )
     if level == AudienceLevel.TECHNICAL:
-        st.json(
-            {
-                "by_tipo": raw.get("by_tipo"),
-                "by_classe": raw.get("by_classe"),
-                "by_porte": raw.get("by_porte"),
-                "by_cadastral_update_year": raw.get(
-                    "by_cadastral_update_year"
-                ),
-                "note": (
-                    "by_cadastral_update_year = atualização cadastral, "
-                    "não conexão"
-                ),
-            }
-        )
+        # O detalhamento já saiu daqui como JSON cru uma vez. Chave em inglês e
+        # valor nulo na tela não ajudam nem o leitor técnico: ele quer o
+        # recorte, com o rótulo por extenso, e o arquivo está na página de
+        # fontes para quem precisar da estrutura original.
+        for titulo, bruto, rotular in (
+            ("Por tecnologia", raw.get("by_tipo"), rotulo_tecnologia),
+            ("Por classe de consumo", raw.get("by_classe"), rotulo_classe_consumo),
+            ("Por porte", raw.get("by_porte"), rotulo_porte),
+        ):
+            st.markdown(f"**{titulo}**")
+            if not isinstance(bruto, dict) or not bruto:
+                st.caption("Recorte não publicado neste retrato.")
+                continue
+            st.dataframe(
+                [
+                    {
+                        titulo.replace("Por ", "").capitalize(): rotular(chave),
+                        "Empreendimentos": numero_br(valor),
+                    }
+                    for chave, valor in sorted(
+                        bruto.items(),
+                        key=lambda item: item[1] or 0,
+                        reverse=True,
+                    )
+                ],
+                width="stretch",
+                hide_index=True,
+            )
+        ano = raw.get("by_cadastral_update_year")
+        if isinstance(ano, dict) and ano:
+            st.markdown("**Por ano de atualização cadastral**")
+            st.caption(
+                "Ano em que o registro foi atualizado no cadastro, que não é "
+                "o ano em que o empreendimento entrou em operação."
+            )
+            st.dataframe(
+                [
+                    {"Ano": str(chave), "Empreendimentos": numero_br(valor)}
+                    for chave, valor in sorted(ano.items())
+                ],
+                width="stretch",
+                hide_index=True,
+            )
 
 with st.expander("Fonte e metodologia", expanded=False):
     for line in mmgd_attribution_lines(mmgd):

@@ -16,6 +16,7 @@ from geoai.portal import (
     polo_city_records,
     search_municipalities,
 )
+from geoai.portal.textos_legados import atualizar
 from geoai.presentation import AudienceLevel
 
 from _bootstrap import (
@@ -353,7 +354,7 @@ else:
             f"**{br_num(cmp['area_km2_delta_a_minus_b'], 1)} km²**"
         )
     st.caption(str(cmp["area_source"]))
-    st.warning(str(cmp["disclaimer_pt"]))
+    st.warning(atualizar(str(cmp["disclaimer_pt"])))
 
     report = {
         "produto": "comparacao_territorial_parana",

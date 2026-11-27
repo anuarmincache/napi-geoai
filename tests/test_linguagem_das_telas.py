@@ -70,8 +70,47 @@ PERMITIDOS: tuple[str, ...] = (
 )
 
 
-def _texto_visivel(at: AppTest) -> str:
+def _texto_de_elementos_brutos(at: AppTest) -> list[str]:
+    """Texto que não passa por markdown e por isso escapava desta checagem.
+
+    A primeira versão deste teste lia só elementos de texto, então um
+    `st.json` com chave em inglês e carimbo de data em formato técnico passava
+    sem ser notado. Era o caso de dois blocos em produção. Elemento que exibe
+    estrutura de dados na tela é linguagem de tela como qualquer outra.
+    """
+
     partes: list[str] = []
+    for tipo in ("dataframe", "table"):
+        try:
+            elementos = at.get(tipo)
+        except (KeyError, AttributeError):  # pragma: no cover - versão sem o tipo
+            continue
+        for elemento in elementos:
+            quadro = getattr(elemento, "value", None)
+            colunas = getattr(quadro, "columns", None)
+            if colunas is None:
+                continue
+            partes.extend(str(c) for c in colunas)
+            for coluna in colunas:
+                # Só os valores de texto: número de tabela não é vocabulário.
+                serie = quadro[coluna]
+                partes.extend(
+                    str(v) for v in serie.unique()[:60] if isinstance(v, str)
+                )
+    for tipo in ("json", "code"):
+        try:
+            elementos = at.get(tipo)
+        except (KeyError, AttributeError):  # pragma: no cover - versão sem o tipo
+            continue
+        for elemento in elementos:
+            valor = getattr(elemento, "value", None)
+            if isinstance(valor, str):
+                partes.append(valor)
+    return partes
+
+
+def _texto_visivel(at: AppTest) -> str:
+    partes: list[str] = _texto_de_elementos_brutos(at)
     for grupo in (
         at.markdown,
         at.caption,
@@ -104,6 +143,44 @@ def _sem_permitidos(texto: str) -> str:
     return texto
 
 
+def _radio_de_nivel(at: AppTest) -> tuple[int, list[str]] | None:
+    """Localiza o seletor de nível de leitura pela lista de opções."""
+
+    for indice, radio in enumerate(at.radio):
+        brutas = getattr(radio, "options", None)
+        if not isinstance(brutas, (list, tuple)):
+            continue
+        opcoes = [o for o in brutas if isinstance(o, str)]
+        if len(opcoes) >= 2 and any("cnic" in o for o in opcoes):
+            return indice, opcoes
+    return None
+
+
+def _texto_em_todos_os_niveis(at: AppTest, pagina: Path) -> str:
+    """Soma o texto da página em cada nível de leitura que ela oferece.
+
+    Blocos exclusivos do nível técnico não apareciam nesta checagem, porque a
+    página era renderizada só no nível padrão. Um deles despejava estrutura de
+    dados crua na tela e passou meses sem ser visto.
+
+    O seletor é reencontrado a cada volta: trocar o nível redesenha a página e
+    o índice do widget anterior pode já apontar para outro controle.
+    """
+
+    partes = [_texto_visivel(at)]
+    achado = _radio_de_nivel(at)
+    if achado is None:
+        return partes[0]
+    for opcao in achado[1]:
+        atual = _radio_de_nivel(at)
+        if atual is None:
+            break
+        at.radio[atual[0]].set_value(opcao).run()
+        assert not at.exception, f"{pagina.name} não subiu no nível {opcao}"
+        partes.append(_texto_visivel(at))
+    return "\n".join(partes)
+
+
 @pytest.mark.parametrize("pagina", PAGINAS, ids=lambda p: p.name)
 def test_pagina_nao_mostra_vocabulario_de_bastidor(pagina: Path) -> None:
     sys.path.insert(0, str(REPO / "app"))
@@ -111,7 +188,7 @@ def test_pagina_nao_mostra_vocabulario_de_bastidor(pagina: Path) -> None:
     at.run()
     assert not at.exception, f"{pagina.name} não subiu"
 
-    texto = _sem_permitidos(_texto_visivel(at))
+    texto = _sem_permitidos(_texto_em_todos_os_niveis(at, pagina))
     achados: list[str] = []
     for nome, expressao, conserto in PROIBIDOS:
         for encontrado in set(expressao.findall(texto)):

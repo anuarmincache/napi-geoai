@@ -31,7 +31,7 @@ from geoai.portal.agro_panel import (
     agro_state_summary,
     list_agro_crops,
 )
-from geoai.portal.textos_legados import atualizar_lista
+from geoai.portal.textos_legados import atualizar, atualizar_lista
 
 from _bootstrap import (
     br_num,
@@ -103,11 +103,11 @@ else:
         "Nenhum indicador agrícola foi calculado."
     )
     if agro.missing_reason_pt:
-        st.caption(agro.missing_reason_pt)
+        st.caption(atualizar(agro.missing_reason_pt))
 
 bundle = cached_municipality_layer()
 if not bundle.validated_for_map:
-    st.error(bundle.missing_reason_pt or "Malha municipal indisponível.")
+    st.error(atualizar(bundle.missing_reason_pt) or "Malha municipal indisponível.")
     render_footer()
     st.stop()
 
@@ -401,7 +401,7 @@ else:
         f"Diferença de área oficial: **{br_num(abs(delta), 1)} km²** "
         + ("a mais no primeiro" if delta >= 0 else "a mais no segundo")
     )
-    st.warning(compared["disclaimer_pt"])
+    st.warning(atualizar(compared["disclaimer_pt"]))
 
 st.subheader("Fonte, referência e método")
 for line in explorer_attribution_lines(bundle):

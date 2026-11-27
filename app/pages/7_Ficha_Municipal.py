@@ -78,11 +78,11 @@ st.caption(
 mun = cached_municipality_layer()
 pop = cached_population_panel()
 if not mun.validated_for_map:
-    st.error(mun.missing_reason_pt or "Malha municipal indisponível.")
+    st.error(atualizar(mun.missing_reason_pt) or "Malha municipal indisponível.")
     render_footer()
     st.stop()
 if not pop.available:
-    st.error(pop.missing_reason_pt or "Painel populacional indisponível.")
+    st.error(atualizar(pop.missing_reason_pt) or "Painel populacional indisponível.")
     render_footer()
     st.stop()
 
@@ -115,8 +115,12 @@ elif level is AudienceLevel.INTERMEDIATE:
     )
 else:
     st.info(
-        "Artefatos: `ibge_pr_population_2026_panel.json` + proveniência/"
-        "qualidade. Join estrito CD_MUN×malha; QGIS validou a malha no MVP 09."
+        "Os números vêm do painel populacional preparado a partir das "
+        "estimativas do IBGE, com a proveniência e a verificação de qualidade "
+        "gravadas ao lado do arquivo. A ligação com a malha municipal é feita "
+        "pelo código de sete dígitos do município, sem correspondência por "
+        "nome, e a malha foi validada polígono a polígono no QGIS. O "
+        "relatório dessa validação está na página de fontes e qualidade."
     )
 
 st.warning(atualizar(pop.panel.get("nao_associados_limitation_pt")) or "")
@@ -216,8 +220,10 @@ if profile:
             )
         st.caption(atualizar(profile.get("energy_scope_pt")) or "")
         if level != AudienceLevel.BASIC:
-            st.caption(profile.get("kw_por_habitante_note_pt") or "")
-            st.caption(profile.get("unassociated_plants_limitation_pt") or "")
+            st.caption(atualizar(profile.get("kw_por_habitante_note_pt")) or "")
+            st.caption(
+                atualizar(profile.get("unassociated_plants_limitation_pt")) or ""
+            )
 
     card_m, card_a = st.columns(2, gap="medium")
     with card_m.container(border=True):
@@ -234,7 +240,7 @@ if profile:
                 None,
             )
         if not mmgd.available:
-            st.caption(mmgd.missing_reason_pt or "Painel MMGD indisponível.")
+            st.caption(atualizar(mmgd.missing_reason_pt) or "Painel MMGD indisponível.")
         elif mmgd_row is None:
             st.caption("Município ausente no painel MMGD.")
         else:
@@ -278,7 +284,9 @@ if profile:
         st.markdown("##### 🌾 Agropecuária (IBGE PAM e PPM)")
         agro = cached_agro_panel()
         if not agro.available:
-            st.caption(agro.missing_reason_pt or "Painel agropecuário indisponível.")
+            st.caption(
+                atualizar(agro.missing_reason_pt) or "Painel agropecuário indisponível."
+            )
         else:
             a_cols = [*st.columns(2), *st.columns(2)]
             for col, key in zip(a_cols, PPM_LABELS_PT, strict=True):
@@ -457,7 +465,7 @@ else:
         "habitante são indicadores calculados, e misturam anos de referência "
         "diferentes: população de 2026 com área de 2025."
     )
-    st.warning(cmp["disclaimer_pt"])
+    st.warning(atualizar(cmp["disclaimer_pt"]))
     st.download_button(
         "Baixar comparação (JSON)",
         data=json.dumps(cmp, ensure_ascii=False, indent=2),

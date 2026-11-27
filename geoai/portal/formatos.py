@@ -88,6 +88,67 @@ PORTES: dict[str, str] = {
 #: Valor que o cadastro traz em branco.
 SEM_INFORMACAO = "Não informada no cadastro"
 
+#: Situação de uma fonte no catálogo. O vocabulário interno é em inglês; na
+#: tela ele precisa dizer, sem ambiguidade, se a fonte alimenta o site hoje.
+SITUACOES_DA_FONTE: dict[str, str] = {
+    "prototype": "Em uso no site",
+    "catalogued": "Catalogada, ainda não coletada",
+}
+
+#: Como o arquivo da fonte é obtido. Interessa ao revisor saber se o dado vem
+#: de portal de dados abertos ou de um arquivo solto em servidor.
+MODOS_DE_ACESSO: dict[str, str] = {
+    "http_file": "Arquivo publicado pelo órgão",
+    "ckan_resource": "Portal de dados abertos do órgão",
+    "gee_asset": "Coleção de imagens em nuvem",
+    "ftp_or_http_index": "Índice de arquivos do órgão",
+}
+
+
+def situacao_da_fonte(valor: object) -> str:
+    """Situação da fonte por extenso."""
+
+    chave = str(valor or "").strip()
+    return SITUACOES_DA_FONTE.get(chave, chave or SEM_INFORMACAO)
+
+
+def modo_de_acesso(valor: object) -> str:
+    """Forma de obtenção do arquivo, por extenso."""
+
+    chave = str(valor or "").strip()
+    return MODOS_DE_ACESSO.get(chave, chave or SEM_INFORMACAO)
+
+#: Motivos de recusa de registro, gravados no artefato com o nome da coluna da
+#: ANEEL. Na tela eles viram a frase que explica o que faltou no registro.
+MOTIVOS_DE_RECUSA: dict[str, str] = {
+    "CodEmpreendimento ausente": "sem código de empreendimento",
+    "UF diferente de PR": "de outro estado",
+    "CodMunicipioIbge inválido": "sem código de município válido",
+    "CodMunicipioIbge fora do Paraná (prefixo 41)": "com município fora do Paraná",
+    "MdaPotenciaInstaladaKW inválida": "sem potência instalada válida",
+}
+
+
+def motivos_de_recusa_pt(reasons: object) -> str:
+    """Transforma a contagem por motivo em frase legível.
+
+    O artefato guarda algo como ``{"MdaPotenciaInstaladaKW inválida": 6}``.
+    Despejar esse dicionário na tela mostra nome de coluna e chave de
+    programação a quem só quer saber o que foi descartado e por quê.
+    """
+
+    if not isinstance(reasons, dict) or not reasons:
+        return "sem detalhamento por motivo"
+    partes = [
+        f"{numero_br(quantos)} {MOTIVOS_DE_RECUSA.get(str(chave), str(chave))}"
+        for chave, quantos in sorted(
+            reasons.items(), key=lambda item: item[1] or 0, reverse=True
+        )
+    ]
+    if len(partes) == 1:
+        return partes[0]
+    return ", ".join(partes[:-1]) + " e " + partes[-1]
+
 
 def rotulo_tecnologia(sigla: object) -> str:
     """«UFV» vira «Solar fotovoltaica (UFV)», para o filtro ser escolhível.

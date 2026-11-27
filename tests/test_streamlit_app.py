@@ -221,7 +221,11 @@ def test_mmgd_page_kpis_and_technology_filter(_streamlit_paths: None) -> None:
     assert not at.exception, at.exception
     labels = [str(m.label) for m in at.metric]
     assert any("Empreendimentos" in lab for lab in labels)
-    assert any("MW instalada" in lab for lab in labels)
+    # Verifica a grandeza e a unidade, não a redação: "MW instalada" era o
+    # rótulo antigo e prendia o teste a uma frase que a tela já não usa.
+    assert any(
+        "Potência instalada" in lab and "MW" in lab for lab in labels
+    ), labels
     warnings = "\n".join(str(w.value) for w in at.warning)
     assert "rejeitados" in warnings.lower() or "MMGD" in warnings
     captions = "\n".join(str(c.value) for c in at.caption)
@@ -250,7 +254,9 @@ def test_mmgd_page_kpis_and_technology_filter(_streamlit_paths: None) -> None:
     emp_ufv = next(lab for lab in labels_ufv if lab.startswith("Empreendimentos"))
     expected_ufv = f"{ufv_scope['n_empreendimentos']:,}".replace(",", ".")
     assert values_ufv[emp_ufv] == expected_ufv
-    mw_lab = next(lab for lab in labels_ufv if lab.startswith("MW instalada"))
+    mw_lab = next(
+        lab for lab in labels_ufv if lab.startswith("Potência instalada")
+    )
     assert "n/d" in values_ufv[mw_lab].lower()
 
 

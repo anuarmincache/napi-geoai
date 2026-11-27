@@ -17,6 +17,31 @@ import re
 #: A chave é um pedaço estável do aviso antigo, suficiente para reconhecê-lo.
 SUBSTITUICOES: tuple[tuple[str, str], ...] = (
     (
+        # Marcador longo de propósito: outras notas do mesmo artefato começam
+        # com "Zero vinculado" e falam de outra coisa.
+        "Zero vinculado ≠ ausência absoluta",
+        "{n} empreendimentos da ANEEL em operação não puderam ser associados "
+        "a um município, por coordenada ausente, inválida ou fora da malha do "
+        "Paraná. Município sem empreendimento vinculado não é município sem "
+        "usina: é município onde nenhuma usina georreferenciada foi associada "
+        "ao polígono.",
+    ),
+    (
+        "MMGD excluído; MW ≠ MWh",
+        "Recorte: geração centralizada da ANEEL na fase de operação. Não "
+        "inclui a geração distribuída. Potência fiscalizada, medida em MW, "
+        "não é energia gerada, que se mede em MWh. Onde aparece zero, "
+        "significa que nenhuma usina georreferenciada foi associada ao "
+        "município.",
+    ),
+    (
+        "Ausência ≠ zero",
+        "Capacidade fiscalizada ou outorgada em MW, considerando apenas "
+        "valores conhecidos e não negativos. Dado ausente não é zero. Não é "
+        "energia gerada, que se mede em MWh, e não inclui a geração "
+        "distribuída.",
+    ),
+    (
         "DthAtualizaCadastralEmpreend",
         "A data de atualização do cadastro não é a data em que a instalação "
         "entrou em operação, e o arquivo é um retrato de um período de "
